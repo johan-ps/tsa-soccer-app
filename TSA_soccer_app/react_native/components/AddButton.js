@@ -1,17 +1,56 @@
-import React from 'react';
+import React, {
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 import { Animated, StyleSheet, Easing } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Colours from '../constants/colour-themes/light_theme';
 
-const AddButton = props => {
-  const focusAnimation = new Animated.Value(0);
+// forwardRef allows functional components to have refs
+const AddButton = forwardRef((props, ref) => {
+  // using useRef provides a current property that is persistent throughout the component's lifecycle
+  const focusAnimation = useRef(new Animated.Value(0)).current;
+  const scrollAnimation = useRef(new Animated.Value(1)).current;
 
-  Animated.timing(focusAnimation, {
-    toValue: 0,
-    duration: 0,
-    useNativeDriver: true,
-  }).start();
+  const [isScroll, setIsScroll] = useState(false); // does scroll animation has priority over focus animation
+  const [scrollDownAnimInit, setScrollDownAnimInit] = useState(false); // has scroll down animation started
+
+  // useImperativeHandle customizes the instance value that is exposed to parent components when using refs
+  useImperativeHandle(ref, () => ({
+    onScrollUp,
+    onScrollDown,
+    setIsScroll,
+  }));
+
+  const onScrollUp = () => {
+    if (scrollDownAnimInit) {
+      setScrollDownAnimInit(false);
+      Animated.timing(scrollAnimation, {
+        toValue: 1,
+        duration: 225,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start(() => {
+        setIsScroll(false);
+      });
+    }
+  };
+
+  const onScrollDown = () => {
+    setIsScroll(true);
+    if (!scrollDownAnimInit) {
+      setScrollDownAnimInit(true);
+      Animated.timing(scrollAnimation, {
+        toValue: 0,
+        duration: 225,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start();
+    }
+  };
 
   const onFocusIn = () => {
     Animated.timing(focusAnimation, {
@@ -31,41 +70,64 @@ const AddButton = props => {
     }).start();
   };
 
-  const scale = {
+  // scrolling scaling animation
+  const scaleFull = {
     transform: [
       {
-        scale: focusAnimation.interpolate({
+        scale: scrollAnimation.interpolate({
           inputRange: [0, 1],
-          outputRange: [1, 0.98],
+          outputRange: [0, 1],
         }),
       },
     ],
   };
 
-  const buttonStyle = {
-    backgroundColor: Colours.primaryColor1,
-    opacity: focusAnimation.interpolate({
+  // scrolling opacity animation
+  const opacity = {
+    opacity: scrollAnimation.interpolate({
       inputRange: [0, 1],
-      outputRange: [1, 0.8],
+      outputRange: [0, 1],
     }),
   };
+
+  // focus scaling animation
+  const scale = {
+    transform: [
+      {
+        scale: focusAnimation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 0.95],
+        }),
+      },
+    ],
+  };
+
   return (
-    <Ripple
-      style={[styles.ripple]}
-      onPress={props.onPress}
-      onPressIn={onFocusIn}
-      onPressOut={onFocusOut}>
-      <Animated.View style={[styles.addBtn, buttonStyle, scale]}>
+    <Animated.View
+      style={[styles.addBtn, isScroll ? scaleFull : scale, opacity]}>
+      <Ripple
+        style={[styles.ripple]}
+        onPress={props.onPress}
+        onPressIn={onFocusIn}
+        onPressOut={onFocusOut}>
         <Icon name="ios-add" color="white" size={28} />
-      </Animated.View>
-    </Ripple>
+      </Ripple>
+    </Animated.View>
   );
-};
+});
 
 export default AddButton;
 
 const styles = StyleSheet.create({
   ripple: {
+    width: 60,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    overflow: 'hidden',
+  },
+  addBtn: {
     width: 60,
     height: 60,
     borderRadius: 50,
@@ -79,13 +141,6 @@ const styles = StyleSheet.create({
     shadowColor: '#F02A4B',
     shadowOpacity: 0.3,
     shadowOffset: { height: 10 },
-  },
-  addBtn: {
-    width: 60,
-    height: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 30,
-    overflow: 'hidden',
+    backgroundColor: Colours.primaryColor1,
   },
 });
