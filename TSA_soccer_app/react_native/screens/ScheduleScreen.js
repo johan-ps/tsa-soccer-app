@@ -1,12 +1,11 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import AddButton from '../components/AddButton';
-import HomeTabNavigator from '../navigation/HomeTabNavigator';
 
-const HomeScreen = () => {
+const ScheduleScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>HomeScreen</Text>
+      <Text>Schedule</Text>
       <AddButton />
     </View>
   );
@@ -20,4 +19,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default ScheduleScreen;
