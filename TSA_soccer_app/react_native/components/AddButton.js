@@ -15,7 +15,7 @@ const AddButton = forwardRef((props, ref) => {
   const focusAnimation = useRef(new Animated.Value(0)).current;
   const scrollAnimation = useRef(new Animated.Value(1)).current;
 
-  const [isScroll, setIsScroll] = useState(false); // does scroll animation has priority over focus animation
+  const [isScroll, setIsScroll] = useState(false); // does scroll animation have priority over focus animation
   const [scrollDownAnimInit, setScrollDownAnimInit] = useState(false); // has scroll down animation started
 
   // useImperativeHandle customizes the instance value that is exposed to parent components when using refs
