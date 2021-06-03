@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import AddButton from '../components/AddButton';
 import * as ThemeActions from '../store/actions/ThemeActions';
+// import HomeTabNavigator from '../navigation/HomeTabNavigator';
 
 const HomeScreen = () => {
   const [offsetY, setOffsetY] = useState(0);
@@ -34,7 +35,7 @@ const HomeScreen = () => {
       newTheme = 'default';
     }
     dispatch(ThemeActions.updateTheme(newTheme));
-  }
+  };
 
   return (
     <View style={styles.container}>

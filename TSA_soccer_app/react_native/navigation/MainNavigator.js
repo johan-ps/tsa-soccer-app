@@ -1,16 +1,24 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, Platform } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { Text, View, StyleSheet } from 'react-native';
 
 import HomeScreen from '../screens/HomeScreen';
+import ScheduleScreen from '../screens/ScheduleScreen';
+import MessagesScreen from '../screens/MessagesScreen';
+import TeamScreen from '../screens/TeamScreen';
+import MoreScreen from '../screens/MoreScreen';
 import * as ThemeActions from '../store/actions/ThemeActions';
 
-const MainNav = createStackNavigator();
+const MainNav = createBottomTabNavigator();
 
 const MainNavigator = () => {
   const dispatch = useDispatch(); // use to dispatch an action
   const scheme = useColorScheme(); // get phone's native theme style
+  const theme = useSelector(state => state.theme.colors);
 
   // run function whenever dispatch or scheme changes
   useEffect(() => {
@@ -20,10 +28,84 @@ const MainNavigator = () => {
   }, [dispatch, scheme]);
 
   return (
-    <MainNav.Navigator>
+    <MainNav.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused }) => {
+          let iconName;
+
+          if (route.name === 'Home') {
+            iconName = 'home';
+          } else if (route.name === 'Schedule') {
+            iconName = 'calendar';
+          } else if (route.name === 'Team') {
+            iconName = 'people';
+          } else if (route.name === 'Messages') {
+            iconName = 'send';
+          } else if (route.name === 'More') {
+            iconName = 'apps';
+          }
+
+          // You can return any component that you like here!
+          //return <Ionicons name={iconName} size={size} color={color} />;
+          return (
+            <View style={styles.tabBarIconContainer}>
+              <Icon
+                name={iconName}
+                color={focused ? theme.primaryIconClr : theme.secondaryIconClr}
+                size={focused ? 23 : 21}
+              />
+              <Text
+                // eslint-disable-next-line react-native/no-inline-styles
+                style={{
+                  color: focused
+                    ? theme.primaryIconClr
+                    : theme.secondaryIconClr,
+                  fontSize: focused ? 12 : 10,
+                  top: 2,
+                }}>
+                {route.name}
+              </Text>
+            </View>
+          );
+        },
+      })}
+      tabBarOptions={{
+        showLabel: false,
+        style: {
+          ...styles.tabBar,
+          backgroundColor: theme.primaryBgClr,
+        },
+      }}>
       <MainNav.Screen name="Home" component={HomeScreen} />
+      <MainNav.Screen name="Schedule" component={ScheduleScreen} />
+      <MainNav.Screen name="Team" component={TeamScreen} />
+      <MainNav.Screen name="Messages" component={MessagesScreen} />
+      <MainNav.Screen name="More" component={MoreScreen} />
     </MainNav.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  tabBarIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Platform.select({
+      ios: {
+        top: 10,
+      },
+      android: {
+        top: 0,
+      },
+    }),
+  },
+  tabBar: {
+    position: 'relative',
+    ...Platform.select({
+      android: {
+        height: 60,
+      },
+    }),
+  },
+});
 
 export default MainNavigator;
