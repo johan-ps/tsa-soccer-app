@@ -2,10 +2,10 @@ import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import AddButton from '../components/AddButton';
 
-const ScheduleScreen = () => {
+const TeamScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Schedule</Text>
+      <Text style={styles.text}>Team</Text>
       <AddButton />
     </View>
   );
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ScheduleScreen;
+export default TeamScreen;
