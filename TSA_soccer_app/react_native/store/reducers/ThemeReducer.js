@@ -14,8 +14,7 @@ const themeReducer = (state = INITIAL_STATE, action) => {
       if (activeTheme === action.theme) {
         return state;
       } else {
-        const index = possible.indexOf(action.theme);
-        const newActiveTheme = possible[index];
+        const newActiveTheme = action.theme;
         const colors = ColorThemes[newActiveTheme];
         const newState = { activeTheme: newActiveTheme, possible, colors };
         return newState;
