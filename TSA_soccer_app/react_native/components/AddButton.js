@@ -7,7 +7,7 @@ import React, {
 import { Animated, StyleSheet, Easing } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Colours from '../constants/colour-themes/light_theme';
+import { useSelector } from 'react-redux';
 
 // forwardRef allows functional components to have refs
 const AddButton = forwardRef((props, ref) => {
@@ -17,6 +17,9 @@ const AddButton = forwardRef((props, ref) => {
 
   const [isScroll, setIsScroll] = useState(false); // does scroll animation have priority over focus animation
   const [scrollDownAnimInit, setScrollDownAnimInit] = useState(false); // has scroll down animation started
+
+  // get current theme colors from state
+  const theme = useSelector(state => state.theme.colors);
 
   // useImperativeHandle customizes the instance value that is exposed to parent components when using refs
   useImperativeHandle(ref, () => ({
@@ -102,15 +105,24 @@ const AddButton = forwardRef((props, ref) => {
     ],
   };
 
+  const themeStyles = {
+    backgroundColor: theme.primaryBtnBgClr,
+  };
+
   return (
     <Animated.View
-      style={[styles.addBtn, isScroll ? scaleFull : scale, opacity]}>
+      style={[
+        styles.addBtn,
+        themeStyles,
+        isScroll ? scaleFull : scale,
+        opacity,
+      ]}>
       <Ripple
         style={[styles.ripple]}
         onPress={props.onPress}
         onPressIn={onFocusIn}
         onPressOut={onFocusOut}>
-        <Icon name="ios-add" color="white" size={28} />
+        <Icon name="ios-add" color={theme.primaryBtnClr} size={28} />
       </Ripple>
     </Animated.View>
   );
@@ -141,6 +153,5 @@ const styles = StyleSheet.create({
     shadowColor: '#F02A4B',
     shadowOpacity: 0.3,
     shadowOffset: { height: 10 },
-    backgroundColor: Colours.primaryColor1,
   },
 });
