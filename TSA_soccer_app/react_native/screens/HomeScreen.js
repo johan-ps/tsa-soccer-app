@@ -4,10 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import AddButton from '../components/AddButton';
 import * as ThemeActions from '../store/actions/ThemeActions';
-// import HomeTabNavigator from '../navigation/HomeTabNavigator';
+import UiModal from '../components/UiModal';
+import UiButton from '../components/UiButton';
 
 const HomeScreen = () => {
   const [offsetY, setOffsetY] = useState(0);
+  const [visible, setVisible] = useState(false);
   const addBtnRef = useRef();
   const dispatch = useDispatch();
   const activeTheme = useSelector(state => state.theme.activeTheme);
@@ -39,24 +41,38 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      <UiModal
+        visible={visible}
+        title="Delete content"
+        content={
+          'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
+        }
+        onCloseHandler={() => {setVisible(false)}}
+      />
       <Text>HomeScreen</Text>
-      <ScrollView onScroll={onScrollHandler}>
-        <Button title="Change theme" onPress={onChangeThemeHandler} />
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-        <Text style={styles.text}>HomeScreen scroll</Text>
-      </ScrollView>
+      {/* <ScrollView onScroll={onScrollHandler}> */}
+      <Button title="Change theme" onPress={onChangeThemeHandler} />
+      <UiButton
+        label="Confirm"
+        textColor="white"
+        bgColor="#0066FF"
+        onPress={() => {setVisible(true)}}
+      />
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      <Text style={styles.text}>HomeScreen scroll</Text>
+      {/* </ScrollView> */}
       <AddButton ref={addBtnRef} />
     </View>
   );
@@ -64,9 +80,11 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     width: '100%',
     padding: 15,
     height: '100%',
+    position: 'relative',
   },
   text: {
     margin: 50,
