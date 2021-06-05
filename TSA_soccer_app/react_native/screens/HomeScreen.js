@@ -6,6 +6,7 @@ import AddButton from '../components/AddButton';
 import * as ThemeActions from '../store/actions/ThemeActions';
 import UiModal from '../components/UiModal';
 import UiButton from '../components/UiButton';
+import UiDropdown from '../components/UiDropdown';
 
 const HomeScreen = () => {
   const [offsetY, setOffsetY] = useState(0);
@@ -42,22 +43,34 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <UiModal
+        primaryLabel="Confirm"
+        secondaryLabel="Cancel"
         visible={visible}
         title="Delete content"
         content={
           'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
         }
-        onCloseHandler={() => {setVisible(false)}}
+        onCloseHandler={() => {
+          setVisible(false);
+        }}
       />
       <Text>HomeScreen</Text>
       {/* <ScrollView onScroll={onScrollHandler}> */}
-      <Button title="Change theme" onPress={onChangeThemeHandler} />
+      <UiButton
+        label="Change theme"
+        textColor="white"
+        bgColor="#0022FF"
+        onPress={onChangeThemeHandler}
+      />
       <UiButton
         label="Confirm"
         textColor="white"
         bgColor="#0066FF"
-        onPress={() => {setVisible(true)}}
+        onPress={() => {
+          setVisible(true);
+        }}
       />
+      <UiDropdown />
       <Text style={styles.text}>HomeScreen scroll</Text>
       <Text style={styles.text}>HomeScreen scroll</Text>
       <Text style={styles.text}>HomeScreen scroll</Text>

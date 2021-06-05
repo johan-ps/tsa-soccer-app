@@ -38,7 +38,10 @@ const UiModal = props => {
   const scale = {
     transform: [
       {
-        scale: showModalAnimation,
+        scale: showModalAnimation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0.5, 1],
+        }),
       },
     ],
   };
@@ -51,39 +54,39 @@ const UiModal = props => {
   };
 
   return (
-    <Modal transparent visible={showModal}>
-      <View style={styles.modalViewContainer}>
+    <Modal transparent={true} visible={showModal}>
+      <Animated.View style={[styles.modalViewContainer, opacity]}>
         <Animated.View
           style={[
             styles.modalContainer,
-            { backgroundColor: theme.primaryCardBgClr },
+            { backgroundColor: theme.cardBgClr },
             scale,
             opacity,
           ]}>
           <View style={styles.textContainer}>
-            <Text style={{ ...styles.title, color: theme.primaryCardHClr }}>
+            <Text style={{ ...styles.title, color: theme.cardHClr }}>
               {props.title}
             </Text>
-            <Text style={{ ...styles.content, color: theme.primaryCardCClr }}>
+            <Text style={{ ...styles.content, color: theme.cardCClr }}>
               {props.content}
             </Text>
           </View>
           <View style={styles.buttonContainer}>
             <UiButton
-              label="Cancel"
+              label={props.secondaryLabel}
               bgColor={theme.secondaryBtnBgClr}
               textColor={theme.secondaryBtnClr}
               onPress={props.onCloseHandler}
             />
             <UiButton
-              label="Confirm"
+              label={props.primaryLabel}
               bgColor={theme.primaryBtnBgClr}
               textColor={theme.primaryBtnClr}
               onPress={props.onCloseHandler}
             />
           </View>
         </Animated.View>
-      </View>
+      </Animated.View>
     </Modal>
   );
 };
@@ -97,8 +100,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     borderRadius: 20,
-    padding: 20,
-    margin: 15,
+    padding: 25,
     width: '90%',
     maxWidth: 400,
     height: '32%',
