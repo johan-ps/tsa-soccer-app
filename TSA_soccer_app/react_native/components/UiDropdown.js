@@ -177,7 +177,9 @@ const UiDropdown = props => {
                     }}
                     style={[
                       styles.option,
-                      option.id === selectedId ? { backgroundColor: theme.dropdownOptSClr } : {},
+                      option.id === selectedId
+                        ? { backgroundColor: theme.dropdownOptSClr }
+                        : {},
                     ]}
                     key={option.id}>
                     <Text
@@ -202,17 +204,26 @@ const UiDropdown = props => {
 
   return (
     <Animated.View
-      style={[styles.dropdownContainer, { backgroundColor: theme.dropdownBgClr }, scale]}
+      style={[
+        styles.dropdownContainer,
+        { backgroundColor: theme.dropdownBgClr },
+        scale,
+      ]}
       onLayout={getDropdownXY}>
       <Ripple
         onPressIn={onFocusIn}
         onPressOut={onFocusOut}
         style={[styles.dropdownBtn, showOptions ? buttonBorder : {}]}>
         <Text style={{ color: theme.dropdownSClr }}>{selectedLabel}</Text>
-        <Animated.View style={[styles.iconContainer, { backgroundColor: theme.dropdownBgClr }, iconAnimStyles]}>
+        <Animated.View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: theme.dropdownBgClr },
+            iconAnimStyles,
+          ]}>
           <Icon
             name="chevron-down-outline"
-            color={showOptions ? theme.dropdownBorderClr : theme.dropdownSClr }
+            color={showOptions ? theme.dropdownBorderClr : theme.dropdownSClr}
             size={24}
           />
         </Animated.View>
