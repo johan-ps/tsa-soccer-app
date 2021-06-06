@@ -13,6 +13,7 @@ export default {
     primaryCardBgClr: '#424242',
     primaryCardHClr: '#ffffff',
     primaryCardCClr: '#a2a2a2',
+    primaryTxtInputBackgroundClr: '#414142'
   },
   darkPlus: {
     name: 'darkPlus',
@@ -28,6 +29,7 @@ export default {
     primaryCardBgClr: '#424242',
     primaryCardHClr: '#ffffff',
     primaryCardCClr: '#a2a2a2',
+    primaryTxtInputBackgroundClr: '#414142'
   },
   default: {
     name: 'default',
@@ -47,5 +49,6 @@ export default {
     primaryCardBgClr: '#ffffff',
     primaryCardHClr: '#000000',
     primaryCardCClr: '#848484',
+    primaryTxtInputBackgroundClr: '#ffffff'
   },
 };
