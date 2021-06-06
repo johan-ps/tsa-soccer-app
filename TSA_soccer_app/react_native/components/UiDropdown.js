@@ -1,47 +1,38 @@
 import React, { useRef, useState } from 'react';
 import {
+  View,
   Text,
   StyleSheet,
   Pressable,
   Animated,
   Easing,
   Modal,
+  ScrollView,
 } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
 const UiDropdown = props => {
+  const {
+    modalOffsetX = 0,
+    modalOffsetY = 0,
+    options = [],
+    placeholder = 'Select Value...',
+    size = 'small',
+    multiselect = false,
+    group = false,
+    icon = false,
+  } = props;
   const [selectedId, setSelectedId] = useState(-1);
-  const [selectedLabel, setSelectedLabel] = useState('Select Value...');
+  const [selectedLabel, setSelectedLabel] = useState(placeholder);
+  const [selectedValues, setSelectedValues] = useState({});
   const [showOptions, setShowOptions] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  const [width, setWidth] = useState({ width: 170 });
   const dropdownAnimation = useRef(new Animated.Value(0)).current;
   const focusAnimation = useRef(new Animated.Value(0)).current;
-  const options = [
-    {
-      id: 0,
-      label: 'Framer',
-    },
-    {
-      id: 1,
-      label: 'Sketch',
-    },
-    {
-      id: 2,
-      label: 'InVision Studio',
-    },
-    {
-      id: 3,
-      label: 'Figma',
-    },
-    {
-      id: 4,
-      label: 'Adobe XD',
-    },
-  ];
-
   const theme = useSelector(state => state.theme.colors);
 
   const onFocusIn = () => {
@@ -72,8 +63,19 @@ const UiDropdown = props => {
 
   const getDropdownXY = event => {
     const layout = event.nativeEvent.layout;
-    setOffsetY(layout.height + layout.y);
-    setOffsetX(layout.x);
+    setOffsetY(layout.height + layout.y + modalOffsetY);
+    setOffsetX(layout.x + modalOffsetX);
+    setWidth({ width: layout.width });
+  };
+
+  const widthStyle = () => {
+    let width = '48.5%';
+    if (size === 'large') {
+      width = '100%';
+    } else if (size === 'medium') {
+      width = '70%';
+    }
+    return { width };
   };
 
   const positionStyle = {
@@ -81,7 +83,29 @@ const UiDropdown = props => {
     left: offsetX,
   };
 
-  const onSelectOptionHandler = option => {
+  const onSelectOptionHandler = (option, child = null) => {
+    if (multiselect) {
+      const newSelectedValues = { ...selectedValues };
+      if (selectedValues[option.id] === undefined) {
+        newSelectedValues[option.id] = {
+          selected: false,
+          children: {},
+        };
+        if (child) {
+          newSelectedValues[option.id].children[child.id] = false;
+        }
+      }
+      newSelectedValues[option.id].children = {
+        ...newSelectedValues[option.id].children,
+      };
+      if (child) {
+        newSelectedValues[option.id].children[child.id] =
+          !newSelectedValues[option.id].children[child.id];
+      }
+      setSelectedValues(newSelectedValues);
+      console.log(newSelectedValues);
+      return;
+    }
     setSelectedId(option.id);
     setSelectedLabel(option.label);
     setTimeout(() => {
@@ -111,7 +135,7 @@ const UiDropdown = props => {
 
   const buttonBorder = {
     borderColor: theme.dropdownBorderClr,
-    borderWidth: 2,
+    shadowColor: '#e51b23',
   };
 
   const scale = {
@@ -134,7 +158,7 @@ const UiDropdown = props => {
       {
         translateY: dropdownAnimation.interpolate({
           inputRange: [0, 1],
-          outputRange: [0, 10],
+          outputRange: [0, 5],
         }),
       },
       {
@@ -165,34 +189,103 @@ const UiDropdown = props => {
             <Animated.View
               style={[
                 styles.optionsContainer,
+                width,
                 { backgroundColor: theme.dropdownBgClr },
                 positionStyle,
                 optionsAnimStyles,
               ]}>
-              {options.map(option => {
-                return (
-                  <Ripple
-                    onPress={() => {
-                      onSelectOptionHandler(option);
-                    }}
-                    style={[
-                      styles.option,
-                      option.id === selectedId
-                        ? { backgroundColor: theme.dropdownOptSClr }
-                        : {},
-                    ]}
-                    key={option.id}>
-                    <Text
-                      style={
-                        option.id === selectedId
-                          ? { color: theme.dropdownOptSTxtClr }
-                          : { color: theme.dropdownOptTxtClr }
-                      }>
-                      {option.label}
-                    </Text>
-                  </Ripple>
-                );
-              })}
+              <ScrollView
+                style={[
+                  styles.optionsScrollContainer,
+                  { backgroundColor: theme.dropdownBgClr },
+                ]}>
+                {options.map(option => {
+                  return (
+                    <View key={option.id}>
+                      <Ripple
+                        onPress={() => {
+                          onSelectOptionHandler(option);
+                        }}
+                        style={[
+                          styles.option,
+                          (multiselect &&
+                            selectedValues[option.id] &&
+                            selectedValues[option.id].selected === true) ||
+                          (!multiselect && option.id === selectedId)
+                            ? { backgroundColor: theme.dropdownOptSClr }
+                            : {},
+                        ]}>
+                        <Text
+                          style={[
+                            option.id === selectedId
+                              ? { color: theme.dropdownOptSTxtClr }
+                              : { color: theme.dropdownOptTxtClr },
+                            group ? { fontWeight: 'bold' } : {},
+                          ]}>
+                          {option.label}
+                        </Text>
+                        {(multiselect &&
+                          selectedValues[option.id] &&
+                          selectedValues[option.id].selected === true) ||
+                        (!multiselect && option.id === selectedId) ? (
+                          <Icon
+                            name="checkmark-outline"
+                            size={20}
+                            color="red"
+                          />
+                        ) : null}
+                      </Ripple>
+                      {option.children
+                        ? option.children.map(child => {
+                            return (
+                              <Ripple
+                                onPress={() => {
+                                  onSelectOptionHandler(option, child);
+                                }}
+                                style={[
+                                  styles.option,
+                                  multiselect &&
+                                  selectedValues[option.id] &&
+                                  selectedValues[option.id].children &&
+                                  selectedValues[option.id].children[
+                                    child.id
+                                  ] === true
+                                    ? { backgroundColor: theme.dropdownOptSClr }
+                                    : {},
+                                ]}
+                                key={child.id}>
+                                <Text
+                                  style={
+                                    multiselect &&
+                                    selectedValues[option.id] &&
+                                    selectedValues[option.id].children &&
+                                    selectedValues[option.id].children[
+                                      child.id
+                                    ] === true
+                                      ? { color: theme.dropdownOptSTxtClr }
+                                      : { color: theme.dropdownOptTxtClr }
+                                  }>
+                                  {child.label}
+                                </Text>
+                                {multiselect &&
+                                selectedValues[option.id] &&
+                                selectedValues[option.id].children &&
+                                selectedValues[option.id].children[child.id] ===
+                                  true ? (
+                                  <Icon
+                                    name="checkmark-outline"
+                                    size={20}
+                                    color="red"
+                                  />
+                                ) : null}
+                              </Ripple>
+                            );
+                          })
+                        : null}
+                    </View>
+                  );
+                })}
+              </ScrollView>
             </Animated.View>
           </Pressable>
         </Modal>
@@ -206,14 +299,17 @@ const UiDropdown = props => {
     <Animated.View
       style={[
         styles.dropdownContainer,
+        widthStyle(),
         { backgroundColor: theme.dropdownBgClr },
+        showOptions ? buttonBorder : {},
         scale,
+        props.style,
       ]}
       onLayout={getDropdownXY}>
       <Ripple
         onPressIn={onFocusIn}
         onPressOut={onFocusOut}
-        style={[styles.dropdownBtn, showOptions ? buttonBorder : {}]}>
+        style={[styles.dropdownBtn]}>
         <Text style={{ color: theme.dropdownSClr }}>{selectedLabel}</Text>
         <Animated.View
           style={[
@@ -237,19 +333,23 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     borderRadius: 10,
     height: 50,
-    width: 200,
+    width: 170,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 10,
-    shadowRadius: 10,
+    elevation: 2,
+    shadowRadius: 2,
     shadowColor: '#000000',
     shadowOpacity: 0.3,
-    shadowOffset: { height: 10 },
+    shadowOffset: { height: 2 },
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: '#A8A4B8',
+    overflow: 'hidden',
   },
   dropdownBtn: {
     borderRadius: 10,
     height: 50,
-    width: 200,
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -266,8 +366,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  optionsScrollContainer: {
+    width: '100%',
+    maxHeight: 160,
+    backgroundColor: 'white',
+    borderRadius: 10,
+  },
   optionsContainer: {
-    width: 200,
+    width: 170,
+    maxHeight: 160,
     backgroundColor: 'white',
     borderRadius: 10,
     elevation: 10,
@@ -281,10 +388,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   option: {
-    width: 200,
+    width: '100%',
     height: 40,
     paddingHorizontal: 20,
     paddingVertical: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   selectedOption: {
     backgroundColor: '#E9EFFF',

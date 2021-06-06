@@ -10,8 +10,17 @@ const ScheduleScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Schedule</Text>
-      {/* <AddButton /> */}
-      <CreateEvent  />
+      <AddButton
+        onPress={() => {
+          setCreateEvent(true);
+        }}
+      />
+      <CreateEvent
+        visible={createEvent}
+        onClose={() => {
+          setCreateEvent(false);
+        }}
+      />
     </View>
   );
 };

@@ -17,7 +17,7 @@ const UiToggle = props => {
   const toggleAnimation = useRef(new Animated.Value(0)).current;
   const focusAnimation = useRef(new Animated.Value(0)).current;
 
-  const onFocusIn = event => {
+  const onFocusIn = () => {
     setFocused(true);
     Animated.timing(focusAnimation, {
       toValue: 1,
@@ -27,7 +27,7 @@ const UiToggle = props => {
     }).start();
   };
 
-  const onFocusOut = event => {
+  const onFocusOut = () => {
     Animated.timing(focusAnimation, {
       toValue: 0,
       duration: 40,

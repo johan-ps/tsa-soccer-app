@@ -67,6 +67,6 @@ export default {
     dropdownOptSClr: '#ffe4e5',
     dropdownOptTxtClr: '#000000',
     dropdownOptSTxtClr: '#e51b23',
-    dropdownSClr: '#C8C6D2',
+    dropdownSClr: '#A8A4B8',
   },
 };
