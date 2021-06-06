@@ -235,7 +235,6 @@ const UiDropdown = props => {
 
 const styles = StyleSheet.create({
   dropdownContainer: {
-    marginTop: 100,
     borderRadius: 10,
     height: 50,
     width: 200,

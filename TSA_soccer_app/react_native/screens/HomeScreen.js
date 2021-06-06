@@ -7,6 +7,7 @@ import * as ThemeActions from '../store/actions/ThemeActions';
 import UiModal from '../components/UiModal';
 import UiButton from '../components/UiButton';
 import UiDropdown from '../components/UiDropdown';
+import UiToggle from '../components/UiToggle';
 
 const HomeScreen = () => {
   const [offsetY, setOffsetY] = useState(0);
@@ -71,6 +72,7 @@ const HomeScreen = () => {
         }}
       />
       <UiDropdown />
+      <UiToggle />
       <Text style={styles.text}>HomeScreen scroll</Text>
       <Text style={styles.text}>HomeScreen scroll</Text>
       <Text style={styles.text}>HomeScreen scroll</Text>
@@ -98,6 +100,7 @@ const styles = StyleSheet.create({
     padding: 15,
     height: '100%',
     position: 'relative',
+    backgroundColor: 'white',
   },
   text: {
     margin: 50,

@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-import AddButton from '../components/AddButton';
+
+import { AddButton } from '../components/_components';
+import CreateEvent from '../components/CreateEvent';
 
 const ScheduleScreen = () => {
+  const [createEvent, setCreateEvent] = useState(false);
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Schedule</Text>
-      <AddButton />
+      {/* <AddButton /> */}
+      <CreateEvent  />
     </View>
   );
 };
@@ -18,11 +23,11 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'black',
+    backgroundColor: 'grey',
   },
   text: {
-    color: 'red'
-  }
+    color: 'red',
+  },
 });
 
 export default ScheduleScreen;
