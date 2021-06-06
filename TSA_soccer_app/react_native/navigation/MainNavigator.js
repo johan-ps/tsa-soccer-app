@@ -93,16 +93,13 @@ const styles = StyleSheet.create({
       ios: {
         top: 10,
       },
-      android: {
-        top: 0,
-      },
     }),
   },
   tabBar: {
     position: 'relative',
     ...Platform.select({
       android: {
-        height: 60,
+        height: 56,
       },
     }),
   },

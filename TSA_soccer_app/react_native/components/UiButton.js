@@ -66,7 +66,7 @@ const UiButton = props => {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    borderRadius: 10,
+    borderRadius: 8,
     height: 40,
     width: 140,
     justifyContent: 'center',
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   shadow: {
-    borderRadius: 10,
+    borderRadius: 8,
     backgroundColor: '#000000',
     height: 40,
     width: 140,
