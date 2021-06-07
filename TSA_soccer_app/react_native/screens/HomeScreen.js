@@ -7,6 +7,7 @@ import * as ThemeActions from '../store/actions/ThemeActions';
 import UiModal from '../components/UiModal';
 import UiButton from '../components/UiButton';
 import UiDropdown from '../components/UiDropdown';
+import UiToggle from '../components/UiToggle';
 
 const HomeScreen = () => {
   const [offsetY, setOffsetY] = useState(0);
@@ -40,6 +41,45 @@ const HomeScreen = () => {
     dispatch(ThemeActions.updateTheme(newTheme));
   };
 
+  const teams = [
+    {
+      label: 'House League',
+      id: 10,
+      children: [
+        {
+          label: 'Markham House League',
+          id: 11,
+        },
+        {
+          label: 'Scarborough House League',
+          id: 12,
+        },
+      ],
+    },
+    {
+      label: 'Rep',
+      id: 13,
+      children: [
+        {
+          label: 'U14',
+          id: 14,
+        },
+        {
+          label: 'U11',
+          id: 15,
+        },
+        {
+          label: 'U10',
+          id: 16,
+        },
+        {
+          label: 'U9',
+          id: 17,
+        },
+      ],
+    },
+  ];
+
   return (
     <View style={styles.container}>
       <UiModal
@@ -70,7 +110,16 @@ const HomeScreen = () => {
           setVisible(true);
         }}
       />
-      <UiDropdown />
+      <UiDropdown
+        modalOffsetX={0}
+        modalOffsetY={0}
+        options={teams}
+        multiselect={true}
+        group={true}
+        size="large"
+        placeholder="'Select Value...'"
+      />
+      <UiToggle />
       <Text style={styles.text}>HomeScreen scroll</Text>
       <Text style={styles.text}>HomeScreen scroll</Text>
       <Text style={styles.text}>HomeScreen scroll</Text>
@@ -98,6 +147,7 @@ const styles = StyleSheet.create({
     padding: 15,
     height: '100%',
     position: 'relative',
+    backgroundColor: 'white',
   },
   text: {
     margin: 50,
