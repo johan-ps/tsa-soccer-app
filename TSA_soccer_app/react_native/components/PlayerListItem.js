@@ -12,6 +12,7 @@ import {
   TouchableHighlight,
 } from 'react-native';
 import { useSelector } from 'react-redux';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const PlayerListItem = props => {
   const { player, navigation } = props;
@@ -23,8 +24,11 @@ const PlayerListItem = props => {
       style={styles.touchableContainer}>
       <View
         style={[styles.container, player.last ? { borderBottomWidth: 0 } : {}]}>
-        <Image style={styles.logo} source={{ uri: player.image }} />
-        <Text style={styles.text}>{player.name}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image style={styles.logo} source={{ uri: player.image }} />
+          <Text style={styles.text}>{player.name}</Text>
+        </View>
+        <Icon color="#A9A9A9" size={20} name="chevron-forward-outline" />
       </View>
     </TouchableHighlight>
   );
@@ -48,6 +52,7 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     padding: 10,
     paddingHorizontal: 15,
+    justifyContent: 'space-between',
   },
   logo: {
     height: 40,

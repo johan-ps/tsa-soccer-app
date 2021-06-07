@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     height: '100%',
-    backgroundColor: 'grey',
+    backgroundColor: '#ece6e6',
   },
   modalContentContainer: {
     width: '100%',

@@ -103,7 +103,6 @@ const UiDropdown = props => {
           !newSelectedValues[option.id].children[child.id];
       }
       setSelectedValues(newSelectedValues);
-      console.log(newSelectedValues);
       return;
     }
     setSelectedId(option.id);

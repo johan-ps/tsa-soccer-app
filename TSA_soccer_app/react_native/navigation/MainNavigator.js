@@ -56,7 +56,7 @@ const MainNavigator = () => {
                 size={focused ? 23 : 21}
               />
               <Text
-                // eslint-disable-next-line react-native/no-inline-styles
+                numberOfLines={1}
                 style={{
                   color: focused
                     ? theme.primaryIconClr
