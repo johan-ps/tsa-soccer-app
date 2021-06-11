@@ -1,15 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import Ripple from 'react-native-material-ripple';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useSelector } from 'react-redux';
 
 const AnnouncementCard = props => {
+  const theme = useSelector(state => state.theme.colors);
   const { image = null } = props;
   const desc =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,';
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.cardBg }]}>
       <View style={styles.header}>
         <View style={styles.headerContentWrapper}>
           <View style={styles.headerImgWrapper}>
@@ -22,13 +23,17 @@ const AnnouncementCard = props => {
             />
           </View>
           <View style={styles.headerContent}>
-            <Text style={styles.name}>Coach Gryffin</Text>
-            <Text style={styles.date}>28 Oct 2020</Text>
+            <Text style={[styles.name, { color: theme.cardTextHeading }]}>
+              Coach Gryffin
+            </Text>
+            <Text style={[styles.date, { color: theme.cardTextSubHeading }]}>
+              28 Oct 2020
+            </Text>
           </View>
         </View>
-        <Ripple style={styles.iconContainer}>
-          <Icon name="ellipsis-vertical" size={20} color="black" />
-        </Ripple>
+        <TouchableOpacity style={styles.iconContainer}>
+          <Icon name="ellipsis-vertical" size={20} color={theme.iconClr} />
+        </TouchableOpacity>
       </View>
       <View style={styles.body}>
         {image ? (
@@ -44,7 +49,9 @@ const AnnouncementCard = props => {
           </View>
         ) : null}
         <View style={styles.bodyContentWrapper}>
-          <Text style={styles.bodyContent}>{desc}</Text>
+          <Text style={[styles.bodyContent, { color: theme.cardTextContent }]}>
+            {desc}
+          </Text>
         </View>
       </View>
     </View>
@@ -53,21 +60,16 @@ const AnnouncementCard = props => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffffcc',
-    padding: 15,
-    borderRadius: 40,
-    marginVertical: 10,
-    // elevation: 5,
-    // shadowRadius: 2,
-    // shadowColor: '#000000',
-    // shadowOpacity: 0.3,
-    // shadowOffset: { height: 15 },
+    marginVertical: 2,
+    position: 'relative',
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   headerContentWrapper: {
     flexDirection: 'row',
@@ -88,17 +90,17 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: 'black',
+    fontFamily: 'Roboto-Bold',
   },
   date: {
     fontSize: 13,
-    color: 'grey',
+    fontFamily: 'Roboto-Light',
   },
   headerImgWrapper: {
     overflow: 'hidden',
-    height: 60,
-    width: 60,
-    borderRadius: 50,
+    height: 50,
+    width: 50,
+    borderRadius: 15,
     elevation: 20,
     shadowRadius: 2,
     shadowColor: '#000000',
@@ -112,16 +114,9 @@ const styles = StyleSheet.create({
   body: {},
   imageContainer: {
     height: 300,
-    marginVertical: 5,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    borderRadius: 30,
-    elevation: 20,
-    shadowRadius: 2,
-    shadowColor: '#000000',
-    shadowOpacity: 0.3,
-    shadowOffset: { height: 20 },
   },
   image: {
     width: '100%',
@@ -133,7 +128,7 @@ const styles = StyleSheet.create({
   },
   bodyContent: {
     fontSize: 14,
-    color: '#00000099',
+    fontFamily: 'Roboto-Regular',
   },
 });
 

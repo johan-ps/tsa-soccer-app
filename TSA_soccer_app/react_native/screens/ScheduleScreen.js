@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
-import { AddButton } from '../components/_components';
+import { AddButton, UiButton } from '../components/_components';
 import CreateEvent from '../components/CreateEvent';
 
 const ScheduleScreen = () => {
@@ -9,6 +9,7 @@ const ScheduleScreen = () => {
 
   return (
     <View style={styles.container}>
+      <UiButton label="Create" onPress={() => {}} />
       <Text style={styles.text}>Schedule</Text>
       <AddButton
         onPress={() => {
@@ -18,7 +19,9 @@ const ScheduleScreen = () => {
       <CreateEvent
         visible={createEvent}
         onClose={() => {
-          setCreateEvent(false);
+          setTimeout(() => {
+            setCreateEvent(false);
+          }, 100);
         }}
       />
     </View>

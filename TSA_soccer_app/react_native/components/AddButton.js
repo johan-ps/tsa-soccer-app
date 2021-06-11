@@ -106,7 +106,7 @@ const AddButton = forwardRef((props, ref) => {
   };
 
   const themeStyles = {
-    backgroundColor: theme.primaryBtnBgClr,
+    backgroundColor: theme.buttonPrimaryBg,
   };
 
   return (
@@ -122,7 +122,7 @@ const AddButton = forwardRef((props, ref) => {
         onPress={props.onPress}
         onPressIn={onFocusIn}
         onPressOut={onFocusOut}>
-        <Icon name="ios-add" color={theme.primaryBtnClr} size={28} />
+        <Icon name="add-outline" color={theme.buttonPrimaryText} size={28} />
       </Ripple>
     </Animated.View>
   );

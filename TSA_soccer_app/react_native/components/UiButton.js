@@ -1,7 +1,21 @@
 import React, { useRef } from 'react';
-import { Text, StyleSheet, Animated, Easing, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  Easing,
+  TouchableHighlight,
+  TouchableNativeFeedback,
+  Platform,
+} from 'react-native';
 
 const UiButton = props => {
+  const {
+    type = 'primary',
+    primaryClr = '#E41B23',
+    secondaryClr = '#ffffff',
+  } = props;
   const focusAnimation = useRef(new Animated.Value(0)).current;
 
   const onFocusIn = () => {
@@ -34,39 +48,96 @@ const UiButton = props => {
     ],
   };
 
-  // focus opacity animation
-  const opacity = {
-    opacity: focusAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 0.1],
-    }),
+  const typeStyles = {
+    primary: {
+      textWrapper: {
+        backgroundColor: primaryClr,
+      },
+      text: {
+        color: secondaryClr,
+      },
+    },
+    secondary: {
+      textWrapper: {
+        backgroundColor: secondaryClr,
+        borderWidth: 2,
+        borderStyle: 'solid',
+        borderColor: primaryClr,
+      },
+      text: {
+        color: primaryClr,
+      },
+    },
+    tertiary: {
+      text: {
+        color: primaryClr,
+      },
+    },
   };
 
-  const bgClr = {
-    backgroundColor: props.bgColor,
+  const renderPlatformSpecific = () => {
+    if (Platform.OS === 'ios') {
+      return (
+        <Animated.View style={[styles.buttonWrapper, scale]}>
+          <TouchableHighlight
+            onPressIn={onFocusIn}
+            onPressOut={onFocusOut}
+            onPress={props.onPress}
+            style={[styles.touchable]}>
+            <View style={[styles.textWrapper, typeStyles[type].textWrapper]}>
+              <Text style={[styles.label, typeStyles[type].text]}>
+                {props.label}
+              </Text>
+            </View>
+          </TouchableHighlight>
+        </Animated.View>
+      );
+    } else {
+      return (
+        <Animated.View style={[styles.buttonWrapper, scale]}>
+          <TouchableNativeFeedback
+            onPressIn={onFocusIn}
+            onPressOut={onFocusOut}
+            onPress={props.onPress}
+            style={[styles.touchable]}
+            background={TouchableNativeFeedback.Ripple('#0000001a', false)}>
+            <View style={[styles.textWrapper, typeStyles[type].textWrapper]}>
+              <Text style={[styles.label, typeStyles[type].text]}>
+                {props.label}
+              </Text>
+            </View>
+          </TouchableNativeFeedback>
+        </Animated.View>
+      );
+    }
   };
 
-  const txtClr = {
-    color: props.textColor,
-  };
-
-  return (
-    <Animated.View style={[styles.buttonContainer, bgClr, scale]}>
-      <Pressable
-        style={[styles.pressable]}
-        onPressIn={onFocusIn}
-        onPressOut={onFocusOut}
-        onPress={props.onPress}>
-        <Text style={[styles.label, txtClr]}>{props.label}</Text>
-        <Animated.View style={[styles.shadow, opacity]} />
-      </Pressable>
-    </Animated.View>
-  );
+  return <View>{renderPlatformSpecific()}</View>;
 };
 
 const styles = StyleSheet.create({
+  buttonWrapper: {
+    borderRadius: 60,
+    height: 48,
+    width: 190,
+    overflow: 'hidden',
+  },
+  touchable: {
+    borderRadius: 60,
+    height: 48,
+    width: 190,
+    backgroundColor: '#f2f2f2',
+  },
+  textWrapper: {
+    borderRadius: 60,
+    height: 48,
+    width: 190,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
+  },
   buttonContainer: {
-    borderRadius: 8,
+    borderRadius: 20,
     height: 40,
     width: 140,
     justifyContent: 'center',
@@ -97,8 +168,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    fontWeight: '500',
-    fontSize: 15,
+    fontWeight: 'bold',
+    fontSize: 16,
+    fontFamily: 'Roboto-Bold',
+    color: '#E41B23',
   },
 });
 

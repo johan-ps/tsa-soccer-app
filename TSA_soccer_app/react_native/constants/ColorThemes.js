@@ -45,6 +45,41 @@ export default {
   },
   default: {
     name: 'default',
+    primaryRed: '#E41B23',
+    primaryYellow: '#FEAF35',
+    neutralBlack: '#000000',
+    neutralDarkGrey: '#231E20',
+    neutralGrey: '#414141',
+    neutralLightGrey: '#C9C8C8',
+
+    // navigation
+    navBg: '#FFFFFF',
+    navInputBg: '#FFFFFF',
+    navText: '#D1D1D1',
+
+    // buttons
+    buttonPrimaryBg: '#E41B23',
+    buttonPrimaryText: '#FFFFFF',
+    buttonSecondaryBg: '#FFFFFF',
+    buttonSecondaryText: '#E41B23',
+    buttonTertiaryBg: '#00000000',
+    buttonTertiaryText: '#E41B23',
+
+    // icons
+    iconClr: '#231E20',
+
+    // text
+    textLight: '#231E20',
+    textDark: '#FFFFFF',
+
+    // cards
+    cardBg: '#FFFFFFCC',
+    cardTextHeading: '#231E20',
+    cardTextSubHeading: 'grey',
+    cardTextContent: '#00000099',
+
+    // modal
+
     primaryClr: '#e51b23', //red
     primaryColor2: '#f2bb2b', //yellow
     primaryColor3: '#414142', //grey

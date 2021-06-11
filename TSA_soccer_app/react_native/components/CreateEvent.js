@@ -152,14 +152,14 @@ const CreateEvent = props => {
         <View style={styles.modalFooter}>
           <UiButton
             label="Cancel"
-            bgColor={theme.secondaryBtnBgClr}
-            textColor={theme.secondaryBtnClr}
+            type="tertiary"
+            primaryClr={theme.buttonTertiaryText}
             onPress={props.onClose}
           />
           <UiButton
             label="Create"
-            bgColor={theme.primaryBtnBgClr}
-            textColor={theme.primaryBtnClr}
+            type="tertiary"
+            primaryClr={theme.buttonTertiaryText}
             onPress={() => {}}
           />
         </View>
@@ -176,14 +176,14 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     height: '100%',
-    backgroundColor: '#ece6e6',
+    backgroundColor: '#F2F2F2',
   },
   modalContentContainer: {
     width: '100%',
-    height: '94%',
+    height: '93%',
     backgroundColor: 'white',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
   },
   modalHeader: {
     padding: 30,
@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     backgroundColor: 'rgba(0, 0, 0, 0)',
     padding: 3,
+    marginHorizontal: 10,
     // marginBottom: 56,
   },
   formHeading: {

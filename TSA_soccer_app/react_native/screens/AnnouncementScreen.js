@@ -24,30 +24,29 @@ const AnnouncementScreen = () => {
   };
 
   return (
-    <LinearGradient colors={['#F37335', '#FDC830']} style={styles.container}>
-      {/* <NavHeader
+    <View style={styles.container}>
+      <NavHeader
         iconListRight={[{ name: 'filter-outline', id: 0 }]}
         searchable={true}
-      /> */}
+      />
       <ScrollView style={styles.body} onScroll={onScrollHandler}>
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <Text style={styles.headerText}>Announcements</Text>
-        </View>
+        </View> */}
         <AnnouncementCard image="https://th.bing.com/th/id/Red4f2866d59316ec64f269b0813412c5?rik=zdwSc4unAQCGKQ&pid=ImgRaw" />
         <AnnouncementCard image="https://images.unsplash.com/photo-1511798616182-aab3698ac53e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=583&q=80" />
         <AnnouncementCard />
         <AnnouncementCard image="https://images.unsplash.com/photo-1615458318132-1f151a3d18f4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=334&q=80" />
       </ScrollView>
       <AddButton ref={addBtnRef} />
-    </LinearGradient>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#CBCBCB',
+    backgroundColor: '#C9C8C8',
     alignItems: 'center',
-    paddingHorizontal: 4,
     width: '100%',
     height: '100%',
   },
