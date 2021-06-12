@@ -154,12 +154,14 @@ const CreateEvent = props => {
             label="Cancel"
             type="tertiary"
             primaryClr={theme.buttonTertiaryText}
+            secondaryClr={theme.buttonTertiaryBg}
             onPress={props.onClose}
           />
           <UiButton
             label="Create"
             type="tertiary"
             primaryClr={theme.buttonTertiaryText}
+            secondaryClr={theme.buttonTertiaryBg}
             onPress={() => {}}
           />
         </View>

@@ -101,6 +101,11 @@ const UiMenu = props => {
     }).start();
   };
 
+  const onSelectOptionHandler = option => {
+    onCloseHandler();
+    props.onPress(option);
+  };
+
   const opacityAnim = {
     opacity: opacityAnimation,
   };
@@ -127,10 +132,14 @@ const UiMenu = props => {
             return (
               <View style={styles.buttonWrapper} key={option.id}>
                 <TouchableNativeFeedback
-                  onPress={() => props.onPress(option)}
+                  onPress={() => {
+                    onSelectOptionHandler(option);
+                  }}
                   style={[styles.touchable, { backgroundColor: theme.menuBg }]}
                   background={TouchableNativeFeedback.Ripple(
-                    theme.touchableBg,
+                    theme.name === 'dark'
+                      ? theme.touchableBgDark
+                      : theme.touchableBgLight,
                     false,
                   )}>
                   <Animated.View

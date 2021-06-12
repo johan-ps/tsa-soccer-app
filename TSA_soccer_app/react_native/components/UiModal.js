@@ -73,16 +73,19 @@ const UiModal = props => {
           </View>
           <View style={styles.buttonContainer}>
             <UiButton
+              primaryClr={theme.buttonSecondaryText}
+              secondaryClr={theme.buttonSecondaryBg}
               label={props.secondaryLabel}
-              bgColor={theme.secondaryBtnBgClr}
-              textColor={theme.secondaryBtnClr}
               onPress={props.onCloseHandler}
+              type="secondary"
+              size="medium"
             />
             <UiButton
+              primaryClr={theme.buttonPrimaryBg}
+              secondaryClr={theme.buttonPrimaryText}
               label={props.primaryLabel}
-              bgColor={theme.primaryBtnBgClr}
-              textColor={theme.primaryBtnClr}
               onPress={props.onCloseHandler}
+              size="medium"
             />
           </View>
         </Animated.View>

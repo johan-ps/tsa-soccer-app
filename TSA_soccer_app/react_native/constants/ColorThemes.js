@@ -32,7 +32,8 @@ export default {
     primaryBg: '#414141',
 
     // touchableBg
-    touchableBg: '#ffffff2a',
+    touchableBgDark: '#ffffff2a',
+    touchableBgLight: '#0000001a',
 
     // menu
     menuBg: '#414141',
@@ -46,8 +47,8 @@ export default {
     // buttons
     buttonPrimaryBg: '#E41B23',
     buttonPrimaryText: '#231E20',
-    buttonSecondaryBg: '#FFFFFF',
-    buttonSecondaryText: '#E41B23',
+    buttonSecondaryBg: '#EEF1F7',
+    buttonSecondaryText: '#808286',
     buttonTertiaryBg: '#00000000',
     buttonTertiaryText: '#E41B23',
 
@@ -79,7 +80,8 @@ export default {
     primaryBg: '#f2f2f2',
 
     // touchableBg
-    touchableBg: '#0000001a',
+    touchableBgDark: '#ffffff2a',
+    touchableBgLight: '#0000001a',
 
     // menu
     menuBg: '#FFFFFF',

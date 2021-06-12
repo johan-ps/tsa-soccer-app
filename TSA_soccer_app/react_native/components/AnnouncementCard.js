@@ -13,6 +13,9 @@ const AnnouncementCard = props => {
 
   const onSelectOption = option => {
     console.log(option);
+    if (option.id === 1) {
+      props.onDelete();
+    }
   };
 
   return (

@@ -2,11 +2,17 @@ import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { AnnouncementCard, NavHeader, AddButton } from '../components/_components';
+import {
+  AnnouncementCard,
+  NavHeader,
+  AddButton,
+  UiModal,
+} from '../components/_components';
 
 const AnnouncementScreen = () => {
   const addBtnRef = useRef();
   const [offsetY, setOffsetY] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
   const theme = useSelector(state => state.theme.colors);
 
   const onScrollHandler = event => {
@@ -24,6 +30,14 @@ const AnnouncementScreen = () => {
     setOffsetY(curOffsetY);
   };
 
+  const onDeleteHandler = () => {
+    setModalVisible(true);
+  };
+
+  const onModalCloseHandler = () => {
+    setModalVisible(false);
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
       <NavHeader
@@ -34,12 +48,25 @@ const AnnouncementScreen = () => {
         {/* <View style={styles.header}>
           <Text style={styles.headerText}>Announcements</Text>
         </View> */}
-        <AnnouncementCard image="https://th.bing.com/th/id/Red4f2866d59316ec64f269b0813412c5?rik=zdwSc4unAQCGKQ&pid=ImgRaw" />
+        <AnnouncementCard
+          onDelete={onDeleteHandler}
+          image="https://th.bing.com/th/id/Red4f2866d59316ec64f269b0813412c5?rik=zdwSc4unAQCGKQ&pid=ImgRaw"
+        />
         <AnnouncementCard image="https://images.unsplash.com/photo-1511798616182-aab3698ac53e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=583&q=80" />
         <AnnouncementCard />
         <AnnouncementCard image="https://images.unsplash.com/photo-1615458318132-1f151a3d18f4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=334&q=80" />
       </ScrollView>
       <AddButton ref={addBtnRef} />
+      <UiModal
+        primaryLabel="Confirm"
+        secondaryLabel="Cancel"
+        visible={modalVisible}
+        title="Delete content"
+        content={
+          'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
+        }
+        onCloseHandler={onModalCloseHandler}
+      />
     </View>
   );
 };
