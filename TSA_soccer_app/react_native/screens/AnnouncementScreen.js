@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { useSelector } from 'react-redux';
 
 import { AnnouncementCard, NavHeader, AddButton } from '../components/_components';
 
 const AnnouncementScreen = () => {
   const addBtnRef = useRef();
   const [offsetY, setOffsetY] = useState(0);
+  const theme = useSelector(state => state.theme.colors);
 
   const onScrollHandler = event => {
     const prevOffsetY = offsetY;
@@ -24,7 +25,7 @@ const AnnouncementScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
       <NavHeader
         iconListRight={[{ name: 'filter-outline', id: 0 }]}
         searchable={true}
@@ -45,7 +46,6 @@ const AnnouncementScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#C9C8C8',
     alignItems: 'center',
     width: '100%',
     height: '100%',

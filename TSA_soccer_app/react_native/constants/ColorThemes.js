@@ -20,28 +20,44 @@ export default {
     dropdownOptTxtClr: '#f2f3f2',
     dropdownOptSTxtClr: '#D9DADB',
     dropdownSClr: '#F9F9F9',
-  },
-  darkPlus: {
-    name: 'darkPlus',
-    primaryClr: '#e51b23',
-    primaryTxtClr: '#ffffff',
-    primaryBtnClr: '#000000',
-    secondaryBtnClr: '#808286',
-    primaryBtnBgClr: '#f2bb2b',
-    secondaryBtnBgClr: '#EEF1F7',
-    primaryIconClr: '#f2bb2b',
-    secondaryIconClr: '#bfbfbf',
-    primaryBgClr: '#000000',
-    primaryTxtInputBackgroundClr: '#414142',
-    cardBgClr: '#424242',
-    cardHClr: '#ffffff',
-    cardCClr: '#a2a2a2',
-    dropdownBgClr: '#4D4B52',
-    dropdownBorderClr: '#f2bb2b',
-    dropdownOptSClr: '#000000',
-    dropdownOptTxtClr: '#f2f3f2',
-    dropdownOptSTxtClr: '#D9DADB',
-    dropdownSClr: '#F9F9F9',
+
+    primaryRed: '#E41B23',
+    primaryYellow: '#FEAF35',
+    neutralBlack: '#000000',
+    neutralDarkGrey: '#231E20',
+    neutralGrey: '#414141',
+    neutralLightGrey: '#C9C8C8',
+
+    // background
+    primaryBg: '#414141',
+
+    // navigation
+    navBg: '#231E20',
+    navInputBg: '#414141',
+    navText: '#D1D1D1',
+
+    // buttons
+    buttonPrimaryBg: '#E41B23',
+    buttonPrimaryText: '#231E20',
+    buttonSecondaryBg: '#FFFFFF',
+    buttonSecondaryText: '#E41B23',
+    buttonTertiaryBg: '#00000000',
+    buttonTertiaryText: '#E41B23',
+
+    // icons
+    iconClr: '#D1D1D1',
+
+    // text
+    textLight: '#231E20',
+    textDark: '#FFFFFF',
+
+    // cards
+    cardBg: '#231E20CC',
+    cardTextHeading: '#D1D1D1',
+    cardTextSubHeading: '#C9C8C8',
+    cardTextContent: '#D1D1D1b9',
+
+    // modal
   },
   default: {
     name: 'default',
@@ -51,6 +67,9 @@ export default {
     neutralDarkGrey: '#231E20',
     neutralGrey: '#414141',
     neutralLightGrey: '#C9C8C8',
+
+    // background
+    primaryBg: '#f2f2f2',
 
     // navigation
     navBg: '#FFFFFF',

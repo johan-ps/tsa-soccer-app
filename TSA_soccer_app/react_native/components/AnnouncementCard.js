@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
+import { UiMenu } from '../components/_components';
+
 const AnnouncementCard = props => {
   const theme = useSelector(state => state.theme.colors);
   const { image = null } = props;
@@ -31,9 +33,12 @@ const AnnouncementCard = props => {
             </Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.iconContainer}>
-          <Icon name="ellipsis-vertical" size={20} color={theme.iconClr} />
-        </TouchableOpacity>
+        <UiMenu
+          options={[
+            { id: 0, label: 'Edit' },
+            { id: 1, label: 'Delete' },
+          ]}
+        />
       </View>
       <View style={styles.body}>
         {image ? (
@@ -60,7 +65,7 @@ const AnnouncementCard = props => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 2,
+    marginTop: 2,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -78,14 +83,6 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     marginLeft: 15,
-  },
-  iconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 40,
-    height: 40,
-    borderRadius: 50,
-    overflow: 'hidden',
   },
   name: {
     fontSize: 15,

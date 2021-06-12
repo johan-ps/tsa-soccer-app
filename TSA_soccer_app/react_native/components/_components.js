@@ -6,6 +6,7 @@ import UiToggle from './UiToggle';
 import UiInput from './UiInput';
 import AnnouncementCard from './AnnouncementCard';
 import NavHeader from './NavHeader';
+import UiMenu from './UiMenu';
 
 export {
   AddButton,
@@ -16,4 +17,5 @@ export {
   UiInput,
   AnnouncementCard,
   NavHeader,
+  UiMenu,
 };
