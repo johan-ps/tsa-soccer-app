@@ -42,6 +42,7 @@ const AnnouncementCard = props => {
           options={[
             { id: 0, label: 'Edit' },
             { id: 1, label: 'Delete' },
+            { id: 2, label: 'Download' },
           ]}
         />
       </View>

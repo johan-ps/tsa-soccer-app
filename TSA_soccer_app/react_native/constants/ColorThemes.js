@@ -31,6 +31,13 @@ export default {
     // background
     primaryBg: '#414141',
 
+    // touchableBg
+    touchableBg: '#ffffff2a',
+
+    // menu
+    menuBg: '#414141',
+    menuText: '#D1D1D1',
+
     // navigation
     navBg: '#231E20',
     navInputBg: '#414141',
@@ -70,6 +77,13 @@ export default {
 
     // background
     primaryBg: '#f2f2f2',
+
+    // touchableBg
+    touchableBg: '#0000001a',
+
+    // menu
+    menuBg: '#FFFFFF',
+    menuText: '#231E20',
 
     // navigation
     navBg: '#FFFFFF',

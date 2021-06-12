@@ -17,82 +17,98 @@ import { useSelector } from 'react-redux';
 
 const UiMenu = props => {
   const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
   const theme = useSelector(state => state.theme.colors);
   const [showOptions, setShowOptions] = useState(false);
-  const [closing, setClosing] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
-  const menuAnimation = useRef(new Animated.Value(0)).current;
+  const [flipY, setFlipY] = useState(false);
+  const menuSizeAnimation = useRef(
+    new Animated.ValueXY({ x: 0, y: 0 }),
+  ).current;
+  const opacityAnimation = useRef(new Animated.Value(0)).current;
   const menuIcon = useRef();
+  const EASING = Easing.bezier(0.4, 0, 0.2, 1);
+  const SCREEN_INDENT = 8;
+  const optionWidth = 150;
+  const optionHeight = 45;
+  const bottomNavHeight = 56;
+  const transforms = [];
 
   const onOpenHandler = () => {
     menuIcon.current.measure((fx, fy, width, height, px, py) => {
       setOffsetX(windowWidth - px - width + 15);
-      setOffsetY(py + 8);
+      // Flip by Y axis if menu hits bottom screen border
+      const y = py + SCREEN_INDENT;
+      if (
+        y >
+        windowHeight - bottomNavHeight - optionHeight * props.options.length
+      ) {
+        setFlipY(true);
+        transforms.push({
+          translateY: Animated.multiply(menuSizeAnimation.y, -1),
+        });
+        setOffsetY(windowHeight - py - bottomNavHeight);
+      } else {
+        setFlipY(false);
+        setOffsetY(y);
+      }
     });
-    setClosing(false);
+    setAnimationStarted(true);
     setShowOptions(true);
-    Animated.timing(menuAnimation, {
-      toValue: 1,
-      duration: 150,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    Animated.parallel([
+      Animated.timing(menuSizeAnimation, {
+        toValue: { x: optionWidth, y: optionHeight },
+        duration: 250,
+        easing: EASING,
+        useNativeDriver: false,
+      }),
+      Animated.timing(opacityAnimation, {
+        toValue: 1,
+        duration: 250,
+        easing: EASING,
+        useNativeDriver: false,
+      }),
+    ]).start();
   };
 
-  const optionPosition = {
-    top: offsetY,
-    right: offsetX,
-  };
-
-  const onCloseHandler = () => {
-    setClosing(true);
-    setTimeout(() => {
-      setShowOptions(false);
-    }, 100);
-    Animated.timing(menuAnimation, {
-      toValue: 0,
-      duration: 150,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const menuAnim = () => {
-    if (closing) {
+  const optionPosition = () => {
+    if (flipY) {
       return {
-        opacity: menuAnimation,
+        bottom: offsetY,
+        right: offsetX,
       };
     } else {
       return {
-        transform: [
-          {
-            scaleY: menuAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.5, 1],
-            }),
-          },
-          {
-            translateY: menuAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [-20, 0],
-            }),
-          },
-          {
-            scaleX: menuAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.2, 1],
-            }),
-          },
-          {
-            translateX: menuAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [94, 0],
-            }),
-          },
-        ],
+        top: offsetY,
+        right: offsetX,
       };
     }
+  };
+
+  const onCloseHandler = () => {
+    setAnimationStarted(false);
+    menuSizeAnimation.setValue({ x: 0, y: 0 });
+    setTimeout(() => {
+      setShowOptions(false);
+    }, 100);
+    Animated.timing(opacityAnimation, {
+      toValue: 0,
+      duration: 250,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const opacityAnim = {
+    opacity: opacityAnimation,
+  };
+
+  const menuSize = {
+    width: menuSizeAnimation.x,
+    height: menuSizeAnimation.y,
+    transform: transforms,
   };
 
   const renderOptions = () => {
@@ -101,20 +117,32 @@ const UiMenu = props => {
     } else {
       return (
         <Animated.View
-          style={[styles.optionsContainer, optionPosition, menuAnim()]}>
+          style={[
+            styles.optionsContainer,
+            { backgroundColor: theme.menuBg },
+            optionPosition(),
+            opacityAnim,
+          ]}>
           {props.options.map(option => {
             return (
               <View style={styles.buttonWrapper} key={option.id}>
                 <TouchableNativeFeedback
                   onPress={() => props.onPress(option)}
-                  style={[styles.touchable]}
+                  style={[styles.touchable, { backgroundColor: theme.menuBg }]}
                   background={TouchableNativeFeedback.Ripple(
-                    '#ffffff2a',
+                    theme.touchableBg,
                     false,
                   )}>
-                  <View style={styles.textWrapper}>
-                    <Text style={styles.label}>{option.label}</Text>
-                  </View>
+                  <Animated.View
+                    style={[
+                      styles.textWrapper,
+                      { backgroundColor: theme.menuBg },
+                      animationStarted && menuSize,
+                    ]}>
+                    <Text style={[styles.label, { color: theme.menuText }]}>
+                      {option.label}
+                    </Text>
+                  </Animated.View>
                 </TouchableNativeFeedback>
               </View>
             );
@@ -156,22 +184,25 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     position: 'absolute',
-    width: 190,
+    borderRadius: 4,
+    overflow: 'hidden',
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.14,
+    shadowRadius: 2,
+    elevation: 8,
   },
-  touchable: {
-    height: 45,
-    backgroundColor: '#414141',
-  },
+  touchable: {},
   textWrapper: {
     height: 45,
+    width: 150,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#414141',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
   },
   label: {
     fontSize: 16,
     fontFamily: 'Roboto-Regular',
-    color: '#D1D1D1',
   },
 });
 
