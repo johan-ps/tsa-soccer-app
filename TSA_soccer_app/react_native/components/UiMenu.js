@@ -10,13 +10,16 @@ import {
   Pressable,
   Animated,
   Easing,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
 const UiMenu = props => {
+  const windowWidth = Dimensions.get('window').width;
   const theme = useSelector(state => state.theme.colors);
   const [showOptions, setShowOptions] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const menuAnimation = useRef(new Animated.Value(0)).current;
@@ -24,13 +27,14 @@ const UiMenu = props => {
 
   const onOpenHandler = () => {
     menuIcon.current.measure((fx, fy, width, height, px, py) => {
-      setOffsetX(px - 190 + width);
-      setOffsetY(py);
+      setOffsetX(windowWidth - px - width + 15);
+      setOffsetY(py + 8);
     });
+    setClosing(false);
     setShowOptions(true);
     Animated.timing(menuAnimation, {
       toValue: 1,
-      duration: 255,
+      duration: 150,
       easing: Easing.out(Easing.ease),
       useNativeDriver: true,
     }).start();
@@ -38,31 +42,57 @@ const UiMenu = props => {
 
   const optionPosition = {
     top: offsetY,
-    left: offsetX,
+    right: offsetX,
   };
 
   const onCloseHandler = () => {
+    setClosing(true);
     setTimeout(() => {
       setShowOptions(false);
-    }, 225);
+    }, 100);
     Animated.timing(menuAnimation, {
       toValue: 0,
-      duration: 255,
+      duration: 150,
       easing: Easing.out(Easing.ease),
       useNativeDriver: true,
     }).start();
   };
 
-  const menuAnim = {
-    transform: [
-      {
-        scale: menuAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0.98, 1],
-        }),
-      },
-    ],
-    opacity: menuAnimation,
+  const menuAnim = () => {
+    if (closing) {
+      return {
+        opacity: menuAnimation,
+      };
+    } else {
+      return {
+        transform: [
+          {
+            scaleY: menuAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0.5, 1],
+            }),
+          },
+          {
+            translateY: menuAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [-20, 0],
+            }),
+          },
+          {
+            scaleX: menuAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0.2, 1],
+            }),
+          },
+          {
+            translateX: menuAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [94, 0],
+            }),
+          },
+        ],
+      };
+    }
   };
 
   const renderOptions = () => {
@@ -70,12 +100,13 @@ const UiMenu = props => {
       return null;
     } else {
       return (
-        <View>
+        <Animated.View
+          style={[styles.optionsContainer, optionPosition, menuAnim()]}>
           {props.options.map(option => {
             return (
               <View style={styles.buttonWrapper} key={option.id}>
                 <TouchableNativeFeedback
-                  onPress={props.onPress}
+                  onPress={() => props.onPress(option)}
                   style={[styles.touchable]}
                   background={TouchableNativeFeedback.Ripple(
                     '#ffffff2a',
@@ -88,7 +119,7 @@ const UiMenu = props => {
               </View>
             );
           })}
-        </View>
+        </Animated.View>
       );
     }
   };
@@ -100,9 +131,7 @@ const UiMenu = props => {
       </TouchableOpacity>
       <Modal animationType="none" transparent={true} visible={showOptions}>
         <Pressable onPress={onCloseHandler} style={[styles.modalContainer]}>
-          <Animated.View style={[styles.optionsContainer, optionPosition, menuAnim]}>
-            {renderOptions()}
-          </Animated.View>
+          {renderOptions()}
         </Pressable>
       </Modal>
     </View>
@@ -127,15 +156,14 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     position: 'absolute',
+    width: 190,
   },
   touchable: {
     height: 45,
-    width: 190,
     backgroundColor: '#414141',
   },
   textWrapper: {
     height: 45,
-    width: 190,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#414141',

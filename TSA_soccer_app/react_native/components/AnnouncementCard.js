@@ -11,6 +11,10 @@ const AnnouncementCard = props => {
   const desc =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,';
 
+  const onSelectOption = option => {
+    console.log(option);
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.cardBg }]}>
       <View style={styles.header}>
@@ -34,6 +38,7 @@ const AnnouncementCard = props => {
           </View>
         </View>
         <UiMenu
+          onPress={onSelectOption}
           options={[
             { id: 0, label: 'Edit' },
             { id: 1, label: 'Delete' },
