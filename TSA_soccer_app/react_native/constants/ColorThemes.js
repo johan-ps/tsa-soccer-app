@@ -20,6 +20,8 @@ export default {
     dropdownOptTxtClr: '#f2f3f2',
     dropdownOptSTxtClr: '#D9DADB',
     dropdownSClr: '#F9F9F9',
+    moreScreenSettingsBgClr: '#4D4B52',
+    moreScreenOptionsBgClr: '#1f1f1f'
   },
   darkPlus: {
     name: 'darkPlus',
@@ -68,5 +70,7 @@ export default {
     dropdownOptTxtClr: '#000000',
     dropdownOptSTxtClr: '#e51b23',
     dropdownSClr: '#A8A4B8',
+    moreScreenSettingsBgClr: '#F0F0F0',
+    moreScreenOptionsBgClr: '#ffffff'
   },
 };

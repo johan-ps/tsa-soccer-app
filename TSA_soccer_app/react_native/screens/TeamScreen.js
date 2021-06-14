@@ -52,39 +52,41 @@ const TeamScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.subContainer}>
-        <Text style={styles.heading}>Team Roster</Text>
-        <Text style={styles.subHeading}>
-          Toronto Soccer Association U13 Rep
-        </Text>
-      </View>
-      <Text style={styles.listHeading}>Coaches - {coachesList.length}</Text>
-      <View style={styles.subContainer}>
-        {coachesList.map(player => (
-          <PlayerListItem
-            player={player}
-            navigation={navigation}
-            key={player.id}
-          />
-        ))}
-      </View>
-      <Text style={styles.listHeading}>Players - {playersList.length}</Text>
-      <View style={styles.subContainer}>
-        {playersList.map((player, index) => (
-          <PlayerListItem
-            key={player.id + index + 1}
-            player={player}
-            navigation={navigation}
-          />
-        ))}
-      </View>
-      <Text style={styles.listHeading}>Going</Text>
-      <View style={styles.subContainer}>
-        <TeamScrollList players={playersList} />
-      </View>
+    <View>
+      <ScrollView style={[styles.container, {backgroundColor: theme.primaryBtnClr}]}>
+        <View style={[styles.subContainer, {backgroundColor: theme.primaryBtnClr}]}>
+          {/* <Text style={styles.heading}>Team Roster</Text> */}
+          <Text style={[styles.subHeading, {color:theme.cardHClr}]}>
+            Toronto Soccer Association U13 Rep
+          </Text>
+        </View>
+        <Text style={[styles.listHeading, {backgroundColor: theme.moreScreenSettingsBgClr}]}>Coaches - {coachesList.length}</Text>
+        <View style={styles.subContainer}>
+          {coachesList.map(player => (
+            <PlayerListItem
+              player={player}
+              navigation={navigation}
+              key={player.id}
+            />
+          ))}
+        </View>
+        <Text style={[styles.listHeading, {backgroundColor: theme.moreScreenSettingsBgClr}]}>Players - {playersList.length}</Text>
+        <View style={styles.subContainer}>
+          {playersList.map((player, index) => (
+            <PlayerListItem
+              key={player.id + index + 1}
+              player={player}
+              navigation={navigation}
+            />
+          ))}
+        </View>
+        <Text style={styles.listHeading}>Going</Text>
+        <View style={styles.subContainer}>
+          <TeamScrollList players={playersList} />
+        </View>
+      </ScrollView>
       <AddButton />
-    </ScrollView>
+    </View>
   );
 };
 
@@ -97,24 +99,28 @@ const styles = StyleSheet.create({
   subContainer: {
     width: '100%',
     backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   heading: {
-    color: 'red',
-    fontSize: 40,
+    fontSize: 20,
     paddingTop: 50,
     paddingHorizontal: 15,
     fontWeight: '600',
   },
   subHeading: {
-    fontSize: 20,
-    paddingBottom: 40,
+    fontSize: 16,
+    paddingTop: 50,
+    paddingBottom: 10,
     paddingHorizontal: 15,
+    fontWeight: '600'
   },
   listHeading: {
     fontSize: 14,
     width: '100%',
     padding: 8,
     backgroundColor: '#F0F0F0',
+    color: '#696969'
   },
 });
 

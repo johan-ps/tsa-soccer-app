@@ -15,7 +15,7 @@ const PlayerProfileScreen = ({ navigation }) => {
   // TODO: add name, team, number, position, contact info (email, number)
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.moreScreenOptionsBgClr}]}>
       {/* TODO: Back button */}
       <View style={styles.iconContainer}>
         <Icon
@@ -92,7 +92,7 @@ const PlayerProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     // width: '100%',
-    // height: '100%',
+    height: '100%',
     paddingTop: 50,
   },
   headerContainer: {
