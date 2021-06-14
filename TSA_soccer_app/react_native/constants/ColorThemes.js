@@ -31,6 +31,10 @@ export default {
     // background
     primaryBg: '#414141',
 
+    // text
+    primaryText: '#FFFFFF',
+    secondaryText: '#C9C8C8',
+
     // touchableBg
     touchableBgDark: '#ffffff2a',
     touchableBgLight: '#0000001a',
@@ -78,6 +82,10 @@ export default {
 
     // background
     primaryBg: '#f2f2f2',
+
+    // text
+    primaryText: '#000000',
+    secondaryText: '#231E20',
 
     // touchableBg
     touchableBgDark: '#ffffff2a',

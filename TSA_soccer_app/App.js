@@ -7,9 +7,11 @@ import thunk from 'redux-thunk';
 
 import MainNavigator from './react_native/navigation/MainNavigator';
 import ThemeReducer from './react_native/store/reducers/ThemeReducer';
+import AnnouncementReducer from './react_native/store/reducers/AnnouncementReducer';
 
 const rootReducer = combineReducers({
   theme: ThemeReducer,
+  announcements: AnnouncementReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
