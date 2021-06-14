@@ -4,7 +4,7 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
-import { Animated, StyleSheet, Easing } from 'react-native';
+import { View, Animated, StyleSheet, Easing } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
@@ -16,6 +16,7 @@ const AddButton = forwardRef((props, ref) => {
   const scrollAnimation = useRef(new Animated.Value(1)).current;
 
   const [isScroll, setIsScroll] = useState(false); // does scroll animation have priority over focus animation
+  const [visible, setVisible] = useState(true);
   const [scrollDownAnimInit, setScrollDownAnimInit] = useState(false); // has scroll down animation started
 
   // get current theme colors from state
@@ -30,6 +31,7 @@ const AddButton = forwardRef((props, ref) => {
 
   const onScrollUp = () => {
     if (scrollDownAnimInit) {
+      setVisible(true);
       setScrollDownAnimInit(false);
       Animated.timing(scrollAnimation, {
         toValue: 1,
@@ -51,7 +53,9 @@ const AddButton = forwardRef((props, ref) => {
         duration: 225,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start();
+      }).start(() => {
+        setVisible(false);
+      });
     }
   };
 
@@ -106,24 +110,36 @@ const AddButton = forwardRef((props, ref) => {
   };
 
   const themeStyles = {
-    backgroundColor: theme.primaryBtnBgClr,
+    backgroundColor: theme.buttonPrimaryBg,
   };
 
   return (
     <Animated.View
-      style={[
-        styles.addBtn,
-        themeStyles,
-        isScroll ? scaleFull : scale,
-        opacity,
-      ]}>
-      <Ripple
-        style={[styles.ripple]}
-        onPress={props.onPress}
-        onPressIn={onFocusIn}
-        onPressOut={onFocusOut}>
-        <Icon name="ios-add" color={theme.primaryBtnClr} size={28} />
-      </Ripple>
+      style={
+        visible
+          ? [
+              styles.addBtnContainer,
+              themeStyles,
+              isScroll ? scaleFull : scale,
+              opacity,
+            ]
+          : { opacity: 0, width: 0, height: 0 }
+      }>
+      {visible ? (
+        <View style={styles.addBtn}>
+          <Ripple
+            style={[styles.ripple]}
+            onPress={props.onPress}
+            onPressIn={onFocusIn}
+            onPressOut={onFocusOut}>
+            <Icon
+              name="add-outline"
+              color={theme.buttonPrimaryText}
+              size={28}
+            />
+          </Ripple>
+        </View>
+      ) : null}
     </Animated.View>
   );
 });
@@ -139,11 +155,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     overflow: 'hidden',
   },
-  addBtn: {
+  addBtnContainer: {
     width: 60,
     height: 60,
     borderRadius: 50,
-    justifyContent: 'space-around',
     overflow: 'hidden',
     position: 'absolute',
     bottom: 25,
@@ -153,5 +168,12 @@ const styles = StyleSheet.create({
     shadowColor: '#F02A4B',
     shadowOpacity: 0.3,
     shadowOffset: { height: 10 },
+  },
+  addBtn: {
+    width: 60,
+    height: 60,
+    borderRadius: 50,
+    justifyContent: 'space-around',
+    overflow: 'hidden',
   },
 });

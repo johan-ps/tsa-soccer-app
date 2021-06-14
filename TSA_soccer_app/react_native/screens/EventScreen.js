@@ -1,10 +1,9 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import AddButton from '../components/AddButton';
-import TeamScrollList from '../components/TeamScrollList'
+import TeamScrollList from '../components/TeamScrollList';
 
 const MessagesScreen = () => {
-
   const playersList = [
     {
       id: 0,
@@ -42,13 +41,13 @@ const MessagesScreen = () => {
     <View style={styles.container}>
       <Text style={styles.text}>Details</Text>
       <Text>Location</Text>
-      
+
       <Text>Going</Text>
-      <TeamScrollList players={playersList}/>
+      <TeamScrollList players={playersList} />
       <Text>Maybe</Text>
-      <TeamScrollList players={playersList}/>
+      <TeamScrollList players={playersList} />
       <Text>Unavailable</Text>
-      <TeamScrollList players={playersList}/>
+      <TeamScrollList players={playersList} />
     </View>
   );
 };
@@ -60,8 +59,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   text: {
-    color: 'red'
-  }
+    color: 'red',
+  },
 });
 
 export default MessagesScreen;

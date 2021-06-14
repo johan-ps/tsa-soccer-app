@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Text, View, StyleSheet } from 'react-native';
 
-import HomeScreen from '../screens/HomeScreen';
+import AnnouncementScreen from '../screens/AnnouncementScreen';
 import ScheduleScreen from '../screens/ScheduleScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import TeamScreen from '../screens/TeamScreen';
@@ -77,7 +77,7 @@ const MainNavigator = () => {
           backgroundColor: theme.primaryBgClr,
         },
       }}>
-      <MainNav.Screen name="Home" component={HomeScreen} />
+      <MainNav.Screen name="Home" component={AnnouncementScreen} />
       <MainNav.Screen name="Schedule" component={ScheduleScreen} />
       <MainNav.Screen name="Team" component={TeamRosterNavigator} /> 
       <MainNav.Screen name="Messages" component={MessagesScreen} />
