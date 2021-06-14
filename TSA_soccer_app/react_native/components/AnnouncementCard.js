@@ -12,7 +12,6 @@ const AnnouncementCard = props => {
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,';
 
   const onSelectOption = option => {
-    console.log(option);
     if (option.id === 1) {
       props.onDelete();
     }

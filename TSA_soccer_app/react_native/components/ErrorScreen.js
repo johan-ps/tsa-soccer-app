@@ -30,7 +30,6 @@ const ErrorScreen = props => {
 
   const getSubHeading = (() => {
     let subheading;
-    console.log(CONST)
     if (error === CONST.NO_RESULTS) {
       subheading = CONST.NO_RESULTS_SUBHEADING;
     } else if (error === CONST.NO_INTERNET) {

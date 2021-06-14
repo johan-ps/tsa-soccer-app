@@ -70,6 +70,8 @@ export default {
     cardTextContent: '#D1D1D1b9',
 
     // modal
+    moreScreenSettingsBgClr: '#4D4B52',
+    moreScreenOptionsBgClr: '#1f1f1f'
   },
   default: {
     name: 'default',
@@ -146,5 +148,7 @@ export default {
     dropdownOptTxtClr: '#000000',
     dropdownOptSTxtClr: '#e51b23',
     dropdownSClr: '#A8A4B8',
+    moreScreenSettingsBgClr: '#F0F0F0',
+    moreScreenOptionsBgClr: '#ffffff'
   },
 };

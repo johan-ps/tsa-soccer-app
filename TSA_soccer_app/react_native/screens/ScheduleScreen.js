@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-
 import { AddButton, UiButton } from '../components/_components';
 import CreateEvent from '../components/CreateEvent';
+import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 
 const ScheduleScreen = () => {
   const [createEvent, setCreateEvent] = useState(false);
@@ -11,6 +11,15 @@ const ScheduleScreen = () => {
     <View style={styles.container}>
       <UiButton label="Create" onPress={() => {}} />
       <Text style={styles.text}>Schedule</Text>
+      <Calendar
+        style={styles.calender}
+        theme={{
+          todayTextColor: '#00adf5',
+          textDayFontSize: 20,
+          textMonthFontSize: 20,
+          textDayHeaderFontSize: 18,
+        }}
+      />
       <AddButton
         onPress={() => {
           setCreateEvent(true);
@@ -31,14 +40,18 @@ const ScheduleScreen = () => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    padding: 15,
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'grey',
+    backgroundColor: 'white',
   },
   text: {
     color: 'red',
+  },
+  calender: {
+    height: '100%',
+    width: 500,
+    marginTop: 100,
   },
 });
 
