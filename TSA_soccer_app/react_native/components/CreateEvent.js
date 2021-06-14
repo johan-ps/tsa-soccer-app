@@ -106,7 +106,7 @@ const CreateEvent = props => {
                 borderTheme="circle"
                 fontSize={14}
                 icon="calendar-outline"
-                style={{ marginBottom: 10 }}
+                style={{ marginBottom: 10, height: 40  }}
               />
               <View
                 style={{
@@ -134,7 +134,7 @@ const CreateEvent = props => {
                 borderTheme="circle"
                 fontSize={14}
                 icon="location-outline"
-                style={{ marginBottom: 10 }}
+                style={{ marginBottom: 10, height: 40 }}
               />
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown

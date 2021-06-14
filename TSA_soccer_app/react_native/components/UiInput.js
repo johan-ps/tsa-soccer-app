@@ -12,8 +12,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
 const UiInput = props => {
-  const { value, placeholder, onChangeText, borderTheme, fontSize, icon } =
-    props;
+  const { value, placeholder, onChangeText, borderTheme, fontSize, icon } = props;
   const [shadow, setShadow] = useState(null);
   const [focus, setFocus] = useState(false);
   const focusAnimation = useRef(new Animated.Value(0)).current;
