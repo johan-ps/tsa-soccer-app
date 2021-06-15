@@ -13,6 +13,7 @@ import TeamScreen from '../screens/TeamScreen';
 import MoreScreen from '../screens/MoreScreen';
 import * as ThemeActions from '../store/actions/ThemeActions';
 import TeamRosterNavigator from './TeamRosterNavigator';
+import ScheduleTopNavigator from './ScheduleTopNavigator';
 
 const MainNav = createBottomTabNavigator();
 
@@ -78,7 +79,7 @@ const MainNavigator = () => {
         },
       }}>
       <MainNav.Screen name="Home" component={AnnouncementScreen} />
-      <MainNav.Screen name="Schedule" component={ScheduleScreen} />
+      <MainNav.Screen name="Schedule" component={ScheduleTopNavigator} />
       <MainNav.Screen name="Team" component={TeamRosterNavigator} /> 
       <MainNav.Screen name="Messages" component={MessagesScreen} />
       <MainNav.Screen name="More" component={MoreScreen} />

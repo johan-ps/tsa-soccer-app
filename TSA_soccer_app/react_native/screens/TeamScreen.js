@@ -3,7 +3,6 @@ import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import AddButton from '../components/AddButton';
 import PlayerListItem from '../components/PlayerListItem';
 import { useSelector } from 'react-redux';
-import TeamScrollList from '../components/TeamScrollList';
 
 const TeamScreen = ({ navigation }) => {
   const playersList = [
@@ -80,10 +79,10 @@ const TeamScreen = ({ navigation }) => {
             />
           ))}
         </View>
-        <Text style={styles.listHeading}>Going</Text>
+        {/* <Text style={styles.listHeading}>Going</Text>
         <View style={styles.subContainer}>
           <TeamScrollList players={playersList} />
-        </View>
+        </View> */}
       </ScrollView>
       <AddButton />
     </View>
