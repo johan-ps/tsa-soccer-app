@@ -38,9 +38,9 @@ const UiMenu = props => {
 
   const onOpenHandler = () => {
     menuIcon.current.measure((fx, fy, width, height, px, py) => {
-      setOffsetX(windowWidth - px - width + 15);
+      setOffsetX(windowWidth - px - width);
       // Flip by Y axis if menu hits bottom screen border
-      const y = py + SCREEN_INDENT;
+      const y = py;
       if (
         y >
         windowHeight - bottomNavHeight - optionHeight * props.options.length
@@ -182,9 +182,6 @@ const styles = StyleSheet.create({
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 40,
-    height: 40,
-    borderRadius: 50,
     overflow: 'hidden',
   },
   modalContainer: {
