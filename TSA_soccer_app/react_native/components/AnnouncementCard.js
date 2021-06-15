@@ -4,12 +4,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
 import { UiMenu } from '../components/_components';
+import * as Util from '../Util/utilities';
 
 const AnnouncementCard = props => {
   const theme = useSelector(state => state.theme.colors);
-  const { image = null } = props;
-  const desc =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,';
+  const { id, date, title, description, type, author, imageUrl, authorImgUrl } =
+    props.announcementData;
 
   const onSelectOption = option => {
     if (option.id === 1) {
@@ -25,17 +25,17 @@ const AnnouncementCard = props => {
             <Image
               style={styles.headerImg}
               source={{
-                uri: 'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
+                uri: authorImgUrl,
               }}
               resizeMode="cover"
             />
           </View>
           <View style={styles.headerContent}>
             <Text style={[styles.name, { color: theme.cardTextHeading }]}>
-              Coach Gryffin
+              {author}
             </Text>
             <Text style={[styles.date, { color: theme.cardTextSubHeading }]}>
-              28 Oct 2020
+              {Util.getTime(date)}
             </Text>
           </View>
         </View>
@@ -49,13 +49,13 @@ const AnnouncementCard = props => {
         />
       </View>
       <View style={styles.body}>
-        {image ? (
+        {imageUrl ? (
           <View style={styles.imageContainer}>
             {/* <Image style={styles.image} source={require('../assets/images/kids-playing-soccer.jpg')} resizeMode='cover' /> */}
             <Image
               style={styles.image}
               source={{
-                uri: image,
+                uri: imageUrl,
               }}
               resizeMode="cover"
             />
@@ -63,7 +63,7 @@ const AnnouncementCard = props => {
         ) : null}
         <View style={styles.bodyContentWrapper}>
           <Text style={[styles.bodyContent, { color: theme.cardTextContent }]}>
-            {desc}
+            {description}
           </Text>
         </View>
       </View>

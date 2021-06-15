@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -15,13 +15,20 @@ const AnnouncementScreen = () => {
   const addBtnRef = useRef();
   const [offsetY, setOffsetY] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const theme = useSelector(state => state.theme.colors);
   const announcements = useSelector(state => state.announcements);
   const dispatch = useDispatch();
 
+  const loadAnnouncements = useCallback(() => {
+    setRefreshing(true);
+    dispatch(announcementActions.getAnnouncements());
+    setRefreshing(false);
+  }, [dispatch, setRefreshing]);
+
   useEffect(() => {
-    // dispatch(announcementActions.getAnnouncements());
-  }, [dispatch, announcements]);
+    loadAnnouncements();
+  }, [dispatch, loadAnnouncements]);
 
   const onScrollHandler = event => {
     const prevOffsetY = offsetY;
@@ -55,24 +62,24 @@ const AnnouncementScreen = () => {
       {announcements.length === 0 ? (
         <ErrorScreen error="NO_RESULTS" />
       ) : (
-        <ScrollView style={styles.body} onScroll={onScrollHandler}>
-          {announcements.map(announcement => {
+        <FlatList
+          style={styles.flatList}
+          onRefresh={loadAnnouncements}
+          refreshing={refreshing}
+          onScroll={onScrollHandler}
+          data={announcements}
+          keyExtractor={item => item.id.toString()}
+          renderItem={itemData => {
             return (
               <AnnouncementCard
-                key={announcement.id}
-                onDelete={onDeleteHandler(announcement.id)}
-                image={announcement.imageUrl}
+                onDelete={() => {
+                  onDeleteHandler(itemData.id);
+                }}
+                announcementData={itemData.item}
               />
             );
-          })}
-          {/* <AnnouncementCard
-            onDelete={onDeleteHandler}
-            image="https://th.bing.com/th/id/Red4f2866d59316ec64f269b0813412c5?rik=zdwSc4unAQCGKQ&pid=ImgRaw"
-          />
-          <AnnouncementCard image="https://images.unsplash.com/photo-1511798616182-aab3698ac53e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=583&q=80" />
-          <AnnouncementCard />
-          <AnnouncementCard image="https://images.unsplash.com/photo-1615458318132-1f151a3d18f4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=334&q=80" /> */}
-        </ScrollView>
+          }}
+        />
       )}
       <AddButton ref={addBtnRef} />
       <UiModal
