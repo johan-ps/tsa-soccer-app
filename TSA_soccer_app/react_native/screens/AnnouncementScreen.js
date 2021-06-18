@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  PanResponder,
+  Animated,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -19,6 +25,49 @@ const AnnouncementScreen = () => {
   const theme = useSelector(state => state.theme.colors);
   const announcements = useSelector(state => state.announcements);
   const dispatch = useDispatch();
+
+  const [isScrollFree, setIsScrollFree] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshHeight = useRef(new Animated.Value(0)).current;
+  const pullHeight = 60;
+
+  const scrollComponentRef = useRef();
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {},
+      onPanResponderMove: (e, gestureState) => {
+        if (!isRefreshing) {
+          if (gestureState.dy >= 0 && offsetY === 0) {
+            if (gestureState.dy * 0.5 >= pullHeight) {
+            } else {
+              refreshHeight.setValue(gestureState.dy * 0.5);
+            }
+          } else {
+            // console.log(scrollComponentRef.current)
+            // scrollComponentRef.current.scrollTo({
+            //   y: gestureState.dy,
+            //   animated: true,
+            // });
+          }
+        }
+      },
+      onPanResponderRelease: () => {
+        Animated.spring(refreshHeight, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      },
+    }),
+  ).current;
+
+  const isScrolledToTop = () => {
+    if (offsetY === 0 && isScrollFree) {
+      setIsScrollFree(false);
+    }
+  };
 
   const loadAnnouncements = useCallback(() => {
     setRefreshing(true);
@@ -62,24 +111,29 @@ const AnnouncementScreen = () => {
       {announcements.length === 0 ? (
         <ErrorScreen error="NO_RESULTS" />
       ) : (
-        <FlatList
-          style={styles.flatList}
-          onRefresh={loadAnnouncements}
-          refreshing={refreshing}
-          onScroll={onScrollHandler}
-          data={announcements}
-          keyExtractor={item => item.id.toString()}
-          renderItem={itemData => {
-            return (
-              <AnnouncementCard
-                onDelete={() => {
-                  onDeleteHandler(itemData.id);
-                }}
-                announcementData={itemData.item}
-              />
-            );
-          }}
-        />
+        <Animated.View
+          {...panResponder.panHandlers}
+          style={{
+            transform: [{ translateY: refreshHeight }],
+          }}>
+          <FlatList
+            ref={scrollComponentRef}
+            style={styles.flatList}
+            onScroll={onScrollHandler}
+            data={announcements}
+            keyExtractor={item => item.id.toString()}
+            renderItem={itemData => {
+              return (
+                <AnnouncementCard
+                  onDelete={() => {
+                    onDeleteHandler(itemData.id);
+                  }}
+                  announcementData={itemData.item}
+                />
+              );
+            }}
+          />
+        </Animated.View>
       )}
       <AddButton ref={addBtnRef} />
       <UiModal

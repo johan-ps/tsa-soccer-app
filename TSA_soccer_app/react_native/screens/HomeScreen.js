@@ -1,141 +1,44 @@
 import React, { useState, useRef } from 'react';
-import { Text, View, StyleSheet, ScrollView, Button } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-
-import AddButton from '../components/AddButton';
-import * as ThemeActions from '../store/actions/ThemeActions';
-import UiModal from '../components/UiModal';
-import UiButton from '../components/UiButton';
-import UiDropdown from '../components/UiDropdown';
-import UiToggle from '../components/UiToggle';
+import { View, StyleSheet, PanResponder, Animated, Text } from 'react-native';
 
 const HomeScreen = () => {
   const [offsetY, setOffsetY] = useState(0);
-  const [visible, setVisible] = useState(false);
-  const addBtnRef = useRef();
-  const dispatch = useDispatch();
-  const activeTheme = useSelector(state => state.theme.activeTheme);
 
   const onScrollHandler = event => {
-    const prevOffsetY = offsetY;
     const curOffsetY = event.nativeEvent.contentOffset.y;
-    if (Math.abs(curOffsetY - prevOffsetY) > 8) {
-      if (curOffsetY < prevOffsetY) {
-        addBtnRef.current.onScrollUp();
-      } else {
-        addBtnRef.current.onScrollDown();
-      }
-    }
     setOffsetY(curOffsetY);
   };
 
-  const onChangeThemeHandler = event => {
-    let newTheme;
-    if (activeTheme === 'default') {
-      newTheme = 'dark';
-    } else if (activeTheme === 'dark') {
-      newTheme = 'darkPlus';
-    } else {
-      newTheme = 'default';
-    }
-    dispatch(ThemeActions.updateTheme(newTheme));
-  };
+  const pan = useRef(new Animated.ValueXY()).current;
 
-  const teams = [
-    {
-      label: 'House League',
-      id: 10,
-      children: [
-        {
-          label: 'Markham House League',
-          id: 11,
-        },
-        {
-          label: 'Scarborough House League',
-          id: 12,
-        },
-      ],
-    },
-    {
-      label: 'Rep',
-      id: 13,
-      children: [
-        {
-          label: 'U14',
-          id: 14,
-        },
-        {
-          label: 'U11',
-          id: 15,
-        },
-        {
-          label: 'U10',
-          id: 16,
-        },
-        {
-          label: 'U9',
-          id: 17,
-        },
-      ],
-    },
-  ];
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        pan.setOffset({
+          x: pan.x._value,
+          y: pan.y._value,
+        });
+      },
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
+        useNativeDriver: false,
+      }),
+      onPanResponderRelease: () => {
+        pan.flattenOffset();
+      },
+    }),
+  ).current;
 
   return (
     <View style={styles.container}>
-      <UiModal
-        primaryLabel="Confirm"
-        secondaryLabel="Cancel"
-        visible={visible}
-        title="Delete content"
-        content={
-          'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
-        }
-        onCloseHandler={() => {
-          setVisible(false);
+      <Text style={styles.titleText}>Drag this box!</Text>
+      <Animated.View
+        style={{
+          transform: [{ translateX: pan.x }, { translateY: pan.y }],
         }}
-      />
-      <Text>HomeScreen</Text>
-      {/* <ScrollView onScroll={onScrollHandler}> */}
-      <UiButton
-        label="Change theme"
-        textColor="white"
-        bgColor="#0022FF"
-        onPress={onChangeThemeHandler}
-      />
-      <UiButton
-        label="Confirm"
-        textColor="white"
-        bgColor="#0066FF"
-        onPress={() => {
-          setVisible(true);
-        }}
-      />
-      <UiDropdown
-        modalOffsetX={0}
-        modalOffsetY={0}
-        options={teams}
-        multiselect={true}
-        group={true}
-        size="large"
-        placeholder="'Select Value...'"
-      />
-      <UiToggle />
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      <Text style={styles.text}>HomeScreen scroll</Text>
-      {/* </ScrollView> */}
-      <AddButton ref={addBtnRef} />
+        {...panResponder.panHandlers}>
+        <View style={styles.box} />
+      </Animated.View>
     </View>
   );
 };
@@ -143,14 +46,19 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-    padding: 15,
-    height: '100%',
-    position: 'relative',
-    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  text: {
-    margin: 50,
+  titleText: {
+    fontSize: 14,
+    lineHeight: 24,
+    fontWeight: 'bold',
+  },
+  box: {
+    height: 150,
+    width: 150,
+    backgroundColor: 'blue',
+    borderRadius: 5,
   },
 });
 
