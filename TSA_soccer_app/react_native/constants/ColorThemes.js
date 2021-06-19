@@ -64,7 +64,8 @@ export default {
     textDark: '#FFFFFF',
 
     // cards
-    cardBg: '#231E20CC',
+    // cardBg: '#231E20CC',
+    cardBg: '#231E20',
     cardTextHeading: '#D1D1D1',
     cardTextSubHeading: '#C9C8C8',
     cardTextContent: '#D1D1D1b9',

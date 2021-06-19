@@ -7,6 +7,7 @@ import {
   Animated,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import LottieView from 'lottie-react-native';
 
 import {
   AnnouncementCard,
@@ -16,6 +17,7 @@ import {
   ErrorScreen,
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
+const loadingLottieAnim = require('../assets/img/soccer-anim.json');
 
 const AnnouncementScreen = () => {
   const addBtnRef = useRef();
@@ -26,47 +28,94 @@ const AnnouncementScreen = () => {
   const announcements = useSelector(state => state.announcements);
   const dispatch = useDispatch();
 
-  const [isScrollFree, setIsScrollFree] = useState(false);
+  const [isScrollTop, setIsScrollTop] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const refreshHeight = useRef(new Animated.Value(0)).current;
-  const pullHeight = 60;
+  const pullHeight = 100;
 
-  const scrollComponentRef = useRef();
+  const loadingAnimRef = useRef();
+  const loadingAnim = useRef(new Animated.Value(0)).current;
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
+  const initPanResponder = useCallback(() => {
+    return PanResponder.create({
+      onMoveShouldSetPanResponder: (e, gestureState) => {
+        if (isRefreshing) {
+          return true;
+        }
+        if (offsetY === 0 && !isRefreshing) {
+          return gestureState.dy > 2;
+        } else {
+          return false;
+        }
+      },
       onPanResponderGrant: () => {},
       onPanResponderMove: (e, gestureState) => {
         if (!isRefreshing) {
           if (gestureState.dy >= 0 && offsetY === 0) {
-            if (gestureState.dy * 0.5 >= pullHeight) {
-            } else {
-              refreshHeight.setValue(gestureState.dy * 0.5);
-            }
-          } else {
-            // console.log(scrollComponentRef.current)
-            // scrollComponentRef.current.scrollTo({
-            //   y: gestureState.dy,
-            //   animated: true,
-            // });
+            refreshHeight.setValue(gestureState.dy * 0.5);
+            loadingAnim.setValue(((gestureState.dy * 0.5) % 100) / 100);
           }
         }
       },
       onPanResponderRelease: () => {
-        Animated.spring(refreshHeight, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
+        if (refreshHeight._value > pullHeight) {
+          loadingAnimRef.current.resume();
+          setIsRefreshing(true);
+          Animated.spring(refreshHeight, {
+            toValue: pullHeight,
+            duration: 100,
+            useNativeDriver: true,
+          }).start(() => {
+            onRefreshHandler();
+          });
+        } else {
+          Animated.spring(refreshHeight, {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: true,
+          }).start();
+        }
       },
-    }),
-  ).current;
+      onPanResponderTerminate: () => {
+        if (refreshHeight._value > pullHeight) {
+          loadingAnimRef.current.resume();
+          setIsRefreshing(true);
+          Animated.spring(refreshHeight, {
+            toValue: pullHeight,
+            duration: 100,
+            useNativeDriver: true,
+          }).start(() => {
+            onRefreshHandler();
+          });
+        } else {
+          Animated.spring(refreshHeight, {
+            toValue: 0,
+            duration: 100,
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+      onStartShouldSetPanResponder: (e, gestureState) => {
+        if (isRefreshing) {
+          return true;
+        }
+        return false;
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isScrollTop, isRefreshing, refreshHeight]);
 
-  const isScrolledToTop = () => {
-    if (offsetY === 0 && isScrollFree) {
-      setIsScrollFree(false);
-    }
+  const panResponder = initPanResponder();
+
+  const onRefreshHandler = () => {
+    setTimeout(() => {
+      Animated.spring(refreshHeight, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }).start();
+      setIsRefreshing(false);
+    }, 500);
   };
 
   const loadAnnouncements = useCallback(() => {
@@ -92,6 +141,12 @@ const AnnouncementScreen = () => {
       addBtnRef.current.onScrollUp();
     }
     setOffsetY(curOffsetY);
+    if (curOffsetY === 0 && !isScrollTop) {
+      setIsScrollTop(true);
+    } else if (isScrollTop) {
+      setIsScrollTop(false);
+      refreshHeight.setValue(0);
+    }
   };
 
   const onDeleteHandler = id => {
@@ -111,29 +166,39 @@ const AnnouncementScreen = () => {
       {announcements.length === 0 ? (
         <ErrorScreen error="NO_RESULTS" />
       ) : (
-        <Animated.View
-          {...panResponder.panHandlers}
-          style={{
-            transform: [{ translateY: refreshHeight }],
-          }}>
-          <FlatList
-            ref={scrollComponentRef}
-            style={styles.flatList}
-            onScroll={onScrollHandler}
-            data={announcements}
-            keyExtractor={item => item.id.toString()}
-            renderItem={itemData => {
-              return (
-                <AnnouncementCard
-                  onDelete={() => {
-                    onDeleteHandler(itemData.id);
-                  }}
-                  announcementData={itemData.item}
-                />
-              );
-            }}
+        <View>
+          <LottieView
+            ref={loadingAnimRef}
+            progress={loadingAnim}
+            style={styles.lottieView}
+            source={loadingLottieAnim}
           />
-        </Animated.View>
+          <Animated.View
+            {...panResponder.panHandlers}
+            style={[
+              styles.panContainer,
+              {
+                transform: [{ translateY: refreshHeight }],
+              },
+            ]}>
+            <FlatList
+              style={[styles.flatList, { backgroundColor: theme.primaryBg }]}
+              onScroll={onScrollHandler}
+              data={announcements}
+              keyExtractor={item => item.id.toString()}
+              renderItem={itemData => {
+                return (
+                  <AnnouncementCard
+                    onDelete={() => {
+                      onDeleteHandler(itemData.id);
+                    }}
+                    announcementData={itemData.item}
+                  />
+                );
+              }}
+            />
+          </Animated.View>
+        </View>
       )}
       <AddButton ref={addBtnRef} />
       <UiModal
@@ -155,8 +220,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: '100%',
+    paddingBottom: 70,
   },
-  body: {},
+  panContainer: {
+    width: '100%',
+    height: '100%',
+  },
+  lottieView: {
+    height: 100,
+    width: '100%',
+    position: 'absolute',
+    top: 5,
+    left: 0,
+    right: 0,
+  },
 });
 
 export default AnnouncementScreen;

@@ -25,7 +25,7 @@ const MainNavigator = () => {
   // run function whenever dispatch or scheme changes
   useEffect(() => {
     if (scheme === 'dark') {
-      // dispatch(ThemeActions.updateTheme(scheme));
+      dispatch(ThemeActions.updateTheme(scheme));
     }
   }, [dispatch, scheme]);
 
