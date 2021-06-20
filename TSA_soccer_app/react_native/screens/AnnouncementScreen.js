@@ -30,30 +30,34 @@ const AnnouncementScreen = () => {
 
   const [isScrollTop, setIsScrollTop] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isScrollFree, setIsScrollFree] = useState(true);
   const refreshHeight = useRef(new Animated.Value(0)).current;
   const pullHeight = 100;
 
   const loadingAnimRef = useRef();
   const loadingAnim = useRef(new Animated.Value(0)).current;
 
+  const scrollRef = useRef();
+
   const initPanResponder = useCallback(() => {
     return PanResponder.create({
       onMoveShouldSetPanResponder: (e, gestureState) => {
-        if (isRefreshing) {
-          return true;
-        }
-        if (offsetY === 0 && !isRefreshing) {
-          return gestureState.dy > 2;
-        } else {
+        if (!isScrollTop) {
           return false;
         }
+        return true;
       },
       onPanResponderGrant: () => {},
       onPanResponderMove: (e, gestureState) => {
         if (!isRefreshing) {
-          if (gestureState.dy >= 0 && offsetY === 0) {
+          if (gestureState.dy >= 0 && isScrollTop) {
+            setIsScrollFree(false);
             refreshHeight.setValue(gestureState.dy * 0.5);
             loadingAnim.setValue(((gestureState.dy * 0.5) % 100) / 100);
+          } else {
+            refreshHeight.setValue(0);
+            let offset = gestureState.dy * -1;
+            scrollRef.current.getScrollResponder().scrollTo({ y: offset });
           }
         }
       },
@@ -69,6 +73,7 @@ const AnnouncementScreen = () => {
             onRefreshHandler();
           });
         } else {
+          setIsScrollFree(true);
           Animated.spring(refreshHeight, {
             toValue: 0,
             duration: 100,
@@ -77,6 +82,7 @@ const AnnouncementScreen = () => {
         }
       },
       onPanResponderTerminate: () => {
+        console.log('here terminate');
         if (refreshHeight._value > pullHeight) {
           loadingAnimRef.current.resume();
           setIsRefreshing(true);
@@ -88,6 +94,7 @@ const AnnouncementScreen = () => {
             onRefreshHandler();
           });
         } else {
+          setIsScrollFree(true);
           Animated.spring(refreshHeight, {
             toValue: 0,
             duration: 100,
@@ -95,11 +102,16 @@ const AnnouncementScreen = () => {
           }).start();
         }
       },
+      onPanResponderTerminationRequest: () => {
+        console.log('here request');
+      },
       onStartShouldSetPanResponder: (e, gestureState) => {
-        if (isRefreshing) {
-          return true;
+        // console.log(e.nativeEvent)
+        // console.log(gestureState)
+        if (!isScrollTop) {
+          return false;
         }
-        return false;
+        return true;
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,6 +194,8 @@ const AnnouncementScreen = () => {
               },
             ]}>
             <FlatList
+              ref={scrollRef}
+              scrollEnabled={isScrollFree}
               style={[styles.flatList, { backgroundColor: theme.primaryBg }]}
               onScroll={onScrollHandler}
               data={announcements}
@@ -217,7 +231,6 @@ const AnnouncementScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     width: '100%',
     height: '100%',
     paddingBottom: 70,
