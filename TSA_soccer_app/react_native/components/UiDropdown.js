@@ -23,8 +23,9 @@ const UiDropdown = props => {
     multiselect = false,
     group = false,
     icon = false,
+    defaultValue
   } = props;
-  const [selectedId, setSelectedId] = useState(-1);
+  const [selectedId, setSelectedId] = useState(defaultValue || -1);
   const [selectedLabel, setSelectedLabel] = useState(placeholder);
   const [selectedValues, setSelectedValues] = useState({});
   const [showOptions, setShowOptions] = useState(false);

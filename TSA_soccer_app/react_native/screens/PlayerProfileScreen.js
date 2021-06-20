@@ -190,29 +190,7 @@ const styles = StyleSheet.create({
         rotate: '-30deg',
       },
     ],
-  },
-  parallelogram: {
-    width: 150,
-    height: 100,
-  },
-  parallelogramInner: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    backgroundColor: 'red',
-    width: 150,
-    height: 100,
-  },
-  parallelogramRight: {
-    top: 0,
-    right: -50,
-    position: 'absolute',
-  },
-  parallelogramLeft: {
-    top: 0,
-    left: -50,
-    position: 'absolute',
-  },
+  }
 });
 
 export default PlayerProfileScreen;

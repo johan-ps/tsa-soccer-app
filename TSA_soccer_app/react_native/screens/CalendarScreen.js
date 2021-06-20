@@ -4,25 +4,18 @@ import { AddButton, UiButton } from '../components/_components';
 import CreateEvent from '../components/CreateEvent';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 
-const ScheduleScreen = ({ navigation }) => {
+const CalendarScreen = () => {
   const [createEvent, setCreateEvent] = useState(false);
 
   return (
     <View style={styles.container}>
-      <UiButton label="Create" onPress={() => {}} />
-      <UiButton label="Open Event" onPress={() => navigation.navigate('Event')} />
-      <Text style={styles.text}>Schedule</Text>
-      <AddButton
-        onPress={() => {
-          setCreateEvent(true);
-        }}
-      />
-      <CreateEvent
-        visible={createEvent}
-        onClose={() => {
-          setTimeout(() => {
-            setCreateEvent(false);
-          }, 100);
+      <Calendar
+        style={styles.calender}
+        theme={{
+          todayTextColor: '#00adf5',
+          textDayFontSize: 20,
+          textMonthFontSize: 20,
+          textDayHeaderFontSize: 18,
         }}
       />
     </View>
@@ -47,4 +40,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScheduleScreen;
+export default CalendarScreen;
+      

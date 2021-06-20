@@ -1,6 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { useColorScheme, Platform } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import PatientProfileScreen from '../screens/PlayerProfileScreen'
