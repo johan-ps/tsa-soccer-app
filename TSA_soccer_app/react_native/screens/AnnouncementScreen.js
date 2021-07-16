@@ -29,6 +29,7 @@ const statusBarHeight = StatusBar.currentHeight;
 
 const AnnouncementScreen = () => {
   const addBtnRef = useRef();
+  const searchBarRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const theme = useSelector(state => state.theme.colors);
   const announcements = useSelector(state => state.announcements);
@@ -43,23 +44,28 @@ const AnnouncementScreen = () => {
   const reanimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
+      marginBottom: 70,
     };
   }, []);
   const refreshBound = 90;
 
   useDerivedValue(() => {
-    if (addBtnRef.current) {
+    if (addBtnRef.current && searchBarRef.current) {
       if (
         translateY.value < 0 &&
         Math.abs(translateY.value - offsetY.value) > 8
       ) {
         if (offsetY.value < translateY.value) {
           runOnJS(addBtnRef.current.onScrollUp)();
+          runOnJS(searchBarRef.current.onScrollUp)();
         } else {
           runOnJS(addBtnRef.current.onScrollDown)();
+          runOnJS(searchBarRef.current.onScrollDown)();
         }
       } else if (translateY.value === 0) {
         runOnJS(addBtnRef.current.onScrollUp)();
+      } else if (translateY.value >= -70 && translateY.value <= 0) {
+        runOnJS(searchBarRef.current.onScrollUp)();
       }
     }
     offsetY.value = translateY.value;
@@ -176,6 +182,7 @@ const AnnouncementScreen = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
       <NavHeader
+        ref={searchBarRef}
         iconListRight={[{ name: 'filter-outline', id: 0 }]}
         searchable={true}
       />
@@ -228,7 +235,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
-    paddingBottom: 70,
+    marginBottom: 70,
   },
   panContainer: {
     width: '100%',

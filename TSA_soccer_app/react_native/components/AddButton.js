@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-} from 'react';
-import { View, StyleSheet, Easing } from 'react-native';
+import React, { forwardRef, useImperativeHandle } from 'react';
+import { View, StyleSheet } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
@@ -12,7 +7,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  useDerivedValue,
 } from 'react-native-reanimated';
 
 // forwardRef allows functional components to have refs
@@ -36,10 +30,9 @@ const AddButton = forwardRef((props, ref) => {
   const onScrollUp = () => {
     if (scrollDownAnimInit.value) {
       visible.value = true;
-      // console.log('on scroll up')
       scrollDownAnimInit.value = false;
       scrollAnimation.value = withTiming(1, {}, () => {
-        isScroll.value = true;
+        isScroll.value = false;
       });
     }
   };

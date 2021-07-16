@@ -1,20 +1,53 @@
-import React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
+import React, { forwardRef, useImperativeHandle } from 'react';
+import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 
-const NavHeader = props => {
+const NavHeader = forwardRef((props, ref) => {
   const { iconListLeft = [], iconListRight = [], searchable = false } = props;
   const theme = useSelector(state => state.theme.colors);
 
+  const scrollAnimation = useSharedValue(0);
+  const scrollDownAnimInit = useSharedValue(false); // has scroll down animation started
+
+  // useImperativeHandle customizes the instance value that is exposed to parent components when using refs
+  useImperativeHandle(ref, () => ({
+    onScrollUp,
+    onScrollDown,
+  }));
+
+  const onScrollUp = () => {
+    if (scrollDownAnimInit.value) {
+      scrollDownAnimInit.value = false;
+      scrollAnimation.value = withTiming(0);
+    }
+  };
+
+  const onScrollDown = () => {
+    if (!scrollDownAnimInit.value) {
+      scrollDownAnimInit.value = true;
+      scrollAnimation.value = withTiming(1);
+    }
+  };
+
+  const animStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: scrollAnimation.value * -70,
+        },
+      ],
+    };
+  });
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.navBg }]}>
+    <Animated.View
+      style={[styles.container, { backgroundColor: theme.navBg }, animStyle]}>
       <View style={styles.iconLeftContainer}>
         {iconListLeft.map(icon => {
           return (
@@ -54,9 +87,9 @@ const NavHeader = props => {
           );
         })}
       </View>
-    </View>
+    </Animated.View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
