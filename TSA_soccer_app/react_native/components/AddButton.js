@@ -4,20 +4,25 @@ import React, {
   useImperativeHandle,
   useRef,
 } from 'react';
-import { View, Animated, StyleSheet, Easing } from 'react-native';
+import { View, StyleSheet, Easing } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  useDerivedValue,
+} from 'react-native-reanimated';
 
 // forwardRef allows functional components to have refs
 const AddButton = forwardRef((props, ref) => {
-  // using useRef provides a current property that is persistent throughout the component's lifecycle
-  const focusAnimation = useRef(new Animated.Value(0)).current;
-  const scrollAnimation = useRef(new Animated.Value(1)).current;
+  const focusAnimation = useSharedValue(1);
+  const scrollAnimation = useSharedValue(1);
 
-  const [isScroll, setIsScroll] = useState(false); // does scroll animation have priority over focus animation
-  const [visible, setVisible] = useState(true);
-  const [scrollDownAnimInit, setScrollDownAnimInit] = useState(false); // has scroll down animation started
+  const isScroll = useSharedValue(false); // does scroll animation have priority over focus animation
+  const visible = useSharedValue(true);
+  const scrollDownAnimInit = useSharedValue(false); // has scroll down animation started
 
   // get current theme colors from state
   const theme = useSelector(state => state.theme.colors);
@@ -26,120 +31,80 @@ const AddButton = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     onScrollUp,
     onScrollDown,
-    setIsScroll,
   }));
 
   const onScrollUp = () => {
-    if (scrollDownAnimInit) {
-      setVisible(true);
-      setScrollDownAnimInit(false);
-      Animated.timing(scrollAnimation, {
-        toValue: 1,
-        duration: 225,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start(() => {
-        setIsScroll(false);
+    if (scrollDownAnimInit.value) {
+      visible.value = true;
+      // console.log('on scroll up')
+      scrollDownAnimInit.value = false;
+      scrollAnimation.value = withTiming(1, {}, () => {
+        isScroll.value = true;
       });
     }
   };
 
   const onScrollDown = () => {
-    setIsScroll(true);
-    if (!scrollDownAnimInit) {
-      setScrollDownAnimInit(true);
-      Animated.timing(scrollAnimation, {
-        toValue: 0,
-        duration: 225,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start(() => {
-        setVisible(false);
+    if (!scrollDownAnimInit.value) {
+      isScroll.value = true;
+      scrollDownAnimInit.value = true;
+      scrollAnimation.value = withTiming(0, {}, () => {
+        visible.value = false;
       });
     }
   };
 
   const onFocusIn = () => {
-    Animated.timing(focusAnimation, {
-      toValue: 1,
-      duration: 225,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    focusAnimation.value = withTiming(0.9);
   };
 
   const onFocusOut = () => {
-    Animated.timing(focusAnimation, {
-      toValue: 0,
-      duration: 225,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    focusAnimation.value = withTiming(1);
   };
 
-  // scrolling scaling animation
-  const scaleFull = {
-    transform: [
-      {
-        scale: scrollAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
-        }),
-      },
-    ],
-  };
-
-  // scrolling opacity animation
-  const opacity = {
-    opacity: scrollAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    }),
-  };
-
-  // focus scaling animation
-  const scale = {
-    transform: [
-      {
-        scale: focusAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 0.95],
-        }),
-      },
-    ],
-  };
-
-  const themeStyles = {
+  const themeBgClr = {
     backgroundColor: theme.buttonPrimaryBg,
   };
 
+  const containerAnimStyle = useAnimatedStyle(() => {
+    let styles = {};
+    if (visible.value) {
+      styles.opacity = scrollAnimation.value;
+      if (isScroll.value) {
+        styles.transform = [
+          {
+            scale: scrollAnimation.value,
+          },
+        ];
+      } else {
+        styles.transform = [
+          {
+            scale: focusAnimation.value,
+          },
+        ];
+      }
+    } else {
+      styles = {
+        opacity: 0,
+        width: 0,
+        height: 0,
+      };
+    }
+    return styles;
+  });
+
   return (
     <Animated.View
-      style={
-        visible
-          ? [
-              styles.addBtnContainer,
-              themeStyles,
-              isScroll ? scaleFull : scale,
-              opacity,
-            ]
-          : { opacity: 0, width: 0, height: 0 }
-      }>
-      {visible ? (
-        <View style={styles.addBtn}>
-          <Ripple
-            style={[styles.ripple]}
-            onPress={props.onPress}
-            onPressIn={onFocusIn}
-            onPressOut={onFocusOut}>
-            <Icon
-              name="add-outline"
-              color={theme.buttonPrimaryText}
-              size={28}
-            />
-          </Ripple>
-        </View>
-      ) : null}
+      style={[styles.addBtnContainer, themeBgClr, containerAnimStyle]}>
+      <View style={styles.addBtn}>
+        <Ripple
+          style={[styles.ripple]}
+          onPress={props.onPress}
+          onPressIn={onFocusIn}
+          onPressOut={onFocusOut}>
+          <Icon name="add-outline" color={theme.buttonPrimaryText} size={28} />
+        </Ripple>
+      </View>
     </Animated.View>
   );
 });

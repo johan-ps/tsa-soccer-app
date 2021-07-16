@@ -7,22 +7,18 @@ import ScheduleScreen from '../screens/ScheduleScreen';
 const Stack = createStackNavigator();
 
 const ScheduleEventNavigator = () => {
-
   return (
-    <Stack.Navigator 
-      initialRouteName="Schedule" 
+    <Stack.Navigator
+      initialRouteName="Schedule"
       screenOptions={{
-        headerShown: false
-      }}
-    > 
+        headerShown: false,
+      }}>
       <Stack.Screen name="Schedule" component={ScheduleScreen} />
       <Stack.Screen name="Event" component={EventScreen} />
     </Stack.Navigator>
   );
 };
 
-const styles = StyleSheet.create({
-  
-});
+const styles = StyleSheet.create({});
 
 export default ScheduleEventNavigator;

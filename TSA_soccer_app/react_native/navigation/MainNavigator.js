@@ -81,7 +81,7 @@ const MainNavigator = () => {
       }}>
       <MainNav.Screen name="Home" component={AnnouncementScreen} />
       <MainNav.Screen name="Schedule" component={ScheduleTopNavigator} />
-      <MainNav.Screen name="Team" component={TeamRosterNavigator} /> 
+      <MainNav.Screen name="Team" component={TeamRosterNavigator} />
       <MainNav.Screen name="Messages" component={MessagesScreen} />
       <MainNav.Screen name="More" component={MoreScreen} />
     </MainNav.Navigator>

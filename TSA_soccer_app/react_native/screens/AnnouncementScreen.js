@@ -1,13 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  PanResponder,
-  Animated,
-} from 'react-native';
+import { View, StyleSheet, Dimensions, StatusBar } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import LottieView from 'lottie-react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withDecay,
+  useAnimatedGestureHandler,
+  runOnJS,
+  useDerivedValue,
+  cancelAnimation,
+} from 'react-native-reanimated';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 import {
   AnnouncementCard,
@@ -19,147 +24,136 @@ import {
 import * as announcementActions from '../store/actions/AnnouncementActions';
 const loadingLottieAnim = require('../assets/img/soccer-anim.json');
 
+const windowHeight = Dimensions.get('window').height;
+const statusBarHeight = StatusBar.currentHeight;
+
 const AnnouncementScreen = () => {
   const addBtnRef = useRef();
-  const [offsetY, setOffsetY] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const theme = useSelector(state => state.theme.colors);
   const announcements = useSelector(state => state.announcements);
   const dispatch = useDispatch();
 
-  const [isScrollTop, setIsScrollTop] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isScrollFree, setIsScrollFree] = useState(true);
-  const refreshHeight = useRef(new Animated.Value(0)).current;
-  const pullHeight = 100;
+  const [scrollUpperBound, setScrollUpperBound] = useState(0);
 
-  const loadingAnimRef = useRef();
-  const loadingAnim = useRef(new Animated.Value(0)).current;
+  const refreshing = useSharedValue(false);
+  const offsetY = useSharedValue(0);
 
-  const scrollRef = useRef();
+  const translateY = useSharedValue(0);
+  const reanimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  }, []);
+  const refreshBound = 90;
 
-  const initPanResponder = useCallback(() => {
-    return PanResponder.create({
-      onMoveShouldSetPanResponder: (e, gestureState) => {
-        if (!isScrollTop) {
-          return false;
-        }
-        return true;
-      },
-      onPanResponderGrant: () => {},
-      onPanResponderMove: (e, gestureState) => {
-        if (!isRefreshing) {
-          if (gestureState.dy >= 0 && isScrollTop) {
-            setIsScrollFree(false);
-            refreshHeight.setValue(gestureState.dy * 0.5);
-            loadingAnim.setValue(((gestureState.dy * 0.5) % 100) / 100);
-          } else {
-            refreshHeight.setValue(0);
-            let offset = gestureState.dy * -1;
-            scrollRef.current.getScrollResponder().scrollTo({ y: offset });
-          }
-        }
-      },
-      onPanResponderRelease: () => {
-        if (refreshHeight._value > pullHeight) {
-          loadingAnimRef.current.resume();
-          setIsRefreshing(true);
-          Animated.spring(refreshHeight, {
-            toValue: pullHeight,
-            duration: 100,
-            useNativeDriver: true,
-          }).start(() => {
-            onRefreshHandler();
-          });
+  useDerivedValue(() => {
+    if (addBtnRef.current) {
+      if (
+        translateY.value < 0 &&
+        Math.abs(translateY.value - offsetY.value) > 8
+      ) {
+        if (offsetY.value < translateY.value) {
+          runOnJS(addBtnRef.current.onScrollUp)();
         } else {
-          setIsScrollFree(true);
-          Animated.spring(refreshHeight, {
-            toValue: 0,
-            duration: 100,
-            useNativeDriver: true,
-          }).start();
+          runOnJS(addBtnRef.current.onScrollDown)();
         }
-      },
-      onPanResponderTerminate: () => {
-        console.log('here terminate');
-        if (refreshHeight._value > pullHeight) {
-          loadingAnimRef.current.resume();
-          setIsRefreshing(true);
-          Animated.spring(refreshHeight, {
-            toValue: pullHeight,
-            duration: 100,
-            useNativeDriver: true,
-          }).start(() => {
-            onRefreshHandler();
-          });
-        } else {
-          setIsScrollFree(true);
-          Animated.spring(refreshHeight, {
-            toValue: 0,
-            duration: 100,
-            useNativeDriver: true,
-          }).start();
-        }
-      },
-      onPanResponderTerminationRequest: () => {
-        console.log('here request');
-      },
-      onStartShouldSetPanResponder: (e, gestureState) => {
-        // console.log(e.nativeEvent)
-        // console.log(gestureState)
-        if (!isScrollTop) {
-          return false;
-        }
-        return true;
-      },
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isScrollTop, isRefreshing, refreshHeight]);
-
-  const panResponder = initPanResponder();
-
-  const onRefreshHandler = () => {
-    setTimeout(() => {
-      Animated.spring(refreshHeight, {
-        toValue: 0,
-        duration: 100,
-        useNativeDriver: true,
-      }).start();
-      setIsRefreshing(false);
-    }, 500);
-  };
+      } else if (translateY.value === 0) {
+        runOnJS(addBtnRef.current.onScrollUp)();
+      }
+    }
+    offsetY.value = translateY.value;
+  });
 
   const loadAnnouncements = useCallback(() => {
-    setRefreshing(true);
     dispatch(announcementActions.getAnnouncements());
-    setRefreshing(false);
-  }, [dispatch, setRefreshing]);
+  }, [dispatch]);
+
+  useDerivedValue(() => {
+    if (refreshing.value) {
+      runOnJS(loadAnnouncements)();
+      refreshing.value = false;
+      translateY.value = withSpring(0, {
+        damping: 100,
+        mass: 10,
+        stiffness: 1000,
+        overshootClamping: true,
+        restDisplacementThreshold: 0,
+        restSpeedThreshold: 0,
+      });
+    }
+  });
+
+  const panGestureEvent = useAnimatedGestureHandler({
+    onStart: (event, context) => {
+      if (refreshing.value) {
+        return;
+      } else if (translateY.value <= 0) {
+        cancelAnimation(translateY);
+      }
+      context.translateY = translateY.value;
+      context.max = 0;
+    },
+    onActive: (event, context) => {
+      if (refreshing.value || context.translateY > 0) {
+        return;
+      }
+      let ty = event.translationY + context.translateY;
+      if (ty > 8) {
+        let friction =
+          Math.pow(1 - Math.min(ty / scrollUpperBound, 1), 2) * 0.6;
+        translateY.value = ty * friction;
+      } else {
+        translateY.value = ty;
+      }
+
+      if (Math.abs(translateY.value) > scrollUpperBound) {
+        translateY.value = -scrollUpperBound;
+      }
+    },
+    onEnd: (event, context) => {
+      if (refreshing.value) {
+        return;
+      }
+      if (context.translateY === 0 && event.translationY > 0) {
+        if (event.translationY > refreshBound) {
+          refreshing.value = true;
+          // translateY.value = withSpring(
+          //   refreshBound,
+          //   {
+          //     damping: 100,
+          //     mass: 10,
+          //     stiffness: 1000,
+          //     overshootClamping: true,
+          //     restDisplacementThreshold: 0,
+          //     restSpeedThreshold: 0,
+          //   },
+          //   () => {
+          //     refreshing.value = true;
+          //   },
+          // );
+        } else {
+          translateY.value = withSpring(0, {
+            damping: 100,
+            mass: 10,
+            stiffness: 1000,
+            overshootClamping: true,
+            restDisplacementThreshold: 0,
+            restSpeedThreshold: 0,
+          });
+        }
+      } else {
+        translateY.value = withDecay({
+          velocity: event.velocityY,
+          clamp: [-scrollUpperBound, 0],
+        });
+      }
+    },
+  });
 
   useEffect(() => {
     loadAnnouncements();
   }, [dispatch, loadAnnouncements]);
-
-  const onScrollHandler = event => {
-    const prevOffsetY = offsetY;
-    const curOffsetY = event.nativeEvent.contentOffset.y;
-    if (Math.abs(curOffsetY - prevOffsetY) > 8) {
-      if (curOffsetY < prevOffsetY) {
-        addBtnRef.current.onScrollUp();
-      } else {
-        addBtnRef.current.onScrollDown();
-      }
-    } else if (curOffsetY === 0) {
-      addBtnRef.current.onScrollUp();
-    }
-    setOffsetY(curOffsetY);
-    if (curOffsetY === 0 && !isScrollTop) {
-      setIsScrollTop(true);
-    } else if (isScrollTop) {
-      setIsScrollTop(false);
-      refreshHeight.setValue(0);
-    }
-  };
 
   const onDeleteHandler = id => {
     setModalVisible(true);
@@ -167,6 +161,16 @@ const AnnouncementScreen = () => {
 
   const onModalCloseHandler = () => {
     setModalVisible(false);
+  };
+
+  const onLayoutHandler = ({
+    nativeEvent: {
+      layout: { height },
+    },
+  }) => {
+    if (height > windowHeight) {
+      setScrollUpperBound(height - windowHeight + 56 + statusBarHeight);
+    }
   };
 
   return (
@@ -178,40 +182,31 @@ const AnnouncementScreen = () => {
       {announcements.length === 0 ? (
         <ErrorScreen error="NO_RESULTS" />
       ) : (
-        <View>
+        <View onLayout={onLayoutHandler}>
           <LottieView
-            ref={loadingAnimRef}
-            progress={loadingAnim}
             style={styles.lottieView}
+            autoPlay={true}
             source={loadingLottieAnim}
           />
-          <Animated.View
-            {...panResponder.panHandlers}
-            style={[
-              styles.panContainer,
-              {
-                transform: [{ translateY: refreshHeight }],
-              },
-            ]}>
-            <FlatList
-              ref={scrollRef}
-              scrollEnabled={isScrollFree}
-              style={[styles.flatList, { backgroundColor: theme.primaryBg }]}
-              onScroll={onScrollHandler}
-              data={announcements}
-              keyExtractor={item => item.id.toString()}
-              renderItem={itemData => {
-                return (
-                  <AnnouncementCard
-                    onDelete={() => {
-                      onDeleteHandler(itemData.id);
-                    }}
-                    announcementData={itemData.item}
-                  />
-                );
-              }}
-            />
-          </Animated.View>
+          <PanGestureHandler onGestureEvent={panGestureEvent}>
+            <Animated.View
+              style={[reanimatedStyle, { backgroundColor: theme.primaryBg }]}>
+              <View>
+                {announcements.map(announcement => {
+                  return (
+                    <AnnouncementCard
+                      key={announcement.id}
+                      onDelete={() => {
+                        onDeleteHandler(announcement.id);
+                      }}
+                      image={announcement.imageUrl}
+                      announcementData={announcement}
+                    />
+                  );
+                })}
+              </View>
+            </Animated.View>
+          </PanGestureHandler>
         </View>
       )}
       <AddButton ref={addBtnRef} />

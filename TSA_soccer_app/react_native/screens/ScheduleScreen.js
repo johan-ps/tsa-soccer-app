@@ -10,7 +10,10 @@ const ScheduleScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <UiButton label="Create" onPress={() => {}} />
-      <UiButton label="Open Event" onPress={() => navigation.navigate('Event')} />
+      <UiButton
+        label="Open Event"
+        onPress={() => navigation.navigate('Event')}
+      />
       <Text style={styles.text}>Schedule</Text>
       <AddButton
         onPress={() => {
