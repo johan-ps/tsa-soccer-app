@@ -1,15 +1,19 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  Animated,
-  Easing,
   TouchableHighlight,
   TouchableNativeFeedback,
   Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  interpolate,
+} from 'react-native-reanimated';
 
 const UiButton = props => {
   const {
@@ -20,38 +24,31 @@ const UiButton = props => {
     border = false,
     darkBg = false,
   } = props;
-  const focusAnimation = useRef(new Animated.Value(0)).current;
+  const focusAnimation = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
 
   const onFocusIn = () => {
-    Animated.timing(focusAnimation, {
-      toValue: 1,
-      duration: 40,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    if (type !== 'tertiary') {
+      focusAnimation.value = withTiming(1, { duration: 40 });
+    }
   };
 
   const onFocusOut = () => {
-    Animated.timing(focusAnimation, {
-      toValue: 0,
-      duration: 40,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    if (type !== 'tertiary') {
+      focusAnimation.value = withTiming(0, { duration: 40 });
+    }
   };
 
   // focus scaling animation
-  const scale = {
-    transform: [
-      {
-        scale: focusAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 0.97],
-        }),
-      },
-    ],
-  };
+  const scale = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: interpolate(focusAnimation.value, [0, 1], [1, 0.97]),
+        },
+      ],
+    };
+  });
 
   const typeStyles = {
     primary: {
@@ -120,7 +117,7 @@ const UiButton = props => {
   const renderPlatformSpecific = () => {
     if (Platform.OS === 'ios') {
       return (
-        <Animated.View style={[styles.buttonWrapper,  scale]}>
+        <Animated.View style={[styles.buttonWrapper, scale]}>
           <TouchableHighlight
             onPressIn={onFocusIn}
             onPressOut={onFocusOut}

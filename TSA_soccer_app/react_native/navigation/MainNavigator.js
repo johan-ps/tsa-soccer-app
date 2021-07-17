@@ -57,7 +57,7 @@ const MainNavigator = () => {
                 color={focused ? theme.primaryIconClr : theme.secondaryIconClr}
                 size={focused ? 23 : 21}
               />
-              <Text
+              {/* <Text
                 numberOfLines={1}
                 style={{
                   color: focused
@@ -67,7 +67,7 @@ const MainNavigator = () => {
                   top: 2,
                 }}>
                 {route.name}
-              </Text>
+              </Text> */}
             </View>
           );
         },
@@ -76,8 +76,9 @@ const MainNavigator = () => {
         showLabel: false,
         style: {
           ...styles.tabBar,
-          backgroundColor: theme.primaryBgClr,
+          backgroundColor: theme.primaryBg,
         },
+        keyboardHidesTabBar: true,
       }}>
       <MainNav.Screen name="Home" component={AnnouncementScreen} />
       <MainNav.Screen name="Schedule" component={ScheduleTopNavigator} />
@@ -99,12 +100,14 @@ const styles = StyleSheet.create({
     }),
   },
   tabBar: {
-    position: 'relative',
-    ...Platform.select({
-      android: {
-        height: 56,
-      },
-    }),
+    backgroundColor: 'transparent',
+    borderTopWidth: 0,
+    position: 'absolute',
+    left: 7,
+    right: 7,
+    bottom: 5,
+    height: 70,
+    borderRadius: 15,
   },
 });
 

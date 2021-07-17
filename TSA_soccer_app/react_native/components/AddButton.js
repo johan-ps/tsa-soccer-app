@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     overflow: 'hidden',
     position: 'absolute',
-    bottom: 25,
+    bottom: 95,
     right: 25,
     elevation: 10,
     shadowRadius: 10,

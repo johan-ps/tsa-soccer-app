@@ -20,6 +20,7 @@ import {
   AddButton,
   UiModal,
   ErrorScreen,
+  CreateAnnouncement,
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
 const loadingLottieAnim = require('../assets/img/soccer-anim.json');
@@ -36,6 +37,7 @@ const AnnouncementScreen = () => {
   const dispatch = useDispatch();
 
   const [scrollUpperBound, setScrollUpperBound] = useState(0);
+  const [createAnnouncement, setCreateAnnouncemnt] = useState(false);
 
   const refreshing = useSharedValue(false);
   const offsetY = useSharedValue(0);
@@ -216,7 +218,20 @@ const AnnouncementScreen = () => {
           </PanGestureHandler>
         </View>
       )}
-      <AddButton ref={addBtnRef} />
+      <AddButton
+        ref={addBtnRef}
+        onPress={() => {
+          setCreateAnnouncemnt(true);
+        }}
+      />
+      <CreateAnnouncement
+        visible={createAnnouncement}
+        onClose={() => {
+          setTimeout(() => {
+            setCreateAnnouncemnt(false);
+          }, 100);
+        }}
+      />
       <UiModal
         primaryLabel="Confirm"
         secondaryLabel="Cancel"

@@ -1,57 +1,60 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Animated, Modal, Easing, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Modal, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
+import Animated, {
+  useSharedValue,
+  withSpring,
+  withTiming,
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
 
 import UiButton from './UiButton';
 
 const UiModal = props => {
   let { visible } = props;
   const [showModal, setShowModal] = useState(visible);
-  const showModalAnimation = useRef(new Animated.Value(0)).current;
   const theme = useSelector(state => state.theme.colors);
+  const modalAnimation = useSharedValue(0);
 
   const toggleModal = () => {
     if (visible) {
       setShowModal(true);
-      Animated.spring(showModalAnimation, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
+      modalAnimation.value = withSpring(1, {
+        damping: 10,
+        mass: 1,
+        stiffness: 100,
+        overshootClamping: true,
+      });
     } else {
       setTimeout(() => {
         setShowModal(false);
       }, 200);
-      Animated.timing(showModalAnimation, {
-        toValue: 0,
-        duration: 300,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start();
+      modalAnimation.value = withTiming(0);
     }
   };
 
   useEffect(() => {
     toggleModal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  const scale = {
-    transform: [
-      {
-        scale: showModalAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0.5, 1],
-        }),
-      },
-    ],
-  };
+  const animStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: interpolate(modalAnimation.value, [0, 1], [0.5, 1]),
+        },
+      ],
+      opacity: modalAnimation.value,
+    };
+  });
 
-  const opacity = {
-    opacity: showModalAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    }),
-  };
+  const opacity = useAnimatedStyle(() => {
+    return {
+      opacity: modalAnimation.value,
+    };
+  });
 
   return (
     <Modal transparent={true} visible={showModal}>
@@ -60,8 +63,7 @@ const UiModal = props => {
           style={[
             styles.modalContainer,
             { backgroundColor: theme.cardBgClr },
-            scale,
-            opacity,
+            animStyle,
           ]}>
           <View style={styles.textContainer}>
             <Text style={{ ...styles.title, color: theme.cardHClr }}>
@@ -102,8 +104,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    borderRadius: 20,
-    padding: 25,
+    borderRadius: 10,
+    padding: 16,
     width: '90%',
     maxWidth: 400,
     height: '32%',
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   content: {
-    fontSize: 14,
+    fontSize: 15,
     marginBottom: 15,
     color: '#848484',
   },
