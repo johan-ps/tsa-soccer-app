@@ -13,7 +13,9 @@ import Animated, {
   useSharedValue,
   withTiming,
   interpolate,
+  withSpring,
 } from 'react-native-reanimated';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 const UiButton = props => {
   const {
@@ -23,6 +25,8 @@ const UiButton = props => {
     secondaryClr = '#ffffff',
     border = false,
     darkBg = false,
+    icon = null,
+    label = null,
   } = props;
   const focusAnimation = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
@@ -35,7 +39,14 @@ const UiButton = props => {
 
   const onFocusOut = () => {
     if (type !== 'tertiary') {
-      focusAnimation.value = withTiming(0, { duration: 40 });
+      focusAnimation.value = withSpring(0, {
+        damping: 100,
+        mass: 10,
+        stiffness: 1000,
+        overshootClamping: true,
+        restDisplacementThreshold: 0,
+        restSpeedThreshold: 0,
+      });
     }
   };
 
@@ -44,7 +55,7 @@ const UiButton = props => {
     return {
       transform: [
         {
-          scale: interpolate(focusAnimation.value, [0, 1], [1, 0.97]),
+          scale: interpolate(focusAnimation.value, [0, 1], [1, 0.99]),
         },
       ],
     };
@@ -117,7 +128,7 @@ const UiButton = props => {
   const renderPlatformSpecific = () => {
     if (Platform.OS === 'ios') {
       return (
-        <Animated.View style={[styles.buttonWrapper, scale]}>
+        <Animated.View style={[styles.buttonWrapper, scale, props.style]}>
           <TouchableHighlight
             onPressIn={onFocusIn}
             onPressOut={onFocusOut}
@@ -135,7 +146,7 @@ const UiButton = props => {
                   sizeStyles[size].text,
                   typeStyles[type].text,
                 ]}>
-                {props.label}
+                {label}
               </Text>
             </View>
           </TouchableHighlight>
@@ -143,7 +154,13 @@ const UiButton = props => {
       );
     } else {
       return (
-        <Animated.View style={[styles.buttonWrapper, scale]}>
+        <Animated.View
+          style={[
+            styles.buttonWrapper,
+            scale,
+            props.style,
+            label ? {} : styles.iconOnly,
+          ]}>
           <TouchableNativeFeedback
             onPressIn={onFocusIn}
             onPressOut={onFocusOut}
@@ -158,12 +175,21 @@ const UiButton = props => {
                 styles.textWrapper,
                 typeStyles[type].textWrapper,
                 sizeStyles[size].button,
+                icon ? styles.iconWrapper : {},
               ]}>
+              {icon ? (
+                <Icon
+                  name={icon}
+                  color={typeStyles[type].text.color}
+                  size={20}
+                />
+              ) : null}
               <Text
                 style={[
                   styles.label,
                   sizeStyles[size].text,
                   typeStyles[type].text,
+                  icon && label ? styles.iconText : {},
                 ]}>
                 {props.label}
               </Text>
@@ -189,6 +215,18 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  iconOnly: {
+    width: 120,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconWrapper: {
+    flexDirection: 'row',
+  },
+  iconText: {
+    paddingLeft: 10,
   },
   buttonContainer: {
     borderRadius: 20,

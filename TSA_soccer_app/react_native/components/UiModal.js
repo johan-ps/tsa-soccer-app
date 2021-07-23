@@ -56,6 +56,24 @@ const UiModal = props => {
     };
   });
 
+  const primaryBtnHandler = () => {
+    if (props.primaryBtnHandler) {
+      props.primaryBtnHandler();
+    }
+    if (props.onCloseHandler) {
+      props.onCloseHandler();
+    }
+  };
+
+  const secondaryBtnHandler = () => {
+    if (props.secondaryBtnHandler) {
+      props.secondaryBtnHandler();
+    }
+    if (props.onCloseHandler) {
+      props.onCloseHandler();
+    }
+  };
+
   return (
     <Modal transparent={true} visible={showModal}>
       <Animated.View style={[styles.modalViewContainer, opacity]}>
@@ -78,7 +96,7 @@ const UiModal = props => {
               primaryClr={theme.buttonSecondaryText}
               secondaryClr={theme.buttonSecondaryBg}
               label={props.secondaryLabel}
-              onPress={props.onCloseHandler}
+              onPress={secondaryBtnHandler}
               type="secondary"
               size="medium"
             />
@@ -86,7 +104,7 @@ const UiModal = props => {
               primaryClr={theme.buttonPrimaryBg}
               secondaryClr={theme.buttonPrimaryText}
               label={props.primaryLabel}
-              onPress={props.onCloseHandler}
+              onPress={primaryBtnHandler}
               size="medium"
             />
           </View>

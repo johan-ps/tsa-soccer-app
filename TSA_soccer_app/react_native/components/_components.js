@@ -9,6 +9,7 @@ import NavHeader from './NavHeader';
 import UiMenu from './UiMenu';
 import ErrorScreen from './ErrorScreen';
 import CreateAnnouncement from './CreateAnnouncement';
+import UiTextArea from './UiTextArea';
 
 export {
   AddButton,
@@ -22,4 +23,5 @@ export {
   UiMenu,
   ErrorScreen,
   CreateAnnouncement,
+  UiTextArea,
 };

@@ -1,15 +1,20 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
-  Animated,
-  Easing,
   Modal,
   ScrollView,
 } from 'react-native';
 import Ripple from 'react-native-material-ripple';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  runOnJS,
+} from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
@@ -23,7 +28,8 @@ const UiDropdown = props => {
     multiselect = false,
     group = false,
     icon = false,
-    defaultValue
+    defaultValue,
+    optionSize = 'small',
   } = props;
   const [selectedId, setSelectedId] = useState(defaultValue || -1);
   const [selectedLabel, setSelectedLabel] = useState(placeholder);
@@ -32,33 +38,18 @@ const UiDropdown = props => {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [width, setWidth] = useState({ width: 170 });
-  const dropdownAnimation = useRef(new Animated.Value(0)).current;
-  const focusAnimation = useRef(new Animated.Value(0)).current;
+  const dropdownAnimation = useSharedValue(0);
+  const focusAnimation = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
 
   const onFocusIn = () => {
-    Animated.timing(focusAnimation, {
-      toValue: 1,
-      duration: 5,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    focusAnimation.value = withTiming(1, { duration: 40 });
   };
 
   const onFocusOut = () => {
-    Animated.timing(focusAnimation, {
-      toValue: 0,
-      duration: 5,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start(() => {
-      setShowOptions(true);
-      Animated.timing(dropdownAnimation, {
-        toValue: 1,
-        duration: 225,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start();
+    focusAnimation.value = withTiming(0, { duration: 40 }, () => {
+      runOnJS(setShowOptions)(true);
+      dropdownAnimation.value = withTiming(1, { duration: 225 });
     });
   };
 
@@ -70,6 +61,7 @@ const UiDropdown = props => {
   };
 
   const widthStyle = () => {
+    // eslint-disable-next-line no-shadow
     let width = '48.5%';
     if (size === 'large') {
       width = '100%';
@@ -112,12 +104,7 @@ const UiDropdown = props => {
       setShowOptions(false);
     }, 500);
     setTimeout(() => {
-      Animated.timing(dropdownAnimation, {
-        toValue: 0,
-        duration: 225,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start();
+      dropdownAnimation.value = withTiming(0, { duration: 225 });
     }, 350);
   };
 
@@ -125,12 +112,7 @@ const UiDropdown = props => {
     setTimeout(() => {
       setShowOptions(false);
     }, 225);
-    Animated.timing(dropdownAnimation, {
-      toValue: 0,
-      duration: 225,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    dropdownAnimation.value = withTiming(0, { duration: 225 });
   };
 
   const buttonBorder = {
@@ -138,48 +120,40 @@ const UiDropdown = props => {
     shadowColor: '#e51b23',
   };
 
-  const scale = {
-    transform: [
-      {
-        scale: focusAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 0.98],
-        }),
-      },
-    ],
-  };
+  const scale = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: interpolate(focusAnimation.value, [0, 1], [1, 0.99]),
+        },
+      ],
+    };
+  });
 
-  const optionsAnimStyles = {
-    opacity: dropdownAnimation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    }),
-    transform: [
-      {
-        translateY: dropdownAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 5],
-        }),
-      },
-      {
-        scaleY: dropdownAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0.9, 1],
-        }),
-      },
-    ],
-  };
+  const optionsAnimStyles = useAnimatedStyle(() => {
+    return {
+      opacity: dropdownAnimation.value,
+      transform: [
+        {
+          translateY: interpolate(dropdownAnimation.value, [0, 1], [0, 10]),
+        },
+        {
+          scaleY: interpolate(dropdownAnimation.value, [0, 1], [0.9, 1]),
+        },
+      ],
+    };
+  });
 
-  const iconAnimStyles = {
-    transform: [
-      {
-        rotate: dropdownAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: ['0deg', '-180deg'],
-        }),
-      },
-    ],
-  };
+  const iconAnimStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          rotate:
+            interpolate(dropdownAnimation.value, [0, 1], [0, -180]) + 'deg',
+        },
+      ],
+    };
+  });
 
   const renderOptions = () => {
     if (showOptions) {
@@ -193,11 +167,13 @@ const UiDropdown = props => {
                 { backgroundColor: theme.dropdownBgClr },
                 positionStyle,
                 optionsAnimStyles,
+                optionSize === 'large' ? { maxHeight: 320 } : {},
               ]}>
               <ScrollView
                 style={[
                   styles.optionsScrollContainer,
                   { backgroundColor: theme.dropdownBgClr },
+                  optionSize === 'large' ? { maxHeight: 320 } : {},
                 ]}>
                 {options.map(option => {
                   return (

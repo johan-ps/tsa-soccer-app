@@ -1,40 +1,13 @@
-import React from 'react';
-import { Text, View, StyleSheet, Modal, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, Modal, ScrollView, Image } from 'react-native';
 import { useSelector } from 'react-redux';
+import ImagePicker from 'react-native-image-crop-picker';
 
-import { UiButton, UiDropdown, UiToggle, UiInput } from './_components';
+import { UiButton, UiDropdown, UiTextArea, UiModal } from './_components';
 
 const CreateAnnouncement = props => {
   const { visible } = props;
   const theme = useSelector(state => state.theme.colors);
-  const startTime = [
-    { id: 0, label: '01:00' },
-    { id: 1, label: '02:00' },
-    { id: 2, label: '03:00' },
-    { id: 3, label: '04:00' },
-    { id: 4, label: '05:00' },
-    { id: 5, label: '06:00' },
-    { id: 6, label: '07:00' },
-    { id: 7, label: '08:00' },
-    { id: 8, label: '09:00' },
-    { id: 9, label: '10:00' },
-    { id: 10, label: '11:00' },
-    { id: 11, label: '12:00' },
-  ];
-  const endTime = [
-    { id: 12, label: '01:00' },
-    { id: 13, label: '02:00' },
-    { id: 14, label: '03:00' },
-    { id: 15, label: '04:00' },
-    { id: 16, label: '05:00' },
-    { id: 17, label: '06:00' },
-    { id: 18, label: '07:00' },
-    { id: 19, label: '08:00' },
-    { id: 20, label: '09:00' },
-    { id: 21, label: '10:00' },
-    { id: 22, label: '11:00' },
-    { id: 23, label: '12:00' },
-  ];
   const teams = [
     {
       label: 'House League',
@@ -73,6 +46,57 @@ const CreateAnnouncement = props => {
       ],
     },
   ];
+
+  const [imgPickerModalVisible, setImgPickerModalVisible] = useState(false);
+  const [image, setImage] = useState(null);
+
+  const imagePickerHandler = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 300,
+      cropping: true,
+      includeBase64: true,
+      includeExif: true,
+    })
+      .then(img => {
+        console.log('received base64 img');
+        setImage({
+          uri: `data:${img.mime};base64,` + img.data,
+          width: img.width,
+          height: img.height,
+        });
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  };
+
+  const cameraHandler = () => {
+    ImagePicker.openCamera({
+      cropping: true,
+      width: 500,
+      height: 500,
+      includeExif: true,
+      mediaType: 'photo',
+    })
+      .then(img => {
+        console.log('received image', img);
+        setImage({
+          uri: img.path,
+          width: img.width,
+          height: img.height,
+          mime: img.mime,
+        });
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  };
+
+  const clearImage = () => {
+    setImage(null);
+  };
+
   return (
     <Modal
       visible={visible}
@@ -94,49 +118,7 @@ const CreateAnnouncement = props => {
             style={styles.scrollviewContainer}
             decelerationRate="fast">
             <View style={styles.modalBody}>
-              <UiInput
-                placeholder="Title"
-                borderTheme="underline"
-                fontSize={20}
-                style={{ marginBottom: 20 }}
-              />
-              <UiToggle labelLeft="Game" labelRight="Practice" />
-              <Text style={styles.formLabels}>Date</Text>
-              <UiInput
-                placeholder="Thursday, 24 Nov 2020"
-                borderTheme="circle"
-                fontSize={14}
-                icon="calendar-outline"
-                style={{ marginBottom: 10, height: 40 }}
-              />
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                <UiDropdown
-                  modalOffsetY={305}
-                  modalOffsetX={30}
-                  options={startTime}
-                  placeholder="Start"
-                  size="small"
-                />
-                <UiDropdown
-                  modalOffsetY={305}
-                  modalOffsetX={30}
-                  options={endTime}
-                  placeholder="End"
-                  size="small"
-                />
-              </View>
-              <Text style={styles.formLabels}>Location</Text>
-              <UiInput
-                placeholder="123 Ramerville Dr."
-                borderTheme="circle"
-                fontSize={14}
-                icon="location-outline"
-                style={{ marginBottom: 10, height: 40 }}
-              />
+              <UiTextArea />
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown
                 modalOffsetY={80}
@@ -146,7 +128,42 @@ const CreateAnnouncement = props => {
                 group={true}
                 placeholder="Choose teams"
                 size="large"
+                optionSize="large"
               />
+              <View style={styles.uploadBtnContainer}>
+                <UiButton
+                  icon="upload"
+                  label="Upload Image"
+                  type="primary"
+                  primaryClr={theme.buttonSecondaryBg}
+                  secondaryClr={theme.buttonSecondaryText}
+                  onPress={() => {
+                    setImgPickerModalVisible(true);
+                  }}
+                  darkBg={false}
+                />
+                {image ? (
+                  <UiButton
+                    icon="close"
+                    type="primary"
+                    primaryClr={theme.buttonSecondaryBg}
+                    secondaryClr={theme.buttonSecondaryText}
+                    onPress={() => {
+                      clearImage();
+                    }}
+                    darkBg={false}
+                  />
+                ) : null}
+              </View>
+              {image ? (
+                <View style={styles.imagePreviewContainer}>
+                  <Image
+                    style={styles.imagePreview}
+                    source={image}
+                    resizeMode="cover"
+                  />
+                </View>
+              ) : null}
             </View>
           </ScrollView>
         </View>
@@ -169,15 +186,27 @@ const CreateAnnouncement = props => {
           />
         </View>
       </View>
+      <UiModal
+        primaryLabel="Camera"
+        secondaryLabel="Library"
+        visible={imgPickerModalVisible}
+        title="Upload Image"
+        content={'How would you like to upload your image?'}
+        primaryBtnHandler={cameraHandler}
+        secondaryBtnHandler={imagePickerHandler}
+        onCloseHandler={() => {
+          setImgPickerModalVisible(false);
+        }}
+      />
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollviewContainer: {
-    // width: '100%',
-    // height: '100%',
-    // backgroundColor: 'white',
+  uploadBtnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 30,
   },
   modalContainer: {
     height: '100%',
@@ -192,6 +221,7 @@ const styles = StyleSheet.create({
   },
   modalHeader: {
     padding: 30,
+    marginTop: 20,
   },
   modalBody: {
     padding: 30,
@@ -208,17 +238,28 @@ const styles = StyleSheet.create({
   },
   formHeading: {
     color: '#1E1E1E',
-    fontSize: 28,
-    fontWeight: 'bold',
-    // textShadowOffset: {width: 2, height: 2},
-    // textShadowRadius: 10,
-    // textShadowColor: '#dadada',
+    fontSize: 20,
+    fontFamily: 'Roboto-Regular',
   },
   formLabels: {
     color: '#A19EAE',
     fontSize: 14,
     marginTop: 20,
     marginBottom: 10,
+  },
+  imagePreviewContainer: {
+    width: '100%',
+    height: 300,
+    borderWidth: 2,
+    borderStyle: 'solid',
+    borderColor: 'white',
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginTop: 30,
+  },
+  imagePreview: {
+    width: '100%',
+    height: 300,
   },
 });
 
