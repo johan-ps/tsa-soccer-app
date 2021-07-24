@@ -75,7 +75,7 @@ const MainNavigator = () => {
         showLabel: false,
         style: {
           ...styles.tabBar,
-          backgroundColor: theme.primaryBgClr,
+          backgroundColor: theme.primaryBgClr
         },
       }}>
       <MainNav.Screen name="Home" component={AnnouncementScreen} />

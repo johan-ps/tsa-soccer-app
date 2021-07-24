@@ -12,7 +12,8 @@ const ScheduleTopNavigator = () => {
     <Tab.Navigator
     tabBarOptions={{
       style: {
-        paddingTop: 40
+        height: 0,
+        width: 0
       },
     }}
     >

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList, SafeAreaView, StatusBar } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -54,44 +54,53 @@ const AnnouncementScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
-      <NavHeader
-        iconListRight={[{ name: 'filter-outline', id: 0 }]}
-        searchable={true}
-      />
-      {announcements.length === 0 ? (
-        <ErrorScreen error="NO_RESULTS" />
-      ) : (
-        <FlatList
-          style={styles.flatList}
-          onRefresh={loadAnnouncements}
-          refreshing={refreshing}
-          onScroll={onScrollHandler}
-          data={announcements}
-          keyExtractor={item => item.id.toString()}
-          renderItem={itemData => {
-            return (
-              <AnnouncementCard
-                onDelete={() => {
-                  onDeleteHandler(itemData.id);
-                }}
-                announcementData={itemData.item}
-              />
-            );
-          }}
-        />
-      )}
-      <AddButton ref={addBtnRef} />
-      <UiModal
-        primaryLabel="Confirm"
-        secondaryLabel="Cancel"
-        visible={modalVisible}
-        title="Delete content"
-        content={
-          'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
-        }
-        onCloseHandler={onModalCloseHandler}
-      />
+    <View>
+      <View style={{height: StatusBar.currentHeight, backgroundColor: theme.navBg}}>
+        <SafeAreaView>
+          <StatusBar translucent backgroundColor={theme.navBg} />
+        </SafeAreaView>
+      </View>
+      <SafeAreaView>
+        <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
+          <NavHeader
+            iconListRight={[{ name: 'filter-outline', id: 0 }]}
+            searchable={true}
+          />
+          {announcements.length === 0 ? (
+            <ErrorScreen error="NO_RESULTS" />
+          ) : (
+            <FlatList
+              style={styles.flatList}
+              onRefresh={loadAnnouncements}
+              refreshing={refreshing}
+              onScroll={onScrollHandler}
+              data={announcements}
+              keyExtractor={item => item.id.toString()}
+              renderItem={itemData => {
+                return (
+                  <AnnouncementCard
+                    onDelete={() => {
+                      onDeleteHandler(itemData.id);
+                    }}
+                    announcementData={itemData.item}
+                  />
+                );
+              }}
+            />
+          )}
+          <AddButton ref={addBtnRef} />
+          <UiModal
+            primaryLabel="Confirm"
+            secondaryLabel="Cancel"
+            visible={modalVisible}
+            title="Delete content"
+            content={
+              'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
+            }
+            onCloseHandler={onModalCloseHandler}
+          />
+        </View>
+      </SafeAreaView>
     </View>
   );
 };

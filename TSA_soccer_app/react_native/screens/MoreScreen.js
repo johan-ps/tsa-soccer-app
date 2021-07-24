@@ -22,7 +22,7 @@ const MoreScreen = () => {
   const theme = useSelector(state => state.theme.colors);
   const activeTheme = useSelector(state => state.theme.activeTheme);
   const [isEnabled, setIsEnabled] = useState(activeTheme === 'default' ? false : true);
-  const [statusBarStyle, setStatusBarStyle] = useState(STYLES[0]);
+  const [statusBarStyle, setStatusBarStyle] = useState(STYLES[1]);
 
 
   const toggleSwitch = (value) => {

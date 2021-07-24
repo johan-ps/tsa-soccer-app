@@ -31,32 +31,29 @@ const TeamScrollList = props => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 80,
-    backgroundColor: 'white',
-    borderBottomColor: '#C0C0C0',
-    borderBottomWidth: 0.5,
+    backgroundColor: '#1E2630',
   },
   innerContainer: {
     width: 60,
-    height: 100,
     position: 'relative',
     alignItems: 'center',
   },
   logo: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
+    height: 45,
+    width: 45,
+    borderRadius: 22.5,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 5,
     marginBottom: 5,
   },
   text: {
-    width: 40,
+    width: 50,
     fontSize: 10,
     fontWeight: '500',
     textAlign: 'center',
     overflow: 'hidden',
+    color: 'white'
   },
 });
 

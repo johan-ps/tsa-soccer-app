@@ -1,9 +1,15 @@
-import React from 'react';
-import { Text, View, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, ImageBackground, TouchableHighlight, Image } from 'react-native';
 import TeamScrollList from '../components/TeamScrollList';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import MapView, { Marker } from 'react-native-maps';
+import LinearGradient from 'react-native-linear-gradient';
+import TeamListPreview from '../components/TeamListPreview';
+import TeamAvailabilityPopup from '../components/TeamAvailabilityPopUp';
 
+
+// TODO: Complete Going/Maybe/Unaivailable
 
 const MessagesScreen = ({ navigation }) => {
   const playersList = [
@@ -40,70 +46,169 @@ const MessagesScreen = ({ navigation }) => {
   ];
 
   const theme = useSelector(state => state.theme.colors);
+  const [openAvailability, setOpenAvailability] = useState(false)
 
+
+  const [region, setRegion] = useState({
+    latitude: 43.64360582926461,
+    longitude: -79.3791203596054,
+    latitudeDelta: 0.005,
+    longitudeDelta: 0.005,
+  });
+  const [marker, setMarker] = useState({
+    title: 'ScotiaBank Arena',
+    description: 'Toronto Raptors',
+    latlng: {
+      latitude: 43.64360582926461,
+      longitude: -79.3791203596054
+    }
+  });
+  
+  const onRegionChange = (region) => {
+    setRegion(region);
+  }
+  
 
   return (
-    <View style={styles.container}>
-      <View style={styles.iconContainer}>
-        <Icon
-          name="chevron-back-outline"
-          size={35}
-          onPress={() => navigation.goBack()}
+      <View style={styles.container}>
+        <View>
+          <ImageBackground
+            style={styles.profilePicture}
+            source={{
+              uri: 'https://weaselsfc.com/wp-content/uploads/2020/03/light-sport-night-sunlight-soccer-darkness-934558-pxhere.com_-e1583360836579.jpg',
+            }}
+          >
+            <View>
+              <LinearGradient
+                colors={['rgba(41, 41, 41, 0.8)', 'transparent']}
+                style={styles.contentContainer}
+              >
+                <View style={styles.iconContainer}>
+                  <Icon
+                    name="chevron-back-outline"
+                    size={35}
+                    onPress={() => navigation.goBack()}
+                    color='white'
+                  />
+                  <TouchableHighlight 
+                    style={{borderRadius: 5, backgroundColor: '#4ce660', opacity: 0.9, width: 35, height: 35, justifyContent: 'center', alignItems: 'center'}}
+                    onPress={() => {}}
+                  >
+                    <Icon
+                      name="checkmark" // checkmark/help/close Colors: #4ce660/'#a9a9a9'/'#e84343
+                      size={30}
+                      color='black'
+                    />
+                  </TouchableHighlight>
+                </View>
+              </LinearGradient>
+              <View style={styles.headerContainer}>
+                <Text style={styles.text}>Game vs. Lightning</Text>
+              </View>
+              <LinearGradient
+                colors={['transparent', 'rgba(41, 41, 41, 0.3)']}
+                style={styles.contentContainer}
+              >
+                <View style={{flexDirection: 'row', paddingLeft: 40}}>
+                  <View style={styles.infoHeaderContainer}>
+                    <View style={{paddingRight: 10}}>
+                      <Icon name="calendar-sharp" size={20} color="white"/>
+                    </View>
+                    <View>
+                      <Text style={styles.infoTextTop}>15 May, 2021</Text>
+                      <Text style={styles.infoTextBottom}>Wednesday</Text>
+                    </View>
+                  </View>
+                  <View style={[styles.infoHeaderContainer, {paddingLeft: 25}]}>
+                    <View style={{paddingRight: 10}}>
+                      <Icon name="time-outline" size={20} color="white"/>
+                    </View>
+                    <View style={{flexDirection: 'column'}}>
+                      <Text style={styles.infoTextTop}>5:30 pm</Text>
+                      <Text style={styles.infoTextBottom}>- 6:30 pm</Text>
+                    </View>
+                  </View>
+                </View>
+              </LinearGradient>
+            </View>
+          </ImageBackground>
+        </View>
+        <View style={styles.descriptionTextContainer}>
+          <Text style={[styles.infoTextTop, {paddingBottom: 10}]}>Description</Text>
+          <Text style={styles.infoTextBottom}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Text>
+        </View>
+        <View style={{flexDirection: 'row', paddingLeft: 40, paddingRight: 40}}>
+          <View style={styles.infoContainer}>
+            <View style={{paddingRight: 10}}>
+              <Icon name="shirt-outline" size={20} color="white"/>
+            </View>
+            <View>
+              <Text style={styles.infoTextTop}>Black</Text>
+            </View>
+          </View>
+          <View style={styles.infoContainer}>
+            <View style={{paddingRight: 10}}>
+              <Icon name="football-outline" size={20} color="white"/>
+            </View>
+            <View>
+              <Text style={styles.infoTextTop}>Toronto Raptors</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={[styles.infoContainer, {width: '100%', paddingLeft: 40, paddingRight: 40 }]}>
+          <View style={{paddingRight: 10}}>
+            <Icon name="location-outline" size={20} color="white"/>
+          </View>
+          <View style={{flexDirection: 'column'}}>
+            <View style={{paddingRight: 10, paddingBottom: 5}}>
+              <Text style={styles.infoTextTop}>ScotiaBank Arena</Text>
+            </View>
+            <View>
+              <Text style={styles.infoTextBottom}>40 Bay St.</Text>
+              <Text style={styles.infoTextBottom}>Toronto, ON</Text>
+              <Text style={styles.infoTextBottom}>M5J 2X2</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            region={region}
+            loadingEnabled={true}
+            loadingBackgroundColor='black'
+            userInterfaceStyle='dark'
+            mapPadding={{top: 10, right: 40, bottom: 10, left: 40}}
+          >
+            <Marker
+              key={1}
+              coordinate={marker.latlng}
+              title={marker.title}
+              description={marker.description}
+            >
+              <Image source={{uri:"https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png"}} style={{height: 35, width:35 }}/>
+            </Marker>
+          </MapView>
+        </View>
+        <View style={{paddingLeft: 40, paddingRight: 40}}>
+          <TeamListPreview players={playersList} onPlusPress={() => setOpenAvailability(true)}/>
+        </View>
+        <TeamAvailabilityPopup 
+          players={playersList} 
+          visible={openAvailability} 
+          onClose={() => {
+            setTimeout(() => {
+              setOpenAvailability(false);
+            }, 100);
+          }}
         />
+        {/* <Text style={[styles.listHeading, { backgroundColor: '#2ad121' }]}>Going</Text>
+        <TeamScrollList players={playersList} />
+        <Text style={[styles.listHeading, { backgroundColor: '#A9A9A9' }]}>Maybe</Text>
+        <TeamScrollList players={playersList} />
+        <Text style={[styles.listHeading, { backgroundColor: '#e63c44' }]}>Unavailable</Text>
+        <TeamScrollList players={playersList} /> */}
       </View>
-      <Text style={styles.text}>Game</Text>
-      <View>
-        <View>
-          <Text>Date</Text>
-        </View>
-        <View>
-          <Text>15 May</Text>
-          <Text>Wednesday</Text>
-        </View>
-      </View>
-      <View>
-        <View>
-          <Text>Time</Text>
-        </View>
-        <View>
-          <Text>5:30 pm</Text>
-          <Text>to 6:30 pm</Text>
-        </View>
-      </View>
-      <View>
-        <View>
-          <Text>Location</Text>
-        </View>
-        <View>
-          <Text>ScotiaBank Arena</Text>
-          <Text>40 Bay St.</Text>
-          <Text>Toronto, ON</Text>
-          <Text>M5J 2X2</Text>
-        </View>
-      </View>
-      <View>
-        <View>
-          <Text>Jersey Colour</Text>
-        </View>
-        <View>
-          <Text>Black</Text>
-        </View>
-      </View>
-      <View>
-        <View>
-          <Text>Opponent</Text>
-        </View>
-        <View>
-          <Text>Toronto Raptors</Text>
-        </View>
-      </View>
-      <Text style={[styles.listHeading, { backgroundColor: '#2ad121' }]}>Going</Text>
-      <TeamScrollList players={playersList} />
-      <Text style={[styles.listHeading, { backgroundColor: '#A9A9A9' }]}>Maybe</Text>
-      <TeamScrollList players={playersList} />
-      <Text style={[styles.listHeading, { backgroundColor: '#e63c44' }]}>Unavailable</Text>
-      <TeamScrollList players={playersList} />
-    </View>
   );
 };
 
@@ -111,16 +216,16 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
-    backgroundColor: 'white'
+    backgroundColor: '#1E2630'
   },
   headerContainer: {
-    left: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
+    paddingLeft: 40,
+    paddingTop: 100
   },
   text: {
-    color: 'red',
+    fontSize: 30,
+    color: 'white',
+    fontWeight: '600',
   },
   iconContainer: {
     marginVertical: 10,
@@ -129,6 +234,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
+    paddingTop: 40,
   },
   listHeading: {
     fontSize: 14,
@@ -145,9 +251,9 @@ const styles = StyleSheet.create({
     marginLeft: 70,
   },
   profilePicture: {
-    height: 100,
-    width: 100,
-    borderRadius: 50,
+    height: 300,
+    width: '100%',
+    backgroundColor : 'transparent',
   },
   profilePictureContainer: {
     borderRadius: 60,
@@ -176,6 +282,57 @@ const styles = StyleSheet.create({
     fontSize: 40,
     color: '#A9A9A9',
   },
+  infoHeaderContainer: {
+    flexDirection: 'row',
+    paddingTop: 25,
+    paddingRight: 10,
+    width: 150,
+  },
+  infoContainer:{
+    flexDirection: 'row',
+    paddingTop: 20,
+    paddingRight: 10,
+    width: 150,
+  },
+  infoTextTop: {
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'left',
+    color: 'white'
+  },
+  infoTextBottom: {
+    fontSize: 12,
+    color: '#ebe8e8',
+    textAlign: 'left',
+  },
+  descriptionTextContainer: {
+    paddingTop: 20,
+    paddingLeft: 40,
+    paddingRight: 40
+  },
+  mapContainer: {
+    height: 140,
+    width: '80%',
+    margin: 20,
+    marginLeft: 40,
+    marginRight: 40
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 10,
+  },
+  contentContainer: {
+    // flex : 1,
+    // paddingTop: 50,
+    // paddingHorizontal: 20,
+    // paddingVertical: 20,
+    overflow:'visible',
+    alignSelf: 'stretch',
+  },
+  availabilityIconContainer: {
+    borderRadius: 5,
+
+  }
 });
 
 export default MessagesScreen;
