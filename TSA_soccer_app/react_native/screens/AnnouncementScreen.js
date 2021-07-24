@@ -1,5 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Dimensions, StatusBar } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  Dimensions,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import LottieView from 'lottie-react-native';
 import Animated, {

@@ -144,6 +144,12 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     paddingHorizontal: 20,
     paddingLeft: 40,
+    ...Platform.select({
+      ios: {
+        paddingTop: 5,
+        paddingBottom: 5
+      },
+    }),
   },
   searchbarIcon: {
     position: 'absolute',
