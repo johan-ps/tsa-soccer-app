@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import CONST from '../constants/Constants';
+import UiButton from '../components/UiButton';
 
 const ErrorScreen = props => {
   const { error } = props;
@@ -44,13 +45,13 @@ const ErrorScreen = props => {
         {error === CONST.NO_RESULTS ? (
           <Image
             style={styles.image}
-            source={require(`../assets/img/magnifying-glass.png`)}
+            source={require('../assets/img/magnifying-glass.png')}
             resizeMode="cover"
           />
         ) : (
           <Image
             style={styles.image}
-            source={require(`../assets/img/internet-slash.png`)}
+            source={require('../assets/img/internet-slash.png')}
             resizeMode="cover"
           />
         )}
@@ -63,6 +64,17 @@ const ErrorScreen = props => {
           {getSubHeading}
         </Text>
       </View>
+      <UiButton
+        // eslint-disable-next-line react-native/no-inline-styles
+        style={{ marginTop: 30 }}
+        icon="reload1"
+        label="Refresh"
+        type="primary"
+        primaryClr={theme.buttonSecondaryBg}
+        secondaryClr={theme.buttonSecondaryText}
+        onPress={props.onRefresh}
+        darkBg={false}
+      />
     </View>
   );
 };

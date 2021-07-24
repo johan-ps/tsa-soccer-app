@@ -11,7 +11,9 @@ export const Announcements = [
     desc,
     'info',
     'Coach Gryffin',
-    'https://images.unsplash.com/photo-1545559054-8f4f9e855781?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    {
+      uri: 'https://images.unsplash.com/photo-1545559054-8f4f9e855781?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    },
     'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
   ),
   new Announcement(
@@ -21,7 +23,9 @@ export const Announcements = [
     desc,
     'info',
     'Coach Gryffin',
-    'https://images.unsplash.com/photo-1558258695-39d4595e049c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    {
+      uri: 'https://images.unsplash.com/photo-1558258695-39d4595e049c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    },
     'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
   ),
   new Announcement(
@@ -41,7 +45,9 @@ export const Announcements = [
     desc,
     'info',
     'Coach Gryffin',
-    'https://images.unsplash.com/photo-1536536982624-06c1776e0ca8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    {
+      uri: 'https://images.unsplash.com/photo-1536536982624-06c1776e0ca8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    },
     'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
   ),
   new Announcement(
@@ -71,7 +77,9 @@ export const Announcements = [
     desc,
     'info',
     'Coach Gryffin',
-    'https://images.unsplash.com/photo-1543793870-4317361ff7e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    {
+      uri: 'https://images.unsplash.com/photo-1543793870-4317361ff7e6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    },
     'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
   ),
   new Announcement(
@@ -81,7 +89,9 @@ export const Announcements = [
     desc,
     'info',
     'Coach Gryffin',
-    'https://images.unsplash.com/photo-1550184816-3eeadf82295f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    {
+      uri: 'https://images.unsplash.com/photo-1550184816-3eeadf82295f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    },
     'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
   ),
   new Announcement(
@@ -101,7 +111,9 @@ export const Announcements = [
     desc,
     'info',
     'Coach Gryffin',
-    'https://images.unsplash.com/photo-1549074699-3761f0ecc66a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    {
+      uri: 'https://images.unsplash.com/photo-1549074699-3761f0ecc66a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    },
     'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
   ),
   new Announcement(
@@ -121,7 +133,9 @@ export const Announcements = [
     desc,
     'info',
     'Coach Gryffin',
-    'https://images.unsplash.com/photo-1562873656-4fbe35b24826?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    {
+      uri: 'https://images.unsplash.com/photo-1562873656-4fbe35b24826?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+    },
     'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
   ),
 ];

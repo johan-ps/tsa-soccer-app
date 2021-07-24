@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -30,6 +30,7 @@ const UiDropdown = props => {
     icon = false,
     defaultValue,
     optionSize = 'small',
+    onSelect,
   } = props;
   const [selectedId, setSelectedId] = useState(defaultValue || -1);
   const [selectedLabel, setSelectedLabel] = useState(placeholder);
@@ -52,6 +53,12 @@ const UiDropdown = props => {
       dropdownAnimation.value = withTiming(1, { duration: 225 });
     });
   };
+
+  useEffect(() => {
+    if (onSelect) {
+      onSelect(selectedValues);
+    }
+  }, [selectedValues, onSelect]);
 
   const getDropdownXY = event => {
     const layout = event.nativeEvent.layout;

@@ -10,6 +10,7 @@ import UiMenu from './UiMenu';
 import ErrorScreen from './ErrorScreen';
 import CreateAnnouncement from './CreateAnnouncement';
 import UiTextArea from './UiTextArea';
+import UiFilterModal from './UiFilterModal';
 
 export {
   AddButton,
@@ -24,4 +25,5 @@ export {
   ErrorScreen,
   CreateAnnouncement,
   UiTextArea,
+  UiFilterModal,
 };

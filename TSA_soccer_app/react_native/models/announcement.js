@@ -8,6 +8,7 @@ class Announcement {
     author,
     imageUrl,
     authorImgUrl,
+    teams,
   ) {
     this.id = id;
     this.date = date;
@@ -17,6 +18,7 @@ class Announcement {
     this.author = author;
     this.imageUrl = imageUrl;
     this.authorImgUrl = authorImgUrl;
+    this.teams = teams;
   }
 }
 

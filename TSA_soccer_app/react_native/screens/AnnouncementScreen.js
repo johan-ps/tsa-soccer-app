@@ -21,6 +21,7 @@ import {
   UiModal,
   ErrorScreen,
   CreateAnnouncement,
+  UiFilterModal,
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
 const loadingLottieAnim = require('../assets/img/soccer-anim.json');
@@ -32,6 +33,8 @@ const AnnouncementScreen = () => {
   const addBtnRef = useRef();
   const searchBarRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
+  const [filterVisible, setFilterVisible] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
   const theme = useSelector(state => state.theme.colors);
   const announcements = useSelector(state => state.announcements);
   const dispatch = useDispatch();
@@ -164,6 +167,7 @@ const AnnouncementScreen = () => {
   }, [dispatch, loadAnnouncements]);
 
   const onDeleteHandler = id => {
+    setDeleteId(id);
     setModalVisible(true);
   };
 
@@ -181,15 +185,25 @@ const AnnouncementScreen = () => {
     }
   };
 
+  const toggleFilter = () => {
+    setFilterVisible(!filterVisible);
+  };
+
+  const deleteAnnouncement = () => {
+    dispatch(announcementActions.deleteAnnouncement(deleteId));
+    setDeleteId(null);
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
       <NavHeader
         ref={searchBarRef}
         iconListRight={[{ name: 'filter-outline', id: 0 }]}
         searchable={true}
+        toggleFilter={toggleFilter}
       />
       {announcements.length === 0 ? (
-        <ErrorScreen error="NO_RESULTS" />
+        <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
       ) : (
         <View onLayout={onLayoutHandler}>
           <LottieView
@@ -241,6 +255,14 @@ const AnnouncementScreen = () => {
           'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
         }
         onCloseHandler={onModalCloseHandler}
+        primaryBtnHandler={deleteAnnouncement}
+      />
+      <UiFilterModal
+        primaryLabel="Apply"
+        secondaryLabel="Cancel"
+        visible={filterVisible}
+        title="Filter Announcements"
+        onCloseHandler={toggleFilter}
       />
     </View>
   );

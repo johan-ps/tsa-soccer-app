@@ -81,7 +81,10 @@ const NavHeader = forwardRef((props, ref) => {
       <View style={styles.iconRightContainer}>
         {iconListRight.map(icon => {
           return (
-            <TouchableOpacity key={icon.id} style={styles.iconContainer}>
+            <TouchableOpacity
+              onPress={props.toggleFilter}
+              key={icon.id}
+              style={styles.iconContainer}>
               <Icon name={icon.name} color={theme.iconClr} size={20} />
             </TouchableOpacity>
           );

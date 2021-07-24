@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
@@ -52,13 +52,7 @@ const AnnouncementCard = props => {
         {imageUrl ? (
           <View style={styles.imageContainer}>
             {/* <Image style={styles.image} source={require('../assets/images/kids-playing-soccer.jpg')} resizeMode='cover' /> */}
-            <Image
-              style={styles.image}
-              source={{
-                uri: imageUrl,
-              }}
-              resizeMode="cover"
-            />
+            <Image style={styles.image} source={imageUrl} resizeMode="cover" />
           </View>
         ) : null}
         <View style={styles.bodyContentWrapper}>

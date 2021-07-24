@@ -1,9 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer, useCallback } from 'react';
 import { Text, View, StyleSheet, Modal, ScrollView, Image } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 
 import { UiButton, UiDropdown, UiTextArea, UiModal } from './_components';
+import * as announcementActions from '../store/actions/AnnouncementActions';
+
+const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+
+const formInit = {
+  inputValues: {
+    title: '',
+    imageUrl: null,
+    description: '',
+    teams: [],
+  },
+  inputValidities: {
+    title: true,
+    imageUrl: true,
+    description: true,
+    teams: true,
+  },
+  formIsValid: true,
+};
+
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value,
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid,
+    };
+    let updatedFormIsValid = true;
+    for (let key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValues: updatedValues,
+      inputValidities: updatedValidities,
+    };
+  } else {
+    return formInit;
+  }
+};
 
 const CreateAnnouncement = props => {
   const { visible } = props;
@@ -46,9 +89,11 @@ const CreateAnnouncement = props => {
       ],
     },
   ];
+  const dispatch = useDispatch();
 
   const [imgPickerModalVisible, setImgPickerModalVisible] = useState(false);
-  const [image, setImage] = useState(null);
+
+  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
 
   const imagePickerHandler = () => {
     ImagePicker.openPicker({
@@ -60,10 +105,15 @@ const CreateAnnouncement = props => {
     })
       .then(img => {
         console.log('received base64 img');
-        setImage({
-          uri: `data:${img.mime};base64,` + img.data,
-          width: img.width,
-          height: img.height,
+        dispatchFormState({
+          type: FORM_INPUT_UPDATE,
+          value: {
+            uri: `data:${img.mime};base64,` + img.data,
+            width: img.width,
+            height: img.height,
+          },
+          isValid: true,
+          input: 'imageUrl',
         });
       })
       .catch(e => {
@@ -81,11 +131,16 @@ const CreateAnnouncement = props => {
     })
       .then(img => {
         console.log('received image', img);
-        setImage({
-          uri: img.path,
-          width: img.width,
-          height: img.height,
-          mime: img.mime,
+        dispatchFormState({
+          type: FORM_INPUT_UPDATE,
+          value: {
+            uri: img.path,
+            width: img.width,
+            height: img.height,
+            mime: img.mime,
+          },
+          isValid: true,
+          input: 'imageUrl',
         });
       })
       .catch(e => {
@@ -94,8 +149,66 @@ const CreateAnnouncement = props => {
   };
 
   const clearImage = () => {
-    setImage(null);
+    dispatchFormState({
+      type: FORM_INPUT_UPDATE,
+      value: null,
+      isValid: true,
+      input: 'imageUrl',
+    });
   };
+
+  const createAnnouncementHandler = () => {
+    dispatch(
+      announcementActions.addAnnouncement({
+        id: Math.random(),
+        date: new Date(),
+        title: '',
+        description: formState.inputValues.description,
+        type: '',
+        author: 'Gryffin',
+        imageUrl: formState.inputValues.imageUrl,
+        authorImgUrl:
+          'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
+        teams: formState.inputValues.teams,
+      }),
+    );
+    props.onClose();
+    dispatchFormState({ type: 'reset' });
+  };
+
+  const onChangeText = useCallback(
+    (inputId, inputValue, inputValidity) => {
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputId,
+      });
+    },
+    [dispatchFormState],
+  );
+
+  const onSelectHandler = useCallback(
+    inputValue => {
+      if (inputValue) {
+        let selectedTeams = [];
+
+        for (let group in inputValue) {
+          for (let teamId in group) {
+            selectedTeams.push(teamId);
+          }
+        }
+
+        dispatchFormState({
+          type: FORM_INPUT_UPDATE,
+          value: inputValue,
+          isValid: true,
+          input: 'teams',
+        });
+      }
+    },
+    [dispatchFormState],
+  );
 
   return (
     <Modal
@@ -118,9 +231,10 @@ const CreateAnnouncement = props => {
             style={styles.scrollviewContainer}
             decelerationRate="fast">
             <View style={styles.modalBody}>
-              <UiTextArea />
+              <UiTextArea id="description" onInputChange={onChangeText} />
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown
+                onSelect={onSelectHandler}
                 modalOffsetY={80}
                 modalOffsetX={0}
                 options={teams}
@@ -142,7 +256,7 @@ const CreateAnnouncement = props => {
                   }}
                   darkBg={false}
                 />
-                {image ? (
+                {formState.inputValues.imageUrl ? (
                   <UiButton
                     icon="close"
                     type="primary"
@@ -155,11 +269,11 @@ const CreateAnnouncement = props => {
                   />
                 ) : null}
               </View>
-              {image ? (
+              {formState.inputValues.imageUrl ? (
                 <View style={styles.imagePreviewContainer}>
                   <Image
                     style={styles.imagePreview}
-                    source={image}
+                    source={formState.inputValues.imageUrl}
                     resizeMode="cover"
                   />
                 </View>
@@ -181,7 +295,9 @@ const CreateAnnouncement = props => {
             type="tertiary"
             primaryClr={theme.buttonTertiaryText}
             secondaryClr={theme.buttonTertiaryBg}
-            onPress={() => {}}
+            onPress={() => {
+              createAnnouncementHandler();
+            }}
             darkBg={true}
           />
         </View>
