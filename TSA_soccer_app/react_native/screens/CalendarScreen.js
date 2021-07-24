@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { AddButton, UiButton } from '../components/_components';
 import CreateEvent from '../components/CreateEvent';
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
+// import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 
 const CalendarScreen = () => {
   const [createEvent, setCreateEvent] = useState(false);
 
   return (
     <View style={styles.container}>
-      <Calendar
+      {/* <Calendar
         style={styles.calender}
         theme={{
           todayTextColor: '#00adf5',
@@ -17,7 +17,7 @@ const CalendarScreen = () => {
           textMonthFontSize: 20,
           textDayHeaderFontSize: 18,
         }}
-      />
+      /> */}
     </View>
   );
 };

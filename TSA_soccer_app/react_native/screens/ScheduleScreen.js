@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { AddButton, UiButton } from '../components/_components';
 import CreateEvent from '../components/CreateEvent';
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
+// import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 
 const ScheduleScreen = ({ navigation }) => {
   const [createEvent, setCreateEvent] = useState(false);
