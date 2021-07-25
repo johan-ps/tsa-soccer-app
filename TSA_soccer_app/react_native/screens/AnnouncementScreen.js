@@ -63,6 +63,10 @@ const AnnouncementScreen = () => {
   }, []);
   const refreshBound = 90;
 
+  // useEffect(() => {
+  //   console.log("Joell modalVisible", modalVisible);
+  // }, [modalVisible])
+
   useDerivedValue(() => {
     if (addBtnRef.current && searchBarRef.current) {
       if (
@@ -204,6 +208,7 @@ const AnnouncementScreen = () => {
   };
 
   return (
+    <SafeAreaView>
     <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
       <NavHeader
         ref={searchBarRef}
@@ -214,6 +219,7 @@ const AnnouncementScreen = () => {
       {announcements.length === 0 ? (
         <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
       ) : (
+        <SafeAreaView>
         <View onLayout={onLayoutHandler}>
           <LottieView
             style={styles.lottieView}
@@ -240,6 +246,7 @@ const AnnouncementScreen = () => {
             </Animated.View>
           </PanGestureHandler>
         </View>
+        </SafeAreaView>
       )}
       <AddButton
         ref={addBtnRef}
@@ -266,6 +273,7 @@ const AnnouncementScreen = () => {
         onCloseHandler={onModalCloseHandler}
         primaryBtnHandler={deleteAnnouncement}
       />
+      
       <UiFilterModal
         primaryLabel="Apply"
         secondaryLabel="Cancel"
@@ -274,6 +282,7 @@ const AnnouncementScreen = () => {
         onCloseHandler={toggleFilter}
       />
     </View>
+    </SafeAreaView>
   );
 };
 

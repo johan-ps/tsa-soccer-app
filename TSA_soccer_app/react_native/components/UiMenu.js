@@ -88,22 +88,21 @@ const UiMenu = props => {
   };
 
   const onCloseHandler = () => {
-    setAnimationStarted(false);
-    menuSizeAnimation.setValue({ x: 0, y: 0 });
-    setTimeout(() => {
+      setAnimationStarted(false);
+      menuSizeAnimation.setValue({ x: 0, y: 0 });
       setShowOptions(false);
-    }, 100);
-    Animated.timing(opacityAnimation, {
-      toValue: 0,
-      duration: 250,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: false,
-    }).start();
+      Animated.timing(opacityAnimation, {
+        toValue: 0,
+        duration: 250,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: false,
+      }).start();
   };
 
   const onSelectOptionHandler = option => {
     onCloseHandler();
-    props.onPress(option);
+      props.onPress(option);
+    
   };
 
   const opacityAnim = {
@@ -118,7 +117,39 @@ const UiMenu = props => {
 
   const renderOptions = () => {
     if (Platform.OS === 'ios') {
-      return null;
+      return (
+        <Animated.View
+          style={[
+            styles.optionsContainer,
+            { backgroundColor: theme.menuBg },
+            optionPosition(),
+            opacityAnim,
+          ]}>
+          {props.options.map(option => {
+            return (
+              <View style={styles.buttonWrapper} key={option.id}>
+                <TouchableOpacity
+                  onPress={() => {
+                    onSelectOptionHandler(option);
+                  }}
+                  style={[styles.touchable, { backgroundColor: theme.menuBg }]}
+                >
+                  <Animated.View
+                    style={[
+                      styles.textWrapper,
+                      { backgroundColor: theme.menuBg },
+                      animationStarted && menuSize,
+                    ]}>
+                    <Text style={[styles.label, { color: theme.menuText }]}>
+                      {option.label}
+                    </Text>
+                  </Animated.View>
+                </TouchableOpacity>
+              </View>
+            );
+          })}
+        </Animated.View>
+      )
     } else {
       return (
         <Animated.View

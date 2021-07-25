@@ -26,6 +26,7 @@
 		CDCCABF6F4A1421EBB49488A /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C46C181900084A18ABE51C69 /* Roboto-Thin.ttf */; };
 		CF48B3AEC9674C84AA39EB68 /* Roboto-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 78D67876FA394EFAA78BD280 /* Roboto-MediumItalic.ttf */; };
 		ED0D1D1E267704B9004700B6 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = ED9DC42C2664800000ED96E9 /* fonts */; };
+		EDFBAC3726ACA2DD00FB762A /* EmptySwiftFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFBAC3626ACA2DD00FB762A /* EmptySwiftFile.swift */; };
 		F041051CB2E24B7A956E3855 /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00645140A3394D57992817DF /* Roboto-Medium.ttf */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +84,8 @@
 		E6E00AB2B0DA4F9F9790BE27 /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED9DC42C2664800000ED96E9 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fonts; sourceTree = "<group>"; };
+		EDFBAC3526ACA2DD00FB762A /* TSA_soccer_app-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TSA_soccer_app-Bridging-Header.h"; sourceTree = "<group>"; };
+		EDFBAC3626ACA2DD00FB762A /* EmptySwiftFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptySwiftFile.swift; sourceTree = "<group>"; };
 		F06EEFF30B854E4DAA351587 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BoldItalic.ttf"; path = "../react_native/assets/fonts/Roboto/Roboto-BoldItalic.ttf"; sourceTree = "<group>"; };
 		F9877EDCF1444E9F958CA146 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		FAF40B351FEF4AD1A13FD20D /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
@@ -158,6 +161,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				EDFBAC3626ACA2DD00FB762A /* EmptySwiftFile.swift */,
 				ED9DC42C2664800000ED96E9 /* fonts */,
 				13B07FAE1A68108700A75B9A /* TSA_soccer_app */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -166,6 +170,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				C5183163F2F39841633C6CD8 /* Pods */,
 				AB2A56D77E1E446F9E03BCE4 /* Resources */,
+				EDFBAC3526ACA2DD00FB762A /* TSA_soccer_app-Bridging-Header.h */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -286,7 +291,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1250;
 					};
 				};
 			};
@@ -503,6 +508,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				EDFBAC3726ACA2DD00FB762A /* EmptySwiftFile.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -522,6 +528,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 963046FFDE5A6662D18E95C9 /* Pods-TSA_soccer_app-TSA_soccer_appTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = T4TXG4UV79;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -550,6 +557,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B0BF2BF86A4C7CB331C22021 /* Pods-TSA_soccer_app-TSA_soccer_appTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = T4TXG4UV79;
@@ -592,6 +600,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = TSA_soccer_app;
+				SWIFT_OBJC_BRIDGING_HEADER = "TSA_soccer_app-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -618,6 +627,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = TSA_soccer_app;
+				SWIFT_OBJC_BRIDGING_HEADER = "TSA_soccer_app-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

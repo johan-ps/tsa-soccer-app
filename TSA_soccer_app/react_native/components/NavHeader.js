@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000000',
     shadowOpacity: 0.3,
     shadowOffset: { height: 15 },
+    zIndex: 100
   },
   iconLeftContainer: {
     height: '100%',

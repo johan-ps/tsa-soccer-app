@@ -40,23 +40,21 @@ const UiToggle = props => {
 
   const toggleHandler = () => {
     setSelectedId(1);
-    setSelectedLabel(labelRight);
     if (selectedId === 0) {
       Animated.timing(toggleAnimation, {
         toValue: 1,
         duration: 200,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start();
+      }).start(() => setSelectedLabel(labelRight));
     } else {
       setSelectedId(0);
-      setSelectedLabel(labelLeft);
       Animated.timing(toggleAnimation, {
         toValue: 0,
         duration: 200,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start();
+      }).start(() => setSelectedLabel(labelLeft));
     }
   };
 
@@ -96,8 +94,8 @@ const UiToggle = props => {
             <Text style={styles.toggleSwitchText}>{selectedLabel}</Text>
           </Pressable>
         </Animated.View>
-        <Text style={styles.toggleLeftText}>{labelLeft}</Text>
-        <Text style={styles.toggleRightText}>{labelRight}</Text>
+        <Text style={styles.toggleLeftText}>{selectedLabel !== labelLeft ? labelLeft : null}</Text>
+        <Text style={styles.toggleRightText}>{selectedLabel !== labelRight ? labelRight: null}</Text>
       </Ripple>
     </Animated.View>
   );

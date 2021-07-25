@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
@@ -18,6 +18,7 @@ const AnnouncementCard = props => {
   };
 
   return (
+    <SafeAreaView>
     <View style={[styles.container, { backgroundColor: theme.cardBg }]}>
       <View style={styles.header}>
         <View style={styles.headerContentWrapper}>
@@ -62,6 +63,7 @@ const AnnouncementCard = props => {
         </View>
       </View>
     </View>
+    </SafeAreaView>
   );
 };
 

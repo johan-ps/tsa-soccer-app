@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
 const UiInput = props => {
-  const { value, placeholder, onChangeText, borderTheme, fontSize, icon } = props;
+  const { value, placeholder, onChangeText, borderTheme, fontSize, icon, openOnFocus, closeOnBlur, disabled } = props;
   const [shadow, setShadow] = useState(null);
   const [focus, setFocus] = useState(false);
   const focusAnimation = useRef(new Animated.Value(0)).current;
@@ -20,6 +20,9 @@ const UiInput = props => {
 
   const onFocus = () => {
     setFocus(true);
+    if(openOnFocus){
+      openOnFocus();
+    }
     borderLayout();
     Animated.timing(focusAnimation, {
       toValue: 1,
@@ -32,6 +35,9 @@ const UiInput = props => {
   const onBlur = () => {
     setShadow(null);
     setFocus(false);
+    if(closeOnBlur){
+      closeOnBlur();
+    }
     Animated.timing(focusAnimation, {
       toValue: 0,
       duration: 225,
@@ -123,6 +129,8 @@ const UiInput = props => {
         placeholderTextColor="#A8A4B8"
         value={value}
         onChangeText={onChangeText}
+        editable={!disabled}
+        selectTextOnFocus={false}
         style={[styles.input, { fontSize }]}
         onFocus={onFocus}
         onBlur={onBlur}
