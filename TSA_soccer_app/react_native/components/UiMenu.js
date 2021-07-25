@@ -88,8 +88,7 @@ const UiMenu = props => {
 
   const onSelectOptionHandler = option => {
     onCloseHandler();
-      props.onPress(option);
-    
+    props.onPress(option);
   };
 
   const opacityAnim = useAnimatedStyle(() => {
@@ -114,7 +113,7 @@ const UiMenu = props => {
             { backgroundColor: theme.menuBg },
             optionPosition,
             opacityAnim,
-            menuSize
+            menuSize,
           ]}>
           {props.options.map(option => {
             return (
@@ -123,8 +122,7 @@ const UiMenu = props => {
                   onPress={() => {
                     onSelectOptionHandler(option);
                   }}
-                  style={[styles.touchable, { backgroundColor: theme.menuBg }]}
-                >
+                  style={[styles.touchable, { backgroundColor: theme.menuBg }]}>
                   <Animated.View
                     style={[
                       styles.textWrapper,
@@ -139,7 +137,7 @@ const UiMenu = props => {
             );
           })}
         </Animated.View>
-      )
+      );
     } else {
       return (
         <Animated.View
