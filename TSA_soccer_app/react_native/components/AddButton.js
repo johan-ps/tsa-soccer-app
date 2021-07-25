@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
@@ -119,7 +119,15 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     overflow: 'hidden',
     position: 'absolute',
-    bottom: 95,
+    bottom: 165,
+    ...Platform.select({
+      ios: {
+        bottom: 95,
+      },
+      android: {
+        bottom: 165,
+      },
+    }),
     right: 25,
     elevation: 10,
     shadowRadius: 10,
