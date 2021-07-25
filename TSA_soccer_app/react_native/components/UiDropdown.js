@@ -107,19 +107,15 @@ const UiDropdown = props => {
     }
     setSelectedId(option.id);
     setSelectedLabel(option.label);
-    setTimeout(() => {
-      setShowOptions(false);
-    }, 500);
-    setTimeout(() => {
-      dropdownAnimation.value = withTiming(0, { duration: 225 });
-    }, 350);
+    dropdownAnimation.value = withTiming(0, { duration: 225 }, () => {
+      runOnJS(setShowOptions)(false);
+    });
   };
 
   const onCloseHandler = () => {
-    setTimeout(() => {
-      setShowOptions(false);
-    }, 225);
-    dropdownAnimation.value = withTiming(0, { duration: 225 });
+    dropdownAnimation.value = withTiming(0, { duration: 225 }, () => {
+      runOnJS(setShowOptions)(false);
+    });
   };
 
   const buttonBorder = {

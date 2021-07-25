@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,33 +8,35 @@ import {
   TouchableNativeFeedback,
   Platform,
   Pressable,
-  Animated,
-  Easing,
   Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  runOnJS,
+} from 'react-native-reanimated';
 
 const UiMenu = props => {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const theme = useSelector(state => state.theme.colors);
   const [showOptions, setShowOptions] = useState(false);
-  const [animationStarted, setAnimationStarted] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [flipY, setFlipY] = useState(false);
-  const menuSizeAnimation = useRef(
-    new Animated.ValueXY({ x: 0, y: 0 }),
-  ).current;
-  const opacityAnimation = useRef(new Animated.Value(0)).current;
+  // const menuSizeAnimation = useRef(
+  //   new Animated.ValueXY({ x: 0, y: 0 }),
+  // ).current;
+  const menuAnimX = useSharedValue(0);
+  const menuAnimY = useSharedValue(0);
+  const opacityAnimation = useSharedValue(0);
   const menuIcon = useRef();
-  const EASING = Easing.bezier(0.4, 0, 0.2, 1);
-  const SCREEN_INDENT = 8;
   const optionWidth = 150;
   const optionHeight = 45;
-  const bottomNavHeight = 56;
-  const transforms = [];
+  const bottomNavHeight = 70;
 
   const onOpenHandler = () => {
     menuIcon.current.measure((fx, fy, width, height, px, py) => {
@@ -46,34 +48,21 @@ const UiMenu = props => {
         windowHeight - bottomNavHeight - optionHeight * props.options.length
       ) {
         setFlipY(true);
-        transforms.push({
-          translateY: Animated.multiply(menuSizeAnimation.y, -1),
-        });
         setOffsetY(windowHeight - py - bottomNavHeight);
       } else {
         setFlipY(false);
         setOffsetY(y);
       }
     });
-    setAnimationStarted(true);
     setShowOptions(true);
-    Animated.parallel([
-      Animated.timing(menuSizeAnimation, {
-        toValue: { x: optionWidth, y: optionHeight },
-        duration: 250,
-        easing: EASING,
-        useNativeDriver: false,
-      }),
-      Animated.timing(opacityAnimation, {
-        toValue: 1,
-        duration: 250,
-        easing: EASING,
-        useNativeDriver: false,
-      }),
-    ]).start();
+    opacityAnimation.value = withTiming(1, { duration: 250 });
+    menuAnimX.value = withTiming(optionWidth, { duration: 250 });
+    menuAnimY.value = withTiming(optionHeight * props.options.length, {
+      duration: 250,
+    });
   };
 
-  const optionPosition = () => {
+  const optionPosition = useMemo(() => {
     if (flipY) {
       return {
         bottom: offsetY,
@@ -85,18 +74,14 @@ const UiMenu = props => {
         right: offsetX,
       };
     }
-  };
+  }, [flipY, offsetX, offsetY]);
 
   const onCloseHandler = () => {
-      setAnimationStarted(false);
-      menuSizeAnimation.setValue({ x: 0, y: 0 });
-      setShowOptions(false);
-      Animated.timing(opacityAnimation, {
-        toValue: 0,
-        duration: 250,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: false,
-      }).start();
+    opacityAnimation.value = withTiming(0, { duration: 250 }, () => {
+      menuAnimX.value = 0;
+      menuAnimY.value = 0;
+      runOnJS(setShowOptions)(false);
+    });
   };
 
   const onSelectOptionHandler = option => {
@@ -105,15 +90,18 @@ const UiMenu = props => {
     
   };
 
-  const opacityAnim = {
-    opacity: opacityAnimation,
-  };
+  const opacityAnim = useAnimatedStyle(() => {
+    return {
+      opacity: opacityAnimation.value,
+    };
+  });
 
-  const menuSize = {
-    width: menuSizeAnimation.x,
-    height: menuSizeAnimation.y,
-    transform: transforms,
-  };
+  const menuSize = useAnimatedStyle(() => {
+    return {
+      width: menuAnimX.value,
+      height: menuAnimY.value,
+    };
+  });
 
   const renderOptions = () => {
     if (Platform.OS === 'ios') {
@@ -122,7 +110,7 @@ const UiMenu = props => {
           style={[
             styles.optionsContainer,
             { backgroundColor: theme.menuBg },
-            optionPosition(),
+            optionPosition,
             opacityAnim,
           ]}>
           {props.options.map(option => {
@@ -156,8 +144,9 @@ const UiMenu = props => {
           style={[
             styles.optionsContainer,
             { backgroundColor: theme.menuBg },
-            optionPosition(),
+            optionPosition,
             opacityAnim,
+            menuSize,
           ]}>
           {props.options.map(option => {
             return (
@@ -177,7 +166,6 @@ const UiMenu = props => {
                     style={[
                       styles.textWrapper,
                       { backgroundColor: theme.menuBg },
-                      animationStarted && menuSize,
                     ]}>
                     <Text style={[styles.label, { color: theme.menuText }]}>
                       {option.label}
@@ -214,6 +202,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
+    width: 30,
+    height: 30,
+    borderRadius: 20,
   },
   modalContainer: {
     width: '100%',

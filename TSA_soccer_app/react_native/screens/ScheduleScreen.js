@@ -25,9 +25,7 @@ const ScheduleScreen = ({ navigation }) => {
       <CreateEvent
         visible={createEvent}
         onClose={() => {
-          setTimeout(() => {
-            setCreateEvent(false);
-          }, 100);
+          setCreateEvent(false);
         }}
       />
     </View>
