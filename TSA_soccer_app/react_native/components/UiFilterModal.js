@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
   interpolate,
+  runOnJS,
 } from 'react-native-reanimated';
 
 import { UiButton, UiDropdown } from './_components';
@@ -27,10 +28,9 @@ const UiFilterModal = props => {
         overshootClamping: true,
       });
     } else {
-      setTimeout(() => {
-        setShowModal(false);
-      }, 200);
-      modalAnimation.value = withTiming(0);
+      modalAnimation.value = withTiming(0, {}, () => {
+        runOnJS(setShowModal)(false);
+      });
     }
   };
 

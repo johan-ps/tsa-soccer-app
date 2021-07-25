@@ -220,9 +220,7 @@ const MessagesScreen = ({ navigation }) => {
         players={playersList}
         visible={openAvailability}
         onClose={() => {
-          setTimeout(() => {
-            setOpenAvailability(false);
-          }, 100);
+          setOpenAvailability(false);
         }}
       />
       {/* <Text style={[styles.listHeading, { backgroundColor: '#2ad121' }]}>Going</Text>

@@ -250,9 +250,7 @@ const AnnouncementScreen = () => {
       <CreateAnnouncement
         visible={createAnnouncement}
         onClose={() => {
-          setTimeout(() => {
-            setCreateAnnouncemnt(false);
-          }, 100);
+          setCreateAnnouncemnt(false);
         }}
       />
       <UiModal
