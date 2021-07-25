@@ -27,9 +27,6 @@ const UiMenu = props => {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [flipY, setFlipY] = useState(false);
-  // const menuSizeAnimation = useRef(
-  //   new Animated.ValueXY({ x: 0, y: 0 }),
-  // ).current;
   const menuAnimX = useSharedValue(0);
   const menuAnimY = useSharedValue(0);
   const opacityAnimation = useSharedValue(0);
@@ -80,8 +77,13 @@ const UiMenu = props => {
     opacityAnimation.value = withTiming(0, { duration: 250 }, () => {
       menuAnimX.value = 0;
       menuAnimY.value = 0;
-      runOnJS(setShowOptions)(false);
+      if (Platform.OS !== 'ios') {
+        runOnJS(setShowOptions)(false);
+      }
     });
+    if (Platform.OS === 'ios') {
+      setShowOptions(false);
+    }
   };
 
   const onSelectOptionHandler = option => {
@@ -112,6 +114,7 @@ const UiMenu = props => {
             { backgroundColor: theme.menuBg },
             optionPosition,
             opacityAnim,
+            menuSize
           ]}>
           {props.options.map(option => {
             return (
@@ -126,7 +129,6 @@ const UiMenu = props => {
                     style={[
                       styles.textWrapper,
                       { backgroundColor: theme.menuBg },
-                      animationStarted && menuSize,
                     ]}>
                     <Text style={[styles.label, { color: theme.menuText }]}>
                       {option.label}
