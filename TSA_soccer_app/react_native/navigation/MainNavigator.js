@@ -14,7 +14,7 @@ import TeamScreen from '../screens/TeamScreen';
 import MoreScreen from '../screens/MoreScreen';
 import * as ThemeActions from '../store/actions/ThemeActions';
 import TeamRosterNavigator from './TeamRosterNavigator';
-import ScheduleTopNavigator from './ScheduleTopNavigator';
+import ScheduleEventNavigator from './ScheduleEventNavigator';
 
 const MainNav = createBottomTabNavigator();
 
@@ -81,7 +81,7 @@ const MainNavigator = () => {
         keyboardHidesTabBar: true,
       }}>
       <MainNav.Screen name="Home" component={AnnouncementScreen} />
-      <MainNav.Screen name="Schedule" component={ScheduleTopNavigator} />
+      <MainNav.Screen name="Schedule" component={ScheduleEventNavigator} />
       <MainNav.Screen name="Team" component={TeamRosterNavigator} />
       <MainNav.Screen name="Messages" component={MessagesScreen} />
       <MainNav.Screen name="More" component={MoreScreen} />
@@ -108,6 +108,11 @@ const styles = StyleSheet.create({
     bottom: 5,
     height: 70,
     borderRadius: 15,
+    ...Platform.select({
+      ios: {
+        marginBottom: 10
+      },
+    }),
   },
 });
 

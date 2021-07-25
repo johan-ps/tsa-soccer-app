@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import Animated, {
@@ -48,7 +48,7 @@ const NavHeader = forwardRef((props, ref) => {
   return (
     <Animated.View
       style={[styles.container, { backgroundColor: theme.navBg }, animStyle]}>
-      <View style={styles.iconLeftContainer}>
+      {/* <View style={styles.iconLeftContainer}>
         {iconListLeft.map(icon => {
           return (
             <TouchableOpacity key={icon.id} style={styles.iconContainer}>
@@ -56,6 +56,9 @@ const NavHeader = forwardRef((props, ref) => {
             </TouchableOpacity>
           );
         })}
+      </View> */}
+      <View style={styles.iconRightContainer}>
+        <Image style={{height: 30, width: 30}} source={require('../assets/img/CTSA_Logo.png')}/>
       </View>
       <View style={styles.center}>
         {searchable ? (
@@ -105,7 +108,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     shadowColor: '#000000',
     shadowOpacity: 0.3,
-    shadowOffset: { height: 15 },
+    shadowOffset: { height: 2 },
     zIndex: 100
   },
   iconLeftContainer: {
@@ -148,7 +151,9 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         paddingTop: 5,
-        paddingBottom: 5
+        paddingBottom: 5,
+        borderRadius: 15,
+        height: 40
       },
     }),
   },

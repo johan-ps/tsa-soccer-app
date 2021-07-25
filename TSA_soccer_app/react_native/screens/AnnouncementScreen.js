@@ -34,6 +34,7 @@ import {
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
 const loadingLottieAnim = require('../assets/img/soccer-anim.json');
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 
 const windowHeight = Dimensions.get('window').height;
 const statusBarHeight = StatusBar.currentHeight;
@@ -45,6 +46,7 @@ const AnnouncementScreen = () => {
   const [filterVisible, setFilterVisible] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const theme = useSelector(state => state.theme.colors);
+  const activeTheme = useSelector(state => state.theme.activeTheme);
   const announcements = useSelector(state => state.announcements);
   const dispatch = useDispatch();
 
@@ -62,10 +64,11 @@ const AnnouncementScreen = () => {
     };
   }, []);
   const refreshBound = 90;
-
-  // useEffect(() => {
-  //   console.log("Joell modalVisible", modalVisible);
-  // }, [modalVisible])
+  const options = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: false
+  };
+  
 
   useDerivedValue(() => {
     if (addBtnRef.current && searchBarRef.current) {
@@ -90,6 +93,7 @@ const AnnouncementScreen = () => {
   });
 
   const loadAnnouncements = useCallback(() => {
+    ReactNativeHapticFeedback.trigger("impactLight", options);
     dispatch(announcementActions.getAnnouncements());
   }, [dispatch]);
 
@@ -208,8 +212,10 @@ const AnnouncementScreen = () => {
   };
 
   return (
+    <View style={[styles.container, { backgroundColor: theme.navBg }]}>
+      <StatusBar barStyle={activeTheme === 'default' ? 'dark-content' : 'light-content'}/>
+      <View style={{backgroundColor: theme.navBg, height: 50, zIndex: 100 }}></View>
     <SafeAreaView>
-    <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
       <NavHeader
         ref={searchBarRef}
         iconListRight={[{ name: 'filter-outline', id: 0 }]}
@@ -226,6 +232,7 @@ const AnnouncementScreen = () => {
             autoPlay={true}
             source={loadingLottieAnim}
           />
+        <SafeAreaView>
           <PanGestureHandler onGestureEvent={panGestureEvent}>
             <Animated.View
               style={[reanimatedStyle, { backgroundColor: theme.primaryBg }]}>
@@ -245,6 +252,7 @@ const AnnouncementScreen = () => {
               </View>
             </Animated.View>
           </PanGestureHandler>
+        </SafeAreaView>
         </View>
         </SafeAreaView>
       )}
@@ -279,8 +287,8 @@ const AnnouncementScreen = () => {
         title="Filter Announcements"
         onCloseHandler={toggleFilter}
       />
-    </View>
     </SafeAreaView>
+    </View>
   );
 };
 
