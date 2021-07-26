@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
@@ -8,8 +8,18 @@ import * as Util from '../Util/utilities';
 
 const AnnouncementCard = props => {
   const theme = useSelector(state => state.theme.colors);
-  const { id, date, title, description, type, author, imageUrl, authorImgUrl } =
-    props.announcementData;
+  const userData = useSelector(state => state.userData);
+  const {
+    id,
+    date,
+    title,
+    description,
+    type,
+    author,
+    imageUrl,
+    authorImgUrl,
+    authorId = 0,
+  } = props.announcementData;
 
   const onSelectOption = option => {
     if (option.id === 1) {
@@ -17,52 +27,66 @@ const AnnouncementCard = props => {
     }
   };
 
+  const menuOptions = useMemo(() => {
+    const edit = { id: 0, label: 'Edit' };
+    const dlt = { id: 1, label: 'Delete' };
+    const download = { id: 2, label: 'Download' };
+    let options = [download];
+
+    if (userData) {
+      if (userData.accessLevel === 1 && userData.id === authorId) {
+        options = [edit, dlt, download];
+      } else if (userData.accessLevel > 1) {
+        options = [edit, dlt, download];
+      }
+    }
+    return options;
+  }, [userData, authorId]);
+
   return (
     <SafeAreaView>
-    <View style={[styles.container, { backgroundColor: theme.cardBg }]}>
-      <View style={styles.header}>
-        <View style={styles.headerContentWrapper}>
-          <View style={styles.headerImgWrapper}>
-            <Image
-              style={styles.headerImg}
-              source={{
-                uri: authorImgUrl,
-              }}
-              resizeMode="cover"
-            />
+      <View style={[styles.container, { backgroundColor: theme.cardBg }]}>
+        <View style={styles.header}>
+          <View style={styles.headerContentWrapper}>
+            <View style={styles.headerImgWrapper}>
+              <Image
+                style={styles.headerImg}
+                source={{
+                  uri: authorImgUrl,
+                }}
+                resizeMode="cover"
+              />
+            </View>
+            <View style={styles.headerContent}>
+              <Text style={[styles.name, { color: theme.cardTextHeading }]}>
+                {author}
+              </Text>
+              <Text style={[styles.date, { color: theme.cardTextSubHeading }]}>
+                {Util.getTime(date)}
+              </Text>
+            </View>
           </View>
-          <View style={styles.headerContent}>
-            <Text style={[styles.name, { color: theme.cardTextHeading }]}>
-              {author}
-            </Text>
-            <Text style={[styles.date, { color: theme.cardTextSubHeading }]}>
-              {Util.getTime(date)}
+          <UiMenu onPress={onSelectOption} options={menuOptions} />
+        </View>
+        <View style={styles.body}>
+          {imageUrl ? (
+            <View style={styles.imageContainer}>
+              {/* <Image style={styles.image} source={require('../assets/images/kids-playing-soccer.jpg')} resizeMode='cover' /> */}
+              <Image
+                style={styles.image}
+                source={imageUrl}
+                resizeMode="cover"
+              />
+            </View>
+          ) : null}
+          <View style={styles.bodyContentWrapper}>
+            <Text
+              style={[styles.bodyContent, { color: theme.cardTextContent }]}>
+              {description}
             </Text>
           </View>
         </View>
-        <UiMenu
-          onPress={onSelectOption}
-          options={[
-            { id: 0, label: 'Edit' },
-            { id: 1, label: 'Delete' },
-            { id: 2, label: 'Download' },
-          ]}
-        />
       </View>
-      <View style={styles.body}>
-        {imageUrl ? (
-          <View style={styles.imageContainer}>
-            {/* <Image style={styles.image} source={require('../assets/images/kids-playing-soccer.jpg')} resizeMode='cover' /> */}
-            <Image style={styles.image} source={imageUrl} resizeMode="cover" />
-          </View>
-        ) : null}
-        <View style={styles.bodyContentWrapper}>
-          <Text style={[styles.bodyContent, { color: theme.cardTextContent }]}>
-            {description}
-          </Text>
-        </View>
-      </View>
-    </View>
     </SafeAreaView>
   );
 };

@@ -33,6 +33,7 @@ import {
   UiFilterModal,
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
+import * as userActions from '../store/actions/UserActions';
 const loadingLottieAnim = require('../assets/img/soccer-anim.json');
 
 const windowHeight = Dimensions.get('window').height;
@@ -46,6 +47,7 @@ const AnnouncementScreen = () => {
   const [deleteId, setDeleteId] = useState(null);
   const theme = useSelector(state => state.theme.colors);
   const announcements = useSelector(state => state.announcements);
+  const userData = useSelector(state => state.userData);
   const dispatch = useDispatch();
 
   const [scrollUpperBound, setScrollUpperBound] = useState(0);
@@ -63,9 +65,13 @@ const AnnouncementScreen = () => {
   }, []);
   const refreshBound = 90;
 
-  // useEffect(() => {
-  //   console.log("Joell modalVisible", modalVisible);
-  // }, [modalVisible])
+  const loadUserData = useCallback(async () => {
+    try {
+      await dispatch(userActions.getUserData());
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch]);
 
   useDerivedValue(() => {
     if (addBtnRef.current && searchBarRef.current) {
@@ -89,13 +95,9 @@ const AnnouncementScreen = () => {
     offsetY.value = translateY.value;
   });
 
-  const loadAnnouncements = useCallback(() => {
-    dispatch(announcementActions.getAnnouncements());
-  }, [dispatch]);
-
-  useDerivedValue(() => {
-    if (refreshing.value) {
-      runOnJS(loadAnnouncements)();
+  const loadAnnouncements = useCallback(async () => {
+    try {
+      await dispatch(announcementActions.getAnnouncements());
       refreshing.value = false;
       translateY.value = withSpring(0, {
         damping: 100,
@@ -105,6 +107,24 @@ const AnnouncementScreen = () => {
         restDisplacementThreshold: 0,
         restSpeedThreshold: 0,
       });
+    } catch (err) {
+      console.log(err);
+    }
+    loadUserData();
+  }, [dispatch, loadUserData, refreshing, translateY]);
+
+  useDerivedValue(() => {
+    if (refreshing.value) {
+      runOnJS(loadAnnouncements)();
+      // refreshing.value = false;
+      // translateY.value = withSpring(0, {
+      //   damping: 100,
+      //   mass: 10,
+      //   stiffness: 1000,
+      //   overshootClamping: true,
+      //   restDisplacementThreshold: 0,
+      //   restSpeedThreshold: 0,
+      // });
     }
   });
 
@@ -124,8 +144,7 @@ const AnnouncementScreen = () => {
       }
       let ty = event.translationY + context.translateY;
       if (ty > 8) {
-        let friction =
-          Math.pow(1 - Math.min(ty / scrollUpperBound, 1), 2) * 0.6;
+        let friction = Math.pow(1 - Math.min(ty / 3000, 1), 2) * 0.6;
         translateY.value = ty * friction;
       } else {
         translateY.value = ty;
@@ -141,21 +160,21 @@ const AnnouncementScreen = () => {
       }
       if (context.translateY === 0 && event.translationY > 0) {
         if (event.translationY > refreshBound) {
-          refreshing.value = true;
-          // translateY.value = withSpring(
-          //   refreshBound,
-          //   {
-          //     damping: 100,
-          //     mass: 10,
-          //     stiffness: 1000,
-          //     overshootClamping: true,
-          //     restDisplacementThreshold: 0,
-          //     restSpeedThreshold: 0,
-          //   },
-          //   () => {
-          //     refreshing.value = true;
-          //   },
-          // );
+          // refreshing.value = true;
+          translateY.value = withSpring(
+            refreshBound,
+            {
+              damping: 100,
+              mass: 10,
+              stiffness: 1000,
+              overshootClamping: true,
+              restDisplacementThreshold: 0,
+              restSpeedThreshold: 0,
+            },
+            () => {
+              refreshing.value = true;
+            },
+          );
         } else {
           translateY.value = withSpring(0, {
             damping: 100,
@@ -194,7 +213,11 @@ const AnnouncementScreen = () => {
     },
   }) => {
     if (height > windowHeight) {
-      setScrollUpperBound(height - windowHeight + 56 + statusBarHeight);
+      let containerHeight = height - windowHeight + 56 + statusBarHeight;
+      if (Math.abs(translateY.value) > containerHeight) {
+        translateY.value = -containerHeight;
+      }
+      setScrollUpperBound(containerHeight);
     }
   };
 
@@ -209,77 +232,85 @@ const AnnouncementScreen = () => {
 
   return (
     <SafeAreaView>
-    <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
-      <NavHeader
-        ref={searchBarRef}
-        iconListRight={[{ name: 'filter-outline', id: 0 }]}
-        searchable={true}
-        toggleFilter={toggleFilter}
-      />
-      {announcements.length === 0 ? (
-        <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
-      ) : (
-        <SafeAreaView>
-        <View onLayout={onLayoutHandler}>
-          <LottieView
-            style={styles.lottieView}
-            autoPlay={true}
-            source={loadingLottieAnim}
+      <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
+        <NavHeader
+          ref={searchBarRef}
+          iconListRight={[{ name: 'filter-outline', id: 0 }]}
+          searchable={true}
+          toggleFilter={toggleFilter}
+        />
+        {announcements.length === 0 ? (
+          <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
+        ) : (
+          <SafeAreaView>
+            <View onLayout={onLayoutHandler}>
+              <LottieView
+                style={styles.lottieView}
+                autoPlay={true}
+                source={loadingLottieAnim}
+              />
+              <PanGestureHandler onGestureEvent={panGestureEvent}>
+                <Animated.View
+                  style={[
+                    reanimatedStyle,
+                    { backgroundColor: theme.primaryBg },
+                  ]}>
+                  <View>
+                    {announcements.map(announcement => {
+                      return (
+                        <AnnouncementCard
+                          key={announcement.id}
+                          onDelete={() => {
+                            onDeleteHandler(announcement.id);
+                          }}
+                          image={announcement.imageUrl}
+                          announcementData={announcement}
+                        />
+                      );
+                    })}
+                  </View>
+                </Animated.View>
+              </PanGestureHandler>
+            </View>
+          </SafeAreaView>
+        )}
+        {userData && userData.accessLevel > 0 ? (
+          <AddButton
+            ref={addBtnRef}
+            onPress={() => {
+              setCreateAnnouncemnt(true);
+            }}
           />
-          <PanGestureHandler onGestureEvent={panGestureEvent}>
-            <Animated.View
-              style={[reanimatedStyle, { backgroundColor: theme.primaryBg }]}>
-              <View>
-                {announcements.map(announcement => {
-                  return (
-                    <AnnouncementCard
-                      key={announcement.id}
-                      onDelete={() => {
-                        onDeleteHandler(announcement.id);
-                      }}
-                      image={announcement.imageUrl}
-                      announcementData={announcement}
-                    />
-                  );
-                })}
-              </View>
-            </Animated.View>
-          </PanGestureHandler>
-        </View>
-        </SafeAreaView>
-      )}
-      <AddButton
-        ref={addBtnRef}
-        onPress={() => {
-          setCreateAnnouncemnt(true);
-        }}
-      />
-      <CreateAnnouncement
-        visible={createAnnouncement}
-        onClose={() => {
-          setCreateAnnouncemnt(false);
-        }}
-      />
-      <UiModal
-        primaryLabel="Confirm"
-        secondaryLabel="Cancel"
-        visible={modalVisible}
-        title="Delete content"
-        content={
-          'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
-        }
-        onCloseHandler={onModalCloseHandler}
-        primaryBtnHandler={deleteAnnouncement}
-      />
-      
-      <UiFilterModal
-        primaryLabel="Apply"
-        secondaryLabel="Cancel"
-        visible={filterVisible}
-        title="Filter Announcements"
-        onCloseHandler={toggleFilter}
-      />
-    </View>
+        ) : null}
+        {userData && userData.accessLevel > 0 ? (
+          <CreateAnnouncement
+            visible={createAnnouncement}
+            onClose={() => {
+              setCreateAnnouncemnt(false);
+            }}
+          />
+        ) : null}
+        {userData && userData.accessLevel > 0 ? (
+          <UiModal
+            primaryLabel="Confirm"
+            secondaryLabel="Cancel"
+            visible={modalVisible}
+            title="Delete content"
+            content={
+              'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
+            }
+            onCloseHandler={onModalCloseHandler}
+            primaryBtnHandler={deleteAnnouncement}
+          />
+        ) : null}
+        <UiFilterModal
+          primaryLabel="Apply"
+          secondaryLabel="Cancel"
+          visible={filterVisible}
+          title="Filter Announcements"
+          onCloseHandler={toggleFilter}
+        />
+      </View>
     </SafeAreaView>
   );
 };

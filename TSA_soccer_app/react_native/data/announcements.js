@@ -1,14 +1,11 @@
 import Announcement from '../models/announcement';
 
-const desc =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,';
-const title = 'New Album Release';
 export const Announcements = [
   new Announcement(
     0,
     new Date(2020, 3, 4, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     {
@@ -19,8 +16,8 @@ export const Announcements = [
   new Announcement(
     1,
     new Date(2020, 3, 3, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     {
@@ -31,8 +28,8 @@ export const Announcements = [
   new Announcement(
     2,
     new Date(2020, 3, 2, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     null,
@@ -41,8 +38,8 @@ export const Announcements = [
   new Announcement(
     3,
     new Date(2020, 3, 1, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     {
@@ -53,8 +50,8 @@ export const Announcements = [
   new Announcement(
     4,
     new Date(2020, 2, 31, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     null,
@@ -63,8 +60,8 @@ export const Announcements = [
   new Announcement(
     5,
     new Date(2020, 2, 15, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     null,
@@ -73,8 +70,8 @@ export const Announcements = [
   new Announcement(
     6,
     new Date(2020, 2, 7, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     {
@@ -85,8 +82,8 @@ export const Announcements = [
   new Announcement(
     7,
     new Date(2020, 2, 4, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     {
@@ -97,8 +94,8 @@ export const Announcements = [
   new Announcement(
     8,
     new Date(2020, 2, 2, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     null,
@@ -107,8 +104,8 @@ export const Announcements = [
   new Announcement(
     9,
     new Date(2020, 2, 1, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     {
@@ -119,8 +116,8 @@ export const Announcements = [
   new Announcement(
     10,
     new Date(2020, 1, 24, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     null,
@@ -129,8 +126,8 @@ export const Announcements = [
   new Announcement(
     11,
     new Date(2020, 0, 13, 1, 40, 0),
-    title,
-    desc,
+    'New Album Release',
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,',
     'info',
     'Coach Gryffin',
     {

@@ -9,10 +9,12 @@ import RNBootSplash from 'react-native-bootsplash';
 import MainNavigator from './react_native/navigation/MainNavigator';
 import ThemeReducer from './react_native/store/reducers/ThemeReducer';
 import AnnouncementReducer from './react_native/store/reducers/AnnouncementReducer';
+import UserReducer from './react_native/store/reducers/UserReducer';
 
 const rootReducer = combineReducers({
   theme: ThemeReducer,
   announcements: AnnouncementReducer,
+  userData: UserReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));

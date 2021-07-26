@@ -1,14 +1,24 @@
-import { Announcements } from '../../data/announcements';
 import Announcement from '../../models/announcement';
+const environmentUrl = 'localhost:3000';
 
 export const GET_ANNOUNCEMENTS = 'GET_ANNOUNCEMENTS';
 export const ADD_ANNOUNCEMENT = 'ADD_ANNOUNCEMENTS';
 export const DELETE_ANNOUNCEMENT = 'DELETE_ANNOUNCEMENT';
 
 export const getAnnouncements = () => {
-  return {
-    type: GET_ANNOUNCEMENTS,
-    announcements: Announcements,
+  return async dispatch => {
+    try {
+      const response = await fetch(`http://${environmentUrl}/announcements`);
+
+      if (!response.ok) {
+        throw new Error('Something went wrong!');
+      }
+
+      const resData = await response.json();
+      dispatch({ type: GET_ANNOUNCEMENTS, announcements: resData });
+    } catch (err) {
+      console.log(err);
+    }
   };
 };
 

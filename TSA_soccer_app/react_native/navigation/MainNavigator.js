@@ -15,6 +15,7 @@ import MoreScreen from '../screens/MoreScreen';
 import * as ThemeActions from '../store/actions/ThemeActions';
 import TeamRosterNavigator from './TeamRosterNavigator';
 import ScheduleTopNavigator from './ScheduleTopNavigator';
+import * as userActions from '../store/actions/UserActions';
 
 const MainNav = createBottomTabNavigator();
 
@@ -23,12 +24,21 @@ const MainNavigator = () => {
   const scheme = useColorScheme(); // get phone's native theme style
   const theme = useSelector(state => state.theme.colors);
 
+  const loadUserData = useCallback(async () => {
+    try {
+      await dispatch(userActions.getUserData());
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch]);
+
   // run function whenever dispatch or scheme changes
   useEffect(() => {
     if (scheme === 'dark') {
       dispatch(ThemeActions.updateTheme(scheme));
     }
-  }, [dispatch, scheme]);
+    loadUserData();
+  }, [dispatch, scheme, loadUserData]);
 
   return (
     <MainNav.Navigator

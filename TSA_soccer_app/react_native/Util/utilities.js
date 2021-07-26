@@ -1,4 +1,5 @@
 export const getDate = date => {
+  date = new Date(date);
   const curDate = new Date();
   const tmrwDate = new Date(curDate);
   tmrwDate.setDate(tmrwDate.getDate() + 1);
@@ -44,6 +45,7 @@ export const formatTime = time => {
 };
 
 export const getTime = date => {
+  date = new Date(date);
   const curDate = new Date();
   const tmrwDate = new Date(curDate);
   tmrwDate.setDate(tmrwDate.getDate() + 1);
@@ -73,6 +75,7 @@ export const getTime = date => {
 };
 
 export const prettyPrintDate = date => {
+  date = new Date(date);
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
   const months = [
     'Jan',
