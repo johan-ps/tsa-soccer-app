@@ -13,6 +13,7 @@ import UiTextArea from './UiTextArea';
 import UiFilterModal from './UiFilterModal';
 import UiIcon from './UiIcon';
 import UiIconButton from './UiIconButton';
+import SettingsActionBtn from './SettingsActionBtn';
 
 export {
   AddButton,
@@ -30,4 +31,5 @@ export {
   UiFilterModal,
   UiIcon,
   UiIconButton,
+  SettingsActionBtn,
 };

@@ -15,6 +15,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const UiIconButton = props => {
   const {
@@ -24,7 +25,7 @@ const UiIconButton = props => {
     backgroundColor = 'black',
     type,
     shadow = false,
-    darkBg = false,
+    darkBg = true,
   } = props;
   const theme = useSelector(state => state.theme.colors);
   const focusAnimation = useSharedValue(0);
@@ -47,11 +48,21 @@ const UiIconButton = props => {
     return {
       transform: [
         {
-          scale: interpolate(focusAnimation.value, [0, 1], [1, 0.99]),
+          scale: interpolate(focusAnimation.value, [0, 1], [1, 0.95]),
         },
       ],
     };
   });
+
+  const computeBorderRadius = () => {
+    if (type === 'square') {
+      return 0;
+    } else if (type === 'round') {
+      return 50;
+    } else {
+      return 16;
+    }
+  };
 
   const renderPlatformSpecific = () => {
     if (Platform.OS === 'ios') {
@@ -68,17 +79,44 @@ const UiIconButton = props => {
       );
     } else {
       return (
-        <Animated.View style={[styles.buttonWrapper, scale]}>
+        <Animated.View
+          style={[
+            styles.buttonWrapper,
+            scale,
+            {
+              borderRadius: computeBorderRadius(),
+              width: size * 2 + 10,
+              height: size * 2 + 10,
+            },
+          ]}>
           <TouchableNativeFeedback
             onPressIn={onFocusIn}
             onPressOut={onFocusOut}
             onPress={props.onPress}
-            style={[styles.touchable]}
+            style={[
+              styles.touchable,
+              {
+                borderRadius: computeBorderRadius(),
+                width: size * 2 + 10,
+                height: size * 2 + 10,
+              },
+            ]}
             background={TouchableNativeFeedback.Ripple(
               darkBg ? theme.touchableBgDark : theme.touchableBgLight,
               false,
             )}>
-            <UiIcon {...props} />
+            <View
+              style={[
+                styles.chatboxContainer,
+                {
+                  backgroundColor,
+                  borderRadius: computeBorderRadius(),
+                  width: size * 2 + 10,
+                  height: size * 2 + 10,
+                },
+              ]}>
+              <Icon name={icon} size={size} color={color} />
+            </View>
           </TouchableNativeFeedback>
         </Animated.View>
       );
@@ -89,12 +127,18 @@ const UiIconButton = props => {
 };
 
 const styles = StyleSheet.create({
+  chatboxContainer: {
+    backgroundColor: '#A9A9A9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 16,
+  },
   buttonWrapper: {
-    borderRadius: 60,
+    borderRadius: 16,
     overflow: 'hidden',
   },
   touchable: {
-    borderRadius: 60,
+    borderRadius: 16,
   },
   textWrapper: {
     borderRadius: 60,

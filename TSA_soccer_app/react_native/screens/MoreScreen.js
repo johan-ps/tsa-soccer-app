@@ -13,41 +13,107 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector, useDispatch } from 'react-redux';
-import {  UiIcon, UiIconButton } from '../components/_components';
+import { SettingsActionBtn, UiButton } from '../components/_components';
 import * as ThemeActions from '../store/actions/ThemeActions';
 
 // TODO: Edit Profile, Change Theme,
 
 const MoreScreen = () => {
-  const settingsOptions = [
-    { title: 'Notifications', iconName: 'notifications-circle-outline' },
-    { title: 'Game Log', iconName: 'newspaper-outline' },
-    { title: 'Statistics', iconName: 'stats-chart-outline' },
-    { title: 'Help', iconName: 'information-circle-outline' },
-    { title: 'Dark Mode', iconName: 'moon-outline' },
-    { title: 'Log Out', iconName: 'log-out-outline' },
-  ];
   const STYLES = ['default', 'light-content'];
 
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
-  const activeTheme = useSelector(state => state.theme.activeTheme);
-  const [isEnabled, setIsEnabled] = useState(
-    activeTheme === 'default' ? false : true,
-  );
   const [statusBarStyle, setStatusBarStyle] = useState(STYLES[1]);
+  const settingsOptions = [
+    {
+      id: 0,
+      title: 'Notifications',
+      icon: {
+        icon: 'notifications',
+        color: '#96d8ff',
+        backgroundColor: '#243e83',
+        type: 'round',
+        size: 24,
+      },
+      iconBtn: {
+        icon: 'chevron-forward',
+        color: '#e3e2ed',
+        backgroundColor: '#45426d',
+        size: 24,
+      },
+      onPress() {},
+    },
+    {
+      id: 1,
+      title: 'Dark Mode',
+      icon: {
+        icon: 'moon',
+        color: '#bbc6ff',
+        backgroundColor: '#3b3c86',
+        type: 'round',
+        size: 24,
+      },
+      iconBtn: {
+        icon: 'chevron-forward',
+        color: '#e3e2ed',
+        backgroundColor: '#45426d',
+        size: 24,
+      },
+      data: theme.name === 'dark' ? 'On' : 'Off',
+      actionType: 'toggle',
+      value: theme.name === 'dark',
+      onPress() {
+        toggleSwitch();
+      },
+    },
+    {
+      id: 2,
+      title: 'Help',
+      icon: {
+        icon: 'football',
+        color: '#f9b994',
+        backgroundColor: '#4f3a5c',
+        type: 'round',
+        size: 24,
+      },
+      iconBtn: {
+        icon: 'chevron-forward',
+        color: '#e3e2ed',
+        backgroundColor: '#45426d',
+        size: 24,
+      },
+      onPress() {},
+    },
+    {
+      id: 3,
+      title: userData && userData.accessLevel > 0 ? 'Log Out' : 'Log In',
+      icon: {
+        icon: userData && userData.accessLevel > 0 ? 'log-out' : 'log-in',
+        color: '#eda3bd',
+        backgroundColor: '#533159',
+        type: 'round',
+        size: 24,
+      },
+      iconBtn: {
+        icon: 'chevron-forward',
+        color: '#e3e2ed',
+        backgroundColor: '#45426d',
+        size: 24,
+      },
+      onPress() {},
+    },
+  ];
 
-  const toggleSwitch = value => {
+  const toggleSwitch = () => {
     let newTheme;
-    if (value) {
-      newTheme = 'dark';
-    } else {
+    if (theme.name === 'dark') {
       newTheme = 'default';
+    } else {
+      newTheme = 'dark';
     }
     dispatch(ThemeActions.updateTheme(newTheme));
     changeStatusBarStyle(newTheme);
-    setIsEnabled(previousState => !previousState);
   };
 
   const changeStatusBarStyle = newTheme => {
@@ -76,81 +142,8 @@ const MoreScreen = () => {
         <Text style={[styles.title, { color: theme.cardHClr }]}>
           {`${userData.name.first} ${userData.name.last}`}
         </Text>
-        {/* <UiButton
-          icon="upload"
-          label="Upload Image"
-          type="primary"
-          primaryClr={theme.buttonPrimaryBg}
-          secondaryClr={theme.buttonPrimaryText}
-          onPress={() => {}}
-          darkBg={false}
-        /> */}
-        {/* <UiIcon
-          icon="notifications"
-          color="#96d8ff"
-          backgroundColor="#243e83"
-          type="round"
-          size={24}
-        /> */}
-        <UiIconButton
-          icon="notifications"
-          color="#96d8ff"
-          backgroundColor="#243e83"
-          type="round"
-          size={24}
-        />
-      </View>
-      <View>
-        <Text
-          style={[
-            styles.listHeading,
-            { backgroundColor: theme.moreScreenSettingsBgClr },
-          ]}>
-          Settings
-        </Text>
-      </View>
-      <View style={styles.optionsContainer}>
         {settingsOptions.map(setting => (
-          <TouchableHighlight
-            onPress={setting.title === 'Dark Mode' ? null : () => {}}
-            underlayColor={'#C0C0C0'}
-            style={{ width: '100%' }}>
-            <View
-              style={[
-                styles.optionContainer,
-                {
-                  backgroundColor: theme.moreScreenOptionsBgClr,
-                  borderBottomColor: 'grey',
-                  borderBottomWidth: 0.5,
-                },
-              ]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Icon
-                  name={setting.iconName}
-                  size={20}
-                  color={theme.cardHClr}
-                />
-                <Text style={[styles.options, { color: theme.cardHClr }]}>
-                  {setting.title}
-                </Text>
-              </View>
-              {setting.title === 'Dark Mode' ? (
-                <Switch
-                  style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-                  trackColor={{ false: '#767577', true: '#767577' }}
-                  //ios_backgroundColor="#3e3e3e"
-                  onValueChange={toggleSwitch}
-                  value={isEnabled}
-                />
-              ) : (
-                <Icon
-                  name="chevron-forward-outline"
-                  size={18}
-                  color={theme.cardHClr}
-                />
-              )}
-            </View>
-          </TouchableHighlight>
+          <SettingsActionBtn key={setting.id} {...setting} />
         ))}
       </View>
     </ScrollView>
@@ -196,6 +189,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     paddingTop: 10,
     paddingBottom: 5,
+    marginBottom: 30,
   },
   headerContainer: {
     alignItems: 'center',
