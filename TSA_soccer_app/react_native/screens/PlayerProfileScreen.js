@@ -15,7 +15,11 @@ const PlayerProfileScreen = ({ navigation }) => {
   // TODO: add name, team, number, position, contact info (email, number)
 
   return (
-    <View style={[styles.container, {backgroundColor: theme.moreScreenOptionsBgClr}]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.moreScreenOptionsBgClr },
+      ]}>
       {/* TODO: Back button */}
       <View style={styles.iconContainer}>
         <Icon
@@ -190,7 +194,7 @@ const styles = StyleSheet.create({
         rotate: '-30deg',
       },
     ],
-  }
+  },
 });
 
 export default PlayerProfileScreen;

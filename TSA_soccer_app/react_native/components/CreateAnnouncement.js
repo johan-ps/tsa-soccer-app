@@ -51,6 +51,7 @@ const formReducer = (state, action) => {
 const CreateAnnouncement = props => {
   const { visible } = props;
   const theme = useSelector(state => state.theme.colors);
+  const userData = useSelector(state => state.userData);
   const teams = [
     {
       label: 'House League',
@@ -164,8 +165,8 @@ const CreateAnnouncement = props => {
         date: new Date(),
         title: '',
         description: formState.inputValues.description,
-        type: '',
-        author: 'Gryffin',
+        type: 'info',
+        author: `${userData.name.first} ${userData.name.last}`,
         imageUrl: formState.inputValues.imageUrl,
         authorImgUrl:
           'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',

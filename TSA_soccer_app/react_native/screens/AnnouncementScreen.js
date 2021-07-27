@@ -66,7 +66,7 @@ const AnnouncementScreen = () => {
 
   const options = {
     enableVibrateFallback: true,
-    ignoreAndroidSystemSettings: false,
+    ignoreAndroidSystemSettings: true,
   };
 
   useDerivedValue(() => {
@@ -93,7 +93,10 @@ const AnnouncementScreen = () => {
 
   const loadAnnouncements = useCallback(async () => {
     try {
-      ReactNativeHapticFeedback.trigger('impactLight', options);
+      ReactNativeHapticFeedback.trigger(
+        Platform.OS === 'ios' ? 'impactLight' : 'clockTick',
+        options,
+      );
       await dispatch(announcementActions.getAnnouncements());
       translateY.value = withSpring(
         0,
