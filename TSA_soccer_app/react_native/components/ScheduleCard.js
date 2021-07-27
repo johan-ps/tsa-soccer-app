@@ -19,25 +19,28 @@ const ScheduleCard = props => {
       onPress={onPress}
       style={[styles.touchableContainer, {backgroundColor: theme.primaryBg}]}
       underlayColor="#DDDDDD" >
-      <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', height: 180}}>
+      <View style={{flexDirection: 'row', height: 180}}>
+        <View style={{height: '100%', justifyContent: 'center', alignItems: 'center'}}>
         <ScheduleClock />
-        <View style={styles.container}>
-        <View style={{flexDirection: 'row'}}>
-          {/* <View style={{flexDirection: 'row', paddingLeft: 20, alignItems: 'center'}}>
-            <Icon name="location-outline" size={20} color="black" />
-            <View>
-              <Text style={styles.infoTextTop}>Scotiabank Arena</Text>
-              <View>
-                <Text style={styles.infoTextBottom}>40 Bay St.</Text>
-                <Text style={styles.infoTextBottom}>Toronto, ON</Text>
-                <Text style={styles.infoTextBottom}>M5J 2X2</Text>
-              </View>
-            </View>
-          </View> */}
-          <View style={{ alignItems: '' }}>
-            <Text style={styles.text}>Game</Text>
-          </View>
         </View>
+        <View style={styles.container}>
+          <View style={{justifyContent: 'flex-end', alignItems: 'flex-end'}}>
+            {/* <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Icon name="location-outline" size={20} color="black" />
+              <View>
+                <Text style={styles.infoTextTop}>Scotiabank Arena</Text>
+                <View>
+                  <Text style={styles.infoTextBottom}>40 Bay St.</Text>
+                  <Text style={styles.infoTextBottom}>Toronto, ON</Text>
+                  <Text style={styles.infoTextBottom}>M5J 2X2</Text>
+                </View>
+              </View>
+            </View> */}
+            <View style={{ flexDirection: 'column', justifyContent:'flex-end', alignItems: 'flex-end', width: '100%'}}>
+              <Text style={styles.text}>Game</Text>
+              <Text style={styles.text}>vs. Lightning</Text>
+            </View>
+          </View>
           <View style={styles.availableIcon}>
             <Icon color="black" size={30} name="checkmark" />
           </View>
@@ -63,7 +66,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 25,
     textAlign: 'left',
-    padding: 20
   },
   availableIcon: {
     borderRadius: 5,
