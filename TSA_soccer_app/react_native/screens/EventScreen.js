@@ -6,6 +6,7 @@ import {
   ImageBackground,
   TouchableHighlight,
   Image,
+  ScrollView
 } from 'react-native';
 import TeamScrollList from '../components/TeamScrollList';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -141,6 +142,7 @@ const MessagesScreen = ({ navigation }) => {
           </View>
         </ImageBackground>
       </View>
+      <ScrollView>
       <View style={styles.descriptionTextContainer}>
         <Text style={[styles.infoTextTop, { paddingBottom: 10 }]}>
           Description
@@ -229,6 +231,7 @@ const MessagesScreen = ({ navigation }) => {
         <TeamScrollList players={playersList} />
         <Text style={[styles.listHeading, { backgroundColor: '#e63c44' }]}>Unavailable</Text>
         <TeamScrollList players={playersList} /> */}
+        </ScrollView>
     </View>
   );
 };

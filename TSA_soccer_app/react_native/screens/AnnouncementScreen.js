@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  ScrollView,
-  FlatList,
   SafeAreaView,
   StatusBar,
   Dimensions,
+  Platform,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import LottieView from 'lottie-react-native';
@@ -33,8 +31,8 @@ import {
   UiFilterModal,
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
-import * as userActions from '../store/actions/UserActions';
 const loadingLottieAnim = require('../assets/img/soccer-anim.json');
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const windowHeight = Dimensions.get('window').height;
 const statusBarHeight = StatusBar.currentHeight;
@@ -46,6 +44,7 @@ const AnnouncementScreen = () => {
   const [filterVisible, setFilterVisible] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const theme = useSelector(state => state.theme.colors);
+  const activeTheme = useSelector(state => state.theme.activeTheme);
   const announcements = useSelector(state => state.announcements);
   const userData = useSelector(state => state.userData);
   const dispatch = useDispatch();
@@ -60,18 +59,15 @@ const AnnouncementScreen = () => {
   const reanimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
-      marginBottom: 70,
+      marginBottom: 90,
     };
   }, []);
   const refreshBound = 90;
 
-  const loadUserData = useCallback(async () => {
-    try {
-      await dispatch(userActions.getUserData());
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
+  const options = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: false,
+  };
 
   useDerivedValue(() => {
     if (addBtnRef.current && searchBarRef.current) {
@@ -97,34 +93,31 @@ const AnnouncementScreen = () => {
 
   const loadAnnouncements = useCallback(async () => {
     try {
+      ReactNativeHapticFeedback.trigger('impactLight', options);
       await dispatch(announcementActions.getAnnouncements());
-      refreshing.value = false;
-      translateY.value = withSpring(0, {
-        damping: 100,
-        mass: 10,
-        stiffness: 1000,
-        overshootClamping: true,
-        restDisplacementThreshold: 0,
-        restSpeedThreshold: 0,
-      });
+      translateY.value = withSpring(
+        0,
+        {
+          damping: 100,
+          mass: 10,
+          stiffness: 1000,
+          overshootClamping: true,
+          restDisplacementThreshold: 0,
+          restSpeedThreshold: 0,
+        },
+        () => {
+          refreshing.value = false;
+        },
+      );
     } catch (err) {
       console.log(err);
     }
-    loadUserData();
-  }, [dispatch, loadUserData, refreshing, translateY]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   useDerivedValue(() => {
     if (refreshing.value) {
       runOnJS(loadAnnouncements)();
-      // refreshing.value = false;
-      // translateY.value = withSpring(0, {
-      //   damping: 100,
-      //   mass: 10,
-      //   stiffness: 1000,
-      //   overshootClamping: true,
-      //   restDisplacementThreshold: 0,
-      //   restSpeedThreshold: 0,
-      // });
     }
   });
 
@@ -150,7 +143,11 @@ const AnnouncementScreen = () => {
         translateY.value = ty;
       }
 
-      if (Math.abs(translateY.value) > scrollUpperBound) {
+      if (
+        (Math.abs(translateY.value) > scrollUpperBound &&
+          scrollUpperBound !== 0) ||
+        (scrollUpperBound === 0 && translateY.value < 0)
+      ) {
         translateY.value = -scrollUpperBound;
       }
     },
@@ -160,7 +157,6 @@ const AnnouncementScreen = () => {
       }
       if (context.translateY === 0 && event.translationY > 0) {
         if (event.translationY > refreshBound) {
-          // refreshing.value = true;
           translateY.value = withSpring(
             refreshBound,
             {
@@ -218,6 +214,14 @@ const AnnouncementScreen = () => {
         translateY.value = -containerHeight;
       }
       setScrollUpperBound(containerHeight);
+    } else {
+      translateY.value = 0;
+      setScrollUpperBound(0);
+
+      if (addBtnRef.current && searchBarRef.current) {
+        addBtnRef.current.onScrollUp();
+        searchBarRef.current.onScrollUp();
+      }
     }
   };
 
@@ -231,8 +235,19 @@ const AnnouncementScreen = () => {
   };
 
   return (
-    <SafeAreaView>
-      <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
+    <View style={[styles.container, { backgroundColor: theme.navBg }]}>
+      <StatusBar
+        barStyle={activeTheme === 'default' ? 'dark-content' : 'light-content'}
+      />
+      {Platform.OS === 'ios' ? (
+        <View
+          style={[
+            styles.notchOffsetContainer,
+            { backgroundColor: theme.navBg },
+          ]}
+        />
+      ) : null}
+      <SafeAreaView style={announcements.length === 0 ? styles.container : {}}>
         <NavHeader
           ref={searchBarRef}
           iconListRight={[{ name: 'filter-outline', id: 0 }]}
@@ -249,39 +264,33 @@ const AnnouncementScreen = () => {
                 autoPlay={true}
                 source={loadingLottieAnim}
               />
-              <PanGestureHandler onGestureEvent={panGestureEvent}>
-                <Animated.View
-                  style={[
-                    reanimatedStyle,
-                    { backgroundColor: theme.primaryBg },
-                  ]}>
-                  <View>
-                    {announcements.map(announcement => {
-                      return (
-                        <AnnouncementCard
-                          key={announcement.id}
-                          onDelete={() => {
-                            onDeleteHandler(announcement.id);
-                          }}
-                          image={announcement.imageUrl}
-                          announcementData={announcement}
-                        />
-                      );
-                    })}
-                  </View>
-                </Animated.View>
-              </PanGestureHandler>
+              <SafeAreaView>
+                <PanGestureHandler onGestureEvent={panGestureEvent}>
+                  <Animated.View
+                    style={[
+                      reanimatedStyle,
+                      { backgroundColor: theme.primaryBg },
+                    ]}>
+                    <View>
+                      {announcements.map(announcement => {
+                        return (
+                          <AnnouncementCard
+                            key={announcement.id}
+                            onDelete={() => {
+                              onDeleteHandler(announcement.id);
+                            }}
+                            image={announcement.imageUrl}
+                            announcementData={announcement}
+                          />
+                        );
+                      })}
+                    </View>
+                  </Animated.View>
+                </PanGestureHandler>
+              </SafeAreaView>
             </View>
           </SafeAreaView>
         )}
-        {userData && userData.accessLevel > 0 ? (
-          <AddButton
-            ref={addBtnRef}
-            onPress={() => {
-              setCreateAnnouncemnt(true);
-            }}
-          />
-        ) : null}
         {userData && userData.accessLevel > 0 ? (
           <CreateAnnouncement
             visible={createAnnouncement}
@@ -303,6 +312,7 @@ const AnnouncementScreen = () => {
             primaryBtnHandler={deleteAnnouncement}
           />
         ) : null}
+
         <UiFilterModal
           primaryLabel="Apply"
           secondaryLabel="Cancel"
@@ -310,16 +320,27 @@ const AnnouncementScreen = () => {
           title="Filter Announcements"
           onCloseHandler={toggleFilter}
         />
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+      {userData && userData.accessLevel > 0 ? (
+        <AddButton
+          ref={addBtnRef}
+          onPress={() => {
+            setCreateAnnouncemnt(true);
+          }}
+        />
+      ) : null}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  notchOffsetContainer: {
+    height: 50,
+    zIndex: 100,
+  },
   container: {
     width: '100%',
     height: '100%',
-    marginBottom: 70,
   },
   panContainer: {
     width: '100%',

@@ -125,11 +125,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 20,
     paddingLeft: 20,
-    height: 40
+    height: 45
   },
   options: {
     color: 'black',
-    fontSize: 15,
+    fontSize: 16,
     paddingLeft: 10,
   },
   profilePicture: {

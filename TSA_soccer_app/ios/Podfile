@@ -12,6 +12,8 @@ target 'TSA_soccer_app' do
     :hermes_enabled => false
   )
 
+  pod 'RNReactNativeHapticFeedback', :path => '../node_modules/react-native-haptic-feedback'
+
   target 'TSA_soccer_appTests' do
     inherit! :complete
     # Pods for testing
