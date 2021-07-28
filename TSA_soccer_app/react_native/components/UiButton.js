@@ -27,6 +27,8 @@ const UiButton = props => {
     darkBg = false,
     icon = null,
     label = null,
+    width,
+    borderRadius,
   } = props;
   const focusAnimation = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
@@ -128,17 +130,31 @@ const UiButton = props => {
   const renderPlatformSpecific = () => {
     if (Platform.OS === 'ios') {
       return (
-        <Animated.View style={[styles.buttonWrapper, scale, props.style]}>
+        <Animated.View
+          style={[
+            styles.buttonWrapper,
+            scale,
+            props.style,
+            width ? { width } : {},
+            borderRadius ? { borderRadius } : {},
+          ]}>
           <TouchableHighlight
             onPressIn={onFocusIn}
             onPressOut={onFocusOut}
             onPress={props.onPress}
-            style={[styles.touchable, sizeStyles[size]]}>
+            style={[
+              styles.touchable,
+              sizeStyles[size],
+              width ? { width } : {},
+              borderRadius ? { borderRadius } : {},
+            ]}>
             <View
               style={[
                 styles.textWrapper,
                 typeStyles[type].textWrapper,
                 sizeStyles[size].button,
+                width ? { width } : {},
+                borderRadius ? { borderRadius } : {},
               ]}>
               <Text
                 style={[
@@ -160,12 +176,13 @@ const UiButton = props => {
             scale,
             props.style,
             label ? {} : styles.iconOnly,
+            borderRadius ? { borderRadius } : {},
           ]}>
           <TouchableNativeFeedback
             onPressIn={onFocusIn}
             onPressOut={onFocusOut}
             onPress={props.onPress}
-            style={[styles.touchable]}
+            style={[styles.touchable, borderRadius ? { borderRadius } : {}]}
             background={TouchableNativeFeedback.Ripple(
               darkBg ? theme.touchableBgDark : theme.touchableBgLight,
               false,
@@ -176,6 +193,8 @@ const UiButton = props => {
                 typeStyles[type].textWrapper,
                 sizeStyles[size].button,
                 icon ? styles.iconWrapper : {},
+                width ? { width } : {},
+                borderRadius ? { borderRadius } : {},
               ]}>
               {icon ? (
                 <Icon
@@ -200,7 +219,9 @@ const UiButton = props => {
     }
   };
 
-  return <View>{renderPlatformSpecific()}</View>;
+  return (
+    <View style={[width ? { width } : {}]}>{renderPlatformSpecific()}</View>
+  );
 };
 
 const styles = StyleSheet.create({

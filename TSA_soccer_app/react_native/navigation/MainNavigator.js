@@ -17,6 +17,7 @@ import TeamRosterNavigator from './TeamRosterNavigator';
 import ScheduleTopNavigator from './ScheduleTopNavigator';
 import * as userActions from '../store/actions/UserActions';
 import ScheduleEventNavigator from './ScheduleEventNavigator';
+import SettingsNavigator from './SettingsNavigator';
 
 const MainNav = createBottomTabNavigator();
 
@@ -95,7 +96,7 @@ const MainNavigator = () => {
       <MainNav.Screen name="Schedule" component={ScheduleEventNavigator} />
       <MainNav.Screen name="Team" component={TeamRosterNavigator} />
       <MainNav.Screen name="Messages" component={MessagesScreen} />
-      <MainNav.Screen name="More" component={MoreScreen} />
+      <MainNav.Screen name="More" component={SettingsNavigator} />
     </MainNav.Navigator>
   );
 };

@@ -6,7 +6,7 @@ import {
   ImageBackground,
   TouchableHighlight,
   Image,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import TeamScrollList from '../components/TeamScrollList';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -143,95 +143,96 @@ const MessagesScreen = ({ navigation }) => {
         </ImageBackground>
       </View>
       <ScrollView>
-      <View style={styles.descriptionTextContainer}>
-        <Text style={[styles.infoTextTop, { paddingBottom: 10 }]}>
-          Description
-        </Text>
-        <Text style={styles.infoTextBottom}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        </Text>
-      </View>
-      <View style={{ flexDirection: 'row', paddingLeft: 40, paddingRight: 40 }}>
-        <View style={styles.infoContainer}>
-          <View style={{ paddingRight: 10 }}>
-            <Icon name="shirt-outline" size={20} color="white" />
+        <View style={styles.descriptionTextContainer}>
+          <Text style={[styles.infoTextTop, { paddingBottom: 10 }]}>
+            Description
+          </Text>
+          <Text style={styles.infoTextBottom}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+        <View
+          style={{ flexDirection: 'row', paddingLeft: 40, paddingRight: 40 }}>
+          <View style={styles.infoContainer}>
+            <View style={{ paddingRight: 10 }}>
+              <Icon name="shirt-outline" size={20} color="white" />
+            </View>
+            <View>
+              <Text style={styles.infoTextTop}>Black</Text>
+            </View>
           </View>
-          <View>
-            <Text style={styles.infoTextTop}>Black</Text>
+          <View style={styles.infoContainer}>
+            <View style={{ paddingRight: 10 }}>
+              <Icon name="football-outline" size={20} color="white" />
+            </View>
+            <View>
+              <Text style={styles.infoTextTop}>Toronto Raptors</Text>
+            </View>
           </View>
         </View>
-        <View style={styles.infoContainer}>
-          <View style={{ paddingRight: 10 }}>
-            <Icon name="football-outline" size={20} color="white" />
-          </View>
-          <View>
-            <Text style={styles.infoTextTop}>Toronto Raptors</Text>
-          </View>
-        </View>
-      </View>
 
-      <View
-        style={[
-          styles.infoContainer,
-          { width: '100%', paddingLeft: 40, paddingRight: 40 },
-        ]}>
-        <View style={{ paddingRight: 10 }}>
-          <Icon name="location-outline" size={20} color="white" />
-        </View>
-        <View style={{ flexDirection: 'column' }}>
-          <View style={{ paddingRight: 10, paddingBottom: 5 }}>
-            <Text style={styles.infoTextTop}>ScotiaBank Arena</Text>
+        <View
+          style={[
+            styles.infoContainer,
+            { width: '100%', paddingLeft: 40, paddingRight: 40 },
+          ]}>
+          <View style={{ paddingRight: 10 }}>
+            <Icon name="location-outline" size={20} color="white" />
           </View>
-          <View>
-            <Text style={styles.infoTextBottom}>40 Bay St.</Text>
-            <Text style={styles.infoTextBottom}>Toronto, ON</Text>
-            <Text style={styles.infoTextBottom}>M5J 2X2</Text>
+          <View style={{ flexDirection: 'column' }}>
+            <View style={{ paddingRight: 10, paddingBottom: 5 }}>
+              <Text style={styles.infoTextTop}>ScotiaBank Arena</Text>
+            </View>
+            <View>
+              <Text style={styles.infoTextBottom}>40 Bay St.</Text>
+              <Text style={styles.infoTextBottom}>Toronto, ON</Text>
+              <Text style={styles.infoTextBottom}>M5J 2X2</Text>
+            </View>
           </View>
         </View>
-      </View>
-      <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          region={region}
-          loadingEnabled={true}
-          loadingBackgroundColor="black"
-          userInterfaceStyle="dark"
-          mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
-          <Marker
-            key={1}
-            coordinate={marker.latlng}
-            title={marker.title}
-            description={marker.description}>
-            <Image
-              source={{
-                uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
-              }}
-              style={{ height: 35, width: 35 }}
-            />
-          </Marker>
-        </MapView>
-      </View>
-      <View style={{ paddingLeft: 40, paddingRight: 40 }}>
-        <TeamListPreview
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            region={region}
+            loadingEnabled={true}
+            loadingBackgroundColor="black"
+            userInterfaceStyle="dark"
+            mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
+            <Marker
+              key={1}
+              coordinate={marker.latlng}
+              title={marker.title}
+              description={marker.description}>
+              <Image
+                source={{
+                  uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+                }}
+                style={{ height: 35, width: 35 }}
+              />
+            </Marker>
+          </MapView>
+        </View>
+        <View style={{ paddingLeft: 40, paddingRight: 40 }}>
+          <TeamListPreview
+            players={playersList}
+            onPlusPress={() => setOpenAvailability(true)}
+          />
+        </View>
+        <TeamAvailabilityPopup
           players={playersList}
-          onPlusPress={() => setOpenAvailability(true)}
+          visible={openAvailability}
+          onClose={() => {
+            setOpenAvailability(false);
+          }}
         />
-      </View>
-      <TeamAvailabilityPopup
-        players={playersList}
-        visible={openAvailability}
-        onClose={() => {
-          setOpenAvailability(false);
-        }}
-      />
-      {/* <Text style={[styles.listHeading, { backgroundColor: '#2ad121' }]}>Going</Text>
+        {/* <Text style={[styles.listHeading, { backgroundColor: '#2ad121' }]}>Going</Text>
         <TeamScrollList players={playersList} />
         <Text style={[styles.listHeading, { backgroundColor: '#A9A9A9' }]}>Maybe</Text>
         <TeamScrollList players={playersList} />
         <Text style={[styles.listHeading, { backgroundColor: '#e63c44' }]}>Unavailable</Text>
         <TeamScrollList players={playersList} /> */}
-        </ScrollView>
+      </ScrollView>
     </View>
   );
 };

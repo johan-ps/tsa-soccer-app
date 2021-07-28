@@ -20,9 +20,7 @@ const ScheduleScreen = ({ navigation }) => {
     <View>
       {viewCalender ? (
         <View>
-          <SafeAreaView>
-            {/* <CalenderScreen /> */}
-          </SafeAreaView>
+          <SafeAreaView>{/* <CalenderScreen /> */}</SafeAreaView>
         </View>
       ) : (
         <View>

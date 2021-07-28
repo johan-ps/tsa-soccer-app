@@ -18,7 +18,7 @@ import * as ThemeActions from '../store/actions/ThemeActions';
 
 // TODO: Edit Profile, Change Theme,
 
-const MoreScreen = () => {
+const MoreScreen = ({ navigation }) => {
   const STYLES = ['default', 'light-content'];
 
   const dispatch = useDispatch();
@@ -101,7 +101,9 @@ const MoreScreen = () => {
         backgroundColor: '#45426d',
         size: 24,
       },
-      onPress() {},
+      onPress() {
+        navigation.navigate('Login');
+      },
     },
   ];
 

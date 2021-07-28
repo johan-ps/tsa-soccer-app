@@ -1,143 +1,140 @@
-import React, { useRef, useState } from 'react';
+import React, { useReducer, useEffect, useRef, useState } from 'react';
 import {
-  Text,
   TextInput,
   StyleSheet,
-  View,
-  Animated,
-  Easing,
   Pressable,
+  TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+
+const INPUT_CHANGE = 'INPUT_CHANGE';
+
+const inputReducer = (state, action) => {
+  switch (action.type) {
+    case INPUT_CHANGE:
+      return {
+        ...state,
+        value: action.value,
+        isValid: action.isValid,
+      };
+    default:
+      return state;
+  }
+};
 
 const UiInput = props => {
-  const { value, placeholder, onChangeText, borderTheme, fontSize, icon, openOnFocus, closeOnBlur, disabled } = props;
-  const [shadow, setShadow] = useState(null);
-  const [focus, setFocus] = useState(false);
-  const focusAnimation = useRef(new Animated.Value(0)).current;
+  const {
+    placeholder,
+    fontSize,
+    icon,
+    openOnFocus,
+    closeOnBlur,
+    disabled,
+    contentType = 'none',
+  } = props;
+  const translateAnim = useSharedValue(0);
+  const scaleAnim = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
+  const [inputState, dispatch] = useReducer(inputReducer, {
+    value: props.initialValue ? props.initialValue : '',
+    isValid: props.initiallyValid,
+    touched: false,
+  });
+  const inputRef = useRef();
+  const [showInput, setShowInput] = useState(false);
+
+  const inputHandler = text => {
+    dispatch({ type: INPUT_CHANGE, value: text, isValid: true });
+  };
+
+  const { onInputChange, id } = props;
+
+  useEffect(() => {
+    if (onInputChange) {
+      onInputChange(id, inputState.value, inputState.isValid);
+    }
+  }, [inputState, onInputChange, id]);
 
   const onFocus = () => {
-    setFocus(true);
-    if(openOnFocus){
+    if (inputRef && inputRef.current) {
+      inputRef.current.focus();
+    }
+    if (openOnFocus) {
       openOnFocus();
     }
-    borderLayout();
-    Animated.timing(focusAnimation, {
-      toValue: 1,
-      duration: 225,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    translateAnim.value = withTiming(1);
+    scaleAnim.value = 1;
   };
 
   const onBlur = () => {
-    setShadow(null);
-    setFocus(false);
-    if(closeOnBlur){
+    if (closeOnBlur) {
       closeOnBlur();
     }
-    Animated.timing(focusAnimation, {
-      toValue: 0,
-      duration: 225,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
+    if (!inputState.value || inputState.value.length === 0) {
+      translateAnim.value = withTiming(0);
+      scaleAnim.value = 0;
+    }
   };
 
-  const ifBorder = {
-    borderBottomColor: '#A8A4B8',
-    borderBottomWidth: 2,
-    borderStyle: 'solid',
+  const toggleShowInput = () => {
+    if (inputState.value && inputState.value.length > 0) {
+      setShowInput(!showInput);
+    }
   };
 
-  const ifCircle = {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: '#A8A4B8',
-    paddingHorizontal: 12,
-    elevation: 2,
-    shadowRadius: 2,
-    shadowColor: '#000000',
-    shadowOpacity: 0.3,
-    shadowOffset: { height: 2 },
-  };
-
-  const borderLayout = () => {
-    if (borderTheme === 'circle') {
-      setShadow({
-        borderColor: theme.primaryIconClr,
-        shadowColor: theme.primaryIconClr,
-        shadowOpacity: 0.3,
-        shadowRadius: 2,
-        shadowOffset: {
-          height: 2,
+  const placeholderAnim = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: interpolate(translateAnim.value, [0, 1], [0, -36]),
         },
-        elevation: 2,
-      });
-    } else if (borderTheme === 'underline') {
-      setShadow({
-        // borderBottomWidth: 0.9,
-        // borderBottomColor: theme.primaryIconClr,
-      });
-    }
-  };
-
-  const underlineAnim = {
-    transform: [
-      {
-        scaleX: focusAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
-        }),
-      },
-    ],
-  };
-
-  const renderUnderline = () => {
-    if (borderTheme === 'underline') {
-      return <Animated.View style={[styles.underline, underlineAnim]} />;
-    } else {
-      return null;
-    }
-  };
-
-  const renderIcon = () => {
-    if (icon) {
-      return (
-        <View style={styles.iconContainer}>
-          <Icon color={focus ? '#e51b23' : '#A8A4B8'} name={icon} size={20} />
-        </View>
-      );
-    } else {
-      return null;
-    }
-  };
+        {
+          translateY: interpolate(translateAnim.value, [0, 1], [0, -12]),
+        },
+        {
+          scale: interpolate(translateAnim.value, [0, 1], [1, 0.8]),
+        },
+      ],
+    };
+  });
 
   return (
-    <View
-      style={[
-        styles.inputContainer,
-        borderTheme === 'circle' ? ifCircle : ifBorder,
-        borderTheme === 'circle' && focus ? shadow : {},
-        props.style,
-      ]}>
+    <Pressable onPress={onFocus} style={[styles.inputContainer, props.style]}>
       <TextInput
-        placeholder={placeholder}
+        selectionColor={theme.primaryRed}
         placeholderTextColor="#A8A4B8"
-        value={value}
-        onChangeText={onChangeText}
+        value={inputState.value}
+        onChangeText={inputHandler}
         editable={!disabled}
         selectTextOnFocus={false}
         style={[styles.input, { fontSize }]}
         onFocus={onFocus}
         onBlur={onBlur}
+        ref={inputRef}
+        textContentType={contentType}
+        autoCompleteType={contentType}
+        secureTextEntry={contentType === 'password' && !showInput}
       />
-      {renderIcon()}
-      {renderUnderline()}
-    </View>
+      <Animated.Text style={[styles.placeholderContainer, placeholderAnim]}>
+        <Animated.Text style={[styles.placeholder]}>
+          {placeholder}
+        </Animated.Text>
+      </Animated.Text>
+      {icon ? (
+        <TouchableOpacity
+          onPress={toggleShowInput}
+          style={styles.iconContainer}>
+          <Icon color="#A8A4B8" name={icon.name} size={icon.size} />
+        </TouchableOpacity>
+      ) : null}
+    </Pressable>
   );
 };
 
@@ -145,24 +142,46 @@ const styles = StyleSheet.create({
   inputContainer: {
     display: 'flex',
     flexDirection: 'row',
-    backgroundColor: 'white',
+    backgroundColor: '#EAEAEA',
     position: 'relative',
+    width: '100%',
+    height: 70,
+    borderRadius: 8,
   },
   input: {
     color: 'black',
     width: '100%',
-  },
-  underline: {
-    position: 'absolute',
-    bottom: -2,
-    width: '100%',
-    height: 2,
-    backgroundColor: '#e51b23',
+    height: '100%',
+    padding: 0,
+    margin: 0,
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    paddingTop: 30,
   },
   iconContainer: {
     position: 'absolute',
-    right: 12,
-    bottom: 12,
+    right: 30,
+    alignSelf: 'center',
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+  },
+  placeholderContainer: {
+    width: '100%',
+    height: 30,
+    position: 'absolute',
+    alignSelf: 'center',
+    left: 30,
+    justifyContent: 'center',
+  },
+  placeholder: {
+    color: '#C0C0CA',
+    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
   },
 });
 
