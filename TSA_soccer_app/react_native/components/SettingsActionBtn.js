@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Switch, Platform } from 'react-native';
-import { UiIcon, UiIconButton } from '../components/_components';
+import { UiIcon, UiIconButton, UiSwitch } from '../components/_components';
 
 const SettingsActionBtn = props => {
   let {
@@ -34,9 +34,9 @@ const SettingsActionBtn = props => {
           {actionType === 'button' ? (
             <UiIconButton {...iconBtn} onPress={props.onPress} />
           ) : (
-            <Switch
+            <UiSwitch
               style={toggleScale()}
-              trackColor={{ false: '#767577', true: '#767577' }}
+              trackColor={{ false: '#767577', true: '#E41B23' }}
               onValueChange={props.onPress}
               value={value}
             />
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   settingBtnWrapper: {
-    width: '90%',
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    maxWidth: '50%',
   },
   settingsRight: {
     flexDirection: 'row',

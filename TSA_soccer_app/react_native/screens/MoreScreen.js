@@ -16,8 +16,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SettingsActionBtn, UiButton } from '../components/_components';
 import * as ThemeActions from '../store/actions/ThemeActions';
 
-// TODO: Edit Profile, Change Theme,
-
 const MoreScreen = ({ navigation }) => {
   const STYLES = ['default', 'light-content'];
 
@@ -42,7 +40,9 @@ const MoreScreen = ({ navigation }) => {
         backgroundColor: '#45426d',
         size: 24,
       },
-      onPress() {},
+      onPress() {
+        navigation.navigate('Notifications');
+      },
     },
     {
       id: 1,
@@ -156,8 +156,8 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
-    display: 'flex',
     flexDirection: 'column',
+    paddingHorizontal: 30,
   },
   optionsContainer: {
     display: 'flex',

@@ -69,7 +69,7 @@ const UiInput = props => {
     if (openOnFocus) {
       openOnFocus();
     }
-    translateAnim.value = withTiming(1);
+    translateAnim.value = withTiming(1, { duration: 150 });
     scaleAnim.value = 1;
   };
 
@@ -78,15 +78,13 @@ const UiInput = props => {
       closeOnBlur();
     }
     if (!inputState.value || inputState.value.length === 0) {
-      translateAnim.value = withTiming(0);
+      translateAnim.value = withTiming(0, { duration: 150 });
       scaleAnim.value = 0;
     }
   };
 
   const toggleShowInput = () => {
-    if (inputState.value && inputState.value.length > 0) {
-      setShowInput(!showInput);
-    }
+    setShowInput(!showInput);
   };
 
   const placeholderAnim = useAnimatedStyle(() => {
@@ -131,7 +129,15 @@ const UiInput = props => {
         <TouchableOpacity
           onPress={toggleShowInput}
           style={styles.iconContainer}>
-          <Icon color="#A8A4B8" name={icon.name} size={icon.size} />
+          <Icon
+            color="#A8A4B8"
+            name={
+              contentType === 'password' && !showInput
+                ? icon.name
+                : icon.altName
+            }
+            size={icon.size}
+          />
         </TouchableOpacity>
       ) : null}
     </Pressable>

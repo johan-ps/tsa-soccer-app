@@ -37,7 +37,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 const windowHeight = Dimensions.get('window').height;
 const statusBarHeight = StatusBar.currentHeight;
 
-const AnnouncementScreen = () => {
+const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();
   const searchBarRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);

@@ -14,6 +14,7 @@ import UiFilterModal from './UiFilterModal';
 import UiIcon from './UiIcon';
 import UiIconButton from './UiIconButton';
 import SettingsActionBtn from './SettingsActionBtn';
+import UiSwitch from './UiSwitch';
 
 export {
   AddButton,
@@ -32,4 +33,5 @@ export {
   UiIcon,
   UiIconButton,
   SettingsActionBtn,
+  UiSwitch,
 };

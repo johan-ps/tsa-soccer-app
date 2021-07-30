@@ -1,63 +1,86 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
   KeyboardAvoidingView,
+  Pressable,
+  Keyboard,
 } from 'react-native';
-import { UiInput, UiButton } from '../components/_components';
+import { UiInput, UiButton, UiIconButton } from '../components/_components';
 
-const LoginScreen = props => {
+const LoginScreen = ({ navigation }) => {
   return (
-    <KeyboardAvoidingView style={styles.container}>
-      <View style={styles.imgContainer}>
-        <Image
-          style={styles.headerImg}
-          source={require('../assets/img/CTSA_Logo.png')}
-          resizeMode="cover"
-        />
-      </View>
-      <View style={styles.heading}>
-        <Text style={styles.headingTitle}>Welcome to CTSA!</Text>
-        <Text style={styles.headingSubtitle}>
-          Join our community of over 100 players in the GTA
-        </Text>
-      </View>
-      <View style={styles.body}>
-        <UiInput
-          contentType="username"
-          placeholder="Username"
-          style={styles.marginBottom}
-        />
-        <UiInput
-          contentType="password"
-          placeholder="Password"
-          icon={{ name: 'eye-outline', size: 26 }}
-        />
-        <UiButton
-          label="Login"
-          width="100%"
-          borderRadius={8}
-          style={styles.button}
-        />
-      </View>
-      <View style={styles.footer} />
+    <KeyboardAvoidingView behavior="position">
+      <Pressable
+        onPress={() => {
+          Keyboard.dismiss();
+        }}
+        style={styles.container}>
+        <View style={styles.closeButton}>
+          <UiIconButton
+            icon="close-outline"
+            color="#E41B23"
+            backgroundColor="#EAEAEA"
+            size={24}
+            darkBg={false}
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+        </View>
+        <View style={styles.imgContainer}>
+          <Image
+            style={styles.headerImg}
+            source={require('../assets/img/CTSA_Logo.png')}
+            resizeMode="cover"
+          />
+        </View>
+        <View style={styles.heading}>
+          <Text style={styles.headingTitle}>Welcome to CTSA!</Text>
+          <Text style={styles.headingSubtitle}>
+            Join our community of over 100 players in the GTA
+          </Text>
+        </View>
+        <View style={styles.body}>
+          <UiInput
+            contentType="username"
+            placeholder="Username"
+            style={styles.marginBottom}
+          />
+          <UiInput
+            contentType="password"
+            placeholder="Password"
+            icon={{ name: 'eye-outline', altName: 'eye-off-outline', size: 26 }}
+          />
+          <UiButton
+            label="Login"
+            width="100%"
+            borderRadius={8}
+            style={styles.button}
+          />
+        </View>
+        <View style={styles.footer} />
+      </Pressable>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'flex-start',
     alignItems: 'center',
+    position: 'relative',
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 30,
+    top: 40,
   },
   imgContainer: {
     width: 120,
     height: 120,
-    marginTop: 20,
+    marginTop: 60,
     marginBottom: 20,
   },
   headerImg: {
