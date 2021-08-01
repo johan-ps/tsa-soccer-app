@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Text, View, StyleSheet, Modal, ScrollView, SafeAreaView, TouchableHighlight, Pressable, Animated, Easing } from 'react-native';
+import React, { useState, useRef, useLayoutEffect } from 'react';
+import { Text, View, StyleSheet, Modal, ScrollView, SafeAreaView, TouchableHighlight, Pressable, Animated, Easing, TouchableOpacity, Switch } from 'react-native';
 import { useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker'
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -11,6 +11,8 @@ import {
   UiToggle,
   UiInput,
 } from '../components/_components';
+import UiTextArea from './UiTextArea';
+import EventLocation from './EventLocation';
 
 const CreateEvent = props => {
   const { visible } = props;
@@ -81,30 +83,41 @@ const CreateEvent = props => {
       ],
     },
   ];
+  const [location, setLocation] = useState(false);
+  const [locationValue, setLocationValue] = useState('Please Select');
   const [date, setDate] = useState(null)
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [shadow, setShadow] = useState(null)
+  const [notifyTeam, setNotifyTeam] = useState(true);
+  const [arriveEarly, setArriveEarly] = useState(false);
   const dateAnimation = useRef(new Animated.Value(0)).current;
+  const locationAnimation = useRef(new Animated.Value(0)).current;
+
   const onPressInDate = () => {
     setShowDatePicker(true);
-    Animated.timing(dateAnimation, {
-      toValue: 100,
-      duration: 40,
+    Animated.spring(dateAnimation, {
+      friction: 100,
+      toValue: 220,
+      duration: 100,
       easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   };
 
   const onPressOutDate = () => {
-    Animated.timing(dateAnimation, {
+    setShowDatePicker(false);
+    Animated.spring(dateAnimation, {
+      friction: 100,
       toValue: 0,
-      duration: 40,
+      duration: 100,
       easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start(() => {
-      setShowDatePicker(false);
-    });
+      useNativeDriver: false,
+    }).start();
   };
+
+  const onSelectLocation = () => {
+    setLocation(true);
+  }
 
   const dateAnimStyle = {
     transform: [
@@ -126,27 +139,16 @@ const CreateEvent = props => {
     elevation: 2,
     shadowRadius: 2,
     shadowColor: '#000000',
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowOffset: { height: 2 },
+    backgroundColor: 'white'
   };
   const shadowStyle = {
     borderColor: theme.primaryIconClr,
-    shadowColor: theme.primaryIconClr,
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    shadowOffset: {
-      height: 2,
-    },
-    elevation: 2,
   }
 
   return (
-    <SafeAreaView>
-    <Modal
-      visible={visible}
-      transparent={true}
-      statusBarTranslucent={true}
-      animationType="slide">
+    <SafeAreaView style={{ backgroundColor: 'white'}}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContentContainer}>
           <View style={styles.modalHeader}>
@@ -159,49 +161,37 @@ const CreateEvent = props => {
               <UiInput
                 placeholder="Title"
                 borderTheme="underline"
-                fontSize={20}
+                fontSize={18}
                 style={{ marginBottom: 20 }}
               />
               <UiToggle labelLeft="Game" labelRight="Practice" />
               <Text style={styles.formLabels}>Date</Text>
               <Pressable 
-                onPressIn={() => {
-                  onPressInDate();
-                  if(!shadow){ setShadow(shadowStyle)} else{ setShadow(null) }
+                onPress={() => {
+                  if(!shadow){ onPressInDate(); setShadow(shadowStyle);} else{ onPressOutDate(); setShadow(null); }
                 }} 
-                onPressOut={onPressOutDate}
                 style={[ifCircle, {marginBottom: 10}, shadow]}
               >
                 <View style={{flexDirection: 'column'}}>
                   <View style={[styles.dateContainer]}>
-                    <Text style={{color: 'grey'}}>{date ? moment(date).format('dddd, D MMM YYYY') : moment().format('dddd, D MMM YYYY')}</Text>
+                    <Text style={{color: date ? 'black' : 'grey', shadowOpacity: 0, fontSize: 16}}>{date ? moment(date).format('dddd, D MMM YYYY') : 'Please Select'}</Text>
                     <View style={styles.iconContainer}>
                       <Icon color={showDatePicker ? '#e51b23' : '#A8A4B8'} name="calendar-outline" size={20} />
                     </View>
                   </View>
-                  <Animated.View style={dateAnimStyle}>
-                  { showDatePicker ?
-                    <DatePicker
-                      date={date}
-                      onDateChange={setDate}
-                      mode={'date'}
-                    />
-                    :
-                    null
-                  }
+                  <Animated.View style={{height: dateAnimation, width: '100%', paddingRight: 20}}>
+                    { showDatePicker ?
+                      <DatePicker
+                        date={date || new Date()}
+                        onDateChange={setDate}
+                        mode={'date'}
+                      />
+                      :
+                      null
+                    }
                   </Animated.View>
                 </View>
               </Pressable>
-              {/* <UiInput
-                value={date}
-                placeholder="Thursday, 24 Nov 2020"
-                borderTheme="circle"
-                fontSize={14}
-                icon="calendar-outline"
-                style={{ marginBottom: 10, height: 40  }}
-                openOnFocus={() => setShowDatePicker(true)}
-                closeOnBlur={() => setShowDatePicker(false)}
-              /> */}
               <View
                 style={{
                   flexDirection: 'row',
@@ -223,13 +213,14 @@ const CreateEvent = props => {
                 />
               </View>
               <Text style={styles.formLabels}>Location</Text>
-              <UiInput
-                placeholder="123 Ramerville Dr."
-                borderTheme="circle"
-                fontSize={14}
-                icon="location-outline"
-                style={{ marginBottom: 10, height: 40 }}
-              />
+              <TouchableOpacity onPress={onSelectLocation} style={[ifCircle, {marginBottom: 10}, shadow]}>
+                <View style={[styles.dateContainer]}>
+                  <Text style={{color: locationValue === 'Please Select' ? 'grey' : 'black', shadowOpacity: 0, fontSize: 16}}>{locationValue}</Text>
+                  <View style={styles.iconContainer}>
+                    <Icon color={showDatePicker ? '#e51b23' : '#A8A4B8'} name="location-outline" size={20} />
+                  </View>
+                </View>
+              </TouchableOpacity>
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown
                 modalOffsetY={80}
@@ -240,6 +231,21 @@ const CreateEvent = props => {
                 placeholder="Choose teams"
                 size="large"
               />
+              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50, marginTop: 10}}>
+                <Text style={styles.optionLabels}>Notify Team</Text>
+                <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
+                  <Switch value={notifyTeam} onChange={() => setNotifyTeam(!notifyTeam)}/>
+                </View>
+              </View>
+              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50, marginBottom: 10}}>
+                <Text style={styles.optionLabels}>Arrive Early</Text>
+                <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
+                  <Switch value={arriveEarly} onChange={() => setArriveEarly(!arriveEarly)}/>
+                </View>
+              </View>
+              <View style={[{flexDirection: 'column'}]}>
+                <UiTextArea placeholder={'Extra Notes'} style={ifCircle}/>
+              </View>
             </View>
           </ScrollView>
         </View>
@@ -249,7 +255,7 @@ const CreateEvent = props => {
             type="tertiary"
             primaryClr={theme.buttonTertiaryText}
             secondaryClr={theme.buttonTertiaryBg}
-            onPress={props.onClose}
+            onPress={() => props.navigation.goBack()}
           />
           <UiButton
             label="Create"
@@ -260,7 +266,7 @@ const CreateEvent = props => {
           />
         </View>
       </View>
-    </Modal>
+      <EventLocation showLocation={location} closeLocation={() => setLocation(false)} onSelect={(aValue) => setLocationValue(aValue)}/>
     </SafeAreaView>
   );
 };
@@ -273,12 +279,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     height: '100%',
-    backgroundColor: '#F2F2F2',
-    ...Platform.select({
-      ios: {
-        paddingTop: 50,
-      },
-    }),
+    backgroundColor: '#F2F2F2'
   },
   modalContentContainer: {
     width: '100%',
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
     padding: 30,
   },
   modalBody: {
-    padding: 30,
+    padding: 20,
     paddingTop: 0,
     marginBottom: 56,
   },
@@ -305,8 +306,8 @@ const styles = StyleSheet.create({
   },
   formHeading: {
     color: '#1E1E1E',
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '600',
     // textShadowOffset: {width: 2, height: 2},
     // textShadowRadius: 10,
     // textShadowColor: '#dadada',
@@ -317,6 +318,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
+  optionLabels: {
+    color: '#A19EAE',
+    fontSize: 16,
+  },
   iconContainer: {
     position: 'absolute',
     right: 12
@@ -325,7 +330,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     padding: 10,
-    alignItems: 'center'
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: 'white',
+    borderRadius: 10
   }
 });
 

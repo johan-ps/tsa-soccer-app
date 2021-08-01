@@ -12,9 +12,9 @@ export const getAnnouncements = () => {
         `http://${environmentUrl}/api/announcements`,
       );
 
-      if (!response.ok) {
-        throw new Error('Something went wrong!');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Something went wrong!');
+      // }
 
       const resData = await response.json();
       dispatch({

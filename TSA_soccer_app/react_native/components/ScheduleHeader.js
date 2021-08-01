@@ -6,6 +6,7 @@ import {
   View,
   TouchableHighlight,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -22,7 +23,7 @@ const ScheduleHeader = props => {
   useEffect(() => {
     let newDatesArray = [];
     let date = moment();
-    while (endDate.diff(date, 'days') > 0) {
+    while (endDate.diff(date, 'days') >= 0) {
       newDatesArray.push(date.clone());
       date.add(1, 'days');
     }
@@ -31,8 +32,13 @@ const ScheduleHeader = props => {
 
   return (
     <View style={styles.container}>
-      <View>
+      <View style={{flexDirection: 'row'}}>
+        <View style={{justifyContent: 'flex-end', width: '50%'}}>
         <Text style={styles.header}>{currentDate.format('MMM YYYY')}</Text>
+        </View>
+        <TouchableOpacity onPress={() => props.onPress()} style={{justifyContent: 'flex-end', alignItems: 'flex-end', width: '50%', paddingRight: 10}}>
+          <Icon name="calendar-sharp" size={25} color="black" />
+        </TouchableOpacity>
       </View>
       <ScrollView
         horizontal={true}

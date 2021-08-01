@@ -1,23 +1,19 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useColorScheme, Platform } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Text, View, StyleSheet } from 'react-native';
 
-import HomeScreen from '../screens/HomeScreen';
 import AnnouncementScreen from '../screens/AnnouncementScreen';
-import ScheduleScreen from '../screens/ScheduleScreen';
 import MessagesScreen from '../screens/MessagesScreen';
-import TeamScreen from '../screens/TeamScreen';
 import MoreScreen from '../screens/MoreScreen';
 import * as ThemeActions from '../store/actions/ThemeActions';
 import TeamRosterNavigator from './TeamRosterNavigator';
-import ScheduleTopNavigator from './ScheduleTopNavigator';
 import * as userActions from '../store/actions/UserActions';
 import ScheduleEventNavigator from './ScheduleEventNavigator';
 import SettingsNavigator from './SettingsNavigator';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const MainNav = createBottomTabNavigator();
 
@@ -42,6 +38,17 @@ const MainNavigator = () => {
     loadUserData();
   }, [dispatch, scheme, loadUserData]);
 
+  const getTabBarVisible = route => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+    // const routeName = route.state
+    // ? route.state.routes[route.state.index].name
+    // : '';
+    if (routeName === 'Event' || routeName === 'CreateEvent') {
+      return false;
+    }
+    return true;
+  };
+
   return (
     <MainNav.Navigator
       screenOptions={({ route }) => ({
@@ -60,8 +67,6 @@ const MainNavigator = () => {
             iconName = 'apps';
           }
 
-          // You can return any component that you like here!
-          //return <Ionicons name={iconName} size={size} color={color} />;
           return (
             <View style={styles.tabBarIconContainer}>
               <Icon
@@ -69,20 +74,10 @@ const MainNavigator = () => {
                 color={focused ? theme.primaryIconClr : theme.secondaryIconClr}
                 size={focused ? 23 : 21}
               />
-              {/* <Text
-                numberOfLines={1}
-                style={{
-                  color: focused
-                    ? theme.primaryIconClr
-                    : theme.secondaryIconClr,
-                  fontSize: focused ? 12 : 10,
-                  top: 2,
-                }}>
-                {route.name}
-              </Text> */}
             </View>
           );
         },
+        tabBarVisible: getTabBarVisible(route),
       })}
       tabBarOptions={{
         showLabel: false,

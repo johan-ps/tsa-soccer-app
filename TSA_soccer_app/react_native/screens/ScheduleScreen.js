@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, SafeAreaView, Pressable } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 import { AddButton, UiButton } from '../components/_components';
 import CreateEvent from '../components/CreateEvent';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
@@ -8,55 +15,88 @@ import ScheduleHeader from '../components/ScheduleHeader';
 import moment from 'moment';
 import ScheduleCardSmall from '../components/ScheduleCardSmall';
 import CalenderScreen from '../screens/CalendarScreen';
+import { useSelector } from 'react-redux';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const ScheduleScreen = ({ navigation }) => {
   const [createEvent, setCreateEvent] = useState(false);
   const [viewCalender, setViewCalender] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const theme = useSelector(state => state.theme.colors);
 
-  // useEffect(() => {
-  //   console.log(viewCalender);
-  // }, [viewCalender]);
   return (
-    <View>
+    <View style={{ backgroundColor: theme.cardBg }}>
       {viewCalender ? (
         <View>
-          <SafeAreaView>{/* <CalenderScreen /> */}</SafeAreaView>
+          <SafeAreaView>
+            <ScheduleHeader onPress={() => setViewCalender(!viewCalender)} />
+            <CalenderScreen
+              minDate={moment().subtract(1, 'day')}
+              onDayPress={day => {
+                console.log('selected day', day);
+              }}
+              renderHeader={date => {
+                return <View />;
+              }}
+              enableSwipeMonths={true}
+            />
+          </SafeAreaView>
         </View>
       ) : (
         <View>
           <SafeAreaView>
-            <View style={styles.container}>
-              <ScheduleHeader />
+            <View style={[styles.container, { backgroundColor: theme.cardBg }]}>
+              <ScheduleHeader onPress={() => setViewCalender(!viewCalender)} />
               <View style={styles.bodyContainer}>
                 <ScheduleCard onPress={() => navigation.navigate('Event')} />
               </View>
-              <Text style={styles.subHeading}>Upcoming</Text>
-              <View
+              <Text
+                style={[styles.subHeading, { color: theme.cardTextHeading }]}>
+                Upcoming
+              </Text>
+              <ScrollView
+                horizontal={true}
+                showsVerticalScrollIndicator={false}
                 style={{
-                  justifyContent: 'center',
-                  paddingLeft: 20,
-                  paddingRight: 20,
+                  height: 200,
+                  marginLeft: 20,
                   paddingTop: 20,
+                  marginRight: 20,
                 }}>
-                <ScheduleCardSmall
-                  onPress={() => navigation.navigate('Event')}
-                />
-              </View>
+                <View
+                  style={{
+                    paddingRight: 20,
+                  }}>
+                  <ScheduleCardSmall
+                    onPress={() => navigation.navigate('Event')}
+                  />
+                </View>
+                <View
+                  style={{
+                    paddingRight: 20,
+                  }}>
+                  <ScheduleCardSmall
+                    onPress={() => navigation.navigate('Event')}
+                  />
+                </View>
+                <View
+                  style={{
+                    paddingRight: 20,
+                  }}>
+                  <ScheduleCardSmall
+                    onPress={() => navigation.navigate('Event')}
+                  />
+                </View>
+              </ScrollView>
             </View>
           </SafeAreaView>
-          {/* <AddButton
-            onPress={() => {
-              setCreateEvent(true);
-            }}
-          />
-          <CreateEvent
-            visible={createEvent}
-            onClose={() => {
-              setCreateEvent(false);
-            }}
-          /> */}
         </View>
       )}
+      <AddButton
+        onPress={() => {
+          navigation.navigate('CreateEvent');
+        }}
+      />
     </View>
   );
 };
@@ -82,6 +122,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginTop: 20,
     marginLeft: 20,
+  },
+  notchOffsetContainer: {
+    height: 70,
+    zIndex: 100,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    marginBottom: 10,
+    flexDirection: 'row',
   },
 });
 

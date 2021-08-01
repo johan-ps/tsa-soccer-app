@@ -15,6 +15,7 @@ import MapView, { Marker } from 'react-native-maps';
 import LinearGradient from 'react-native-linear-gradient';
 import TeamListPreview from '../components/TeamListPreview';
 import TeamAvailabilityPopup from '../components/TeamAvailabilityPopUp';
+import AvailabilityMenu from '../components/AvailabilityMenu';
 
 // TODO: Complete Going/Maybe/Unaivailable
 
@@ -93,23 +94,7 @@ const MessagesScreen = ({ navigation }) => {
                   onPress={() => navigation.goBack()}
                   color="white"
                 />
-                <TouchableHighlight
-                  style={{
-                    borderRadius: 5,
-                    backgroundColor: '#4ce660',
-                    opacity: 0.9,
-                    width: 35,
-                    height: 35,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                  onPress={() => {}}>
-                  <Icon
-                    name="checkmark" // checkmark/help/close Colors: #4ce660/'#a9a9a9'/'#e84343
-                    size={30}
-                    color="black"
-                  />
-                </TouchableHighlight>
+                <AvailabilityMenu />
               </View>
             </LinearGradient>
             <View style={styles.headerContainer}>

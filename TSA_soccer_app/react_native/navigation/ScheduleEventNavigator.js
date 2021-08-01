@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import EventScreen from '../screens/EventScreen';
 import ScheduleScreen from '../screens/ScheduleScreen';
+import CreateEvent from '../components/CreateEvent';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ const ScheduleEventNavigator = () => {
       }}>
       <Stack.Screen name="Schedule" component={ScheduleScreen} />
       <Stack.Screen name="Event" component={EventScreen} />
+      <Stack.Screen name="CreateEvent" component={CreateEvent} />
     </Stack.Navigator>
   );
 };

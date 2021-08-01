@@ -11,11 +11,22 @@ import { useSelector } from 'react-redux';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import ScheduleHeaderItem from './ScheduleHeaderItem';
+import * as Progress from 'react-native-progress';
 
 const ScheduleClock = props => {
   const theme = useSelector(state => state.theme.colors);
   const DEG_BETWEEN_HANDS = 6;
+  const radius = 70;
   const [clockHandPositions, setClockHandPositions] = useState([]);
+  const [topBorder, setTopBorder] = useState(0);
+  const [bottomBorder, setBottomBorder] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setTopBorder(0.2);
+      setBottomBorder(0.2);
+    }, 200)
+  }, [])
 
   useEffect(() => {
     let clockHands = [];
@@ -68,6 +79,8 @@ const ScheduleClock = props => {
   return (
     <View style={[styles.clockContainer, { backgroundColor: theme.primaryBg }]}>
       {clockHandPositions}
+      <Progress.Circle size={160} progress={topBorder} borderWidth={0} animated={true} thickness={5} color={'red'}/>
+      <Progress.Circle size={160} progress={bottomBorder} borderWidth={0} style={{position: 'absolute', transform: [{rotate: '180deg'}]}} animated={true} thickness={5} color={'red'}/>
       <View style={styles.infoHeaderContainer}>
         <View style={{ flexDirection: 'column' }}>
           <Text style={styles.infoTextTop}>
@@ -89,6 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 45,
     backgroundColor: '#dedede',
+    position: 'absolute'
   },
   clockContainer: {
     width: 140,
@@ -97,6 +111,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
+    marginLeft: 20
   },
   clockLine: {
     height: 130,
@@ -123,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   infoTextTop: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '500',
     textAlign: 'left',
     color: 'black',

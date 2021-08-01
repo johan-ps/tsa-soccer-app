@@ -1,10 +1,11 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import RNBootSplash from 'react-native-bootsplash';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import MainNavigator from './react_native/navigation/MainNavigator';
 import ThemeReducer from './react_native/store/reducers/ThemeReducer';
@@ -20,6 +21,23 @@ const rootReducer = combineReducers({
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const App = () => {
+  const [appReady, setAppReady] = useState(false);
+  const [storedCredentials, setStoredCredentials] = useState('');
+
+  const checkLoginCredentials = () => {
+    AsyncStorage.getItem('credentials')
+      .then(res => {
+        if (res) {
+          setStoredCredentials(JSON.parse(res));
+        } else {
+          setStoredCredentials(null);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   return (
     <Provider store={store}>
       <NavigationContainer
