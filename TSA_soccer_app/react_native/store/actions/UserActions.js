@@ -1,5 +1,5 @@
 export const GET_USER_DATA = 'GET_USER_DATA';
-const environmentUrl = 'localhost:3000'; // '10.0.0.59:3000'; // '10.0.2.2:3000';
+import { environmentUrl } from '../../constants/Environment';
 
 export const getUserData = () => {
   return async dispatch => {

@@ -1,5 +1,5 @@
 import Announcement from '../../models/announcement';
-const environmentUrl = 'localhost:3000';
+import { environmentUrl } from '../../constants/Environment';
 
 export const GET_ANNOUNCEMENTS = 'GET_ANNOUNCEMENTS';
 export const ADD_ANNOUNCEMENT = 'ADD_ANNOUNCEMENTS';
@@ -8,14 +8,19 @@ export const DELETE_ANNOUNCEMENT = 'DELETE_ANNOUNCEMENT';
 export const getAnnouncements = () => {
   return async dispatch => {
     try {
-      const response = await fetch(`http://${environmentUrl}/announcements`);
+      const response = await fetch(
+        `http://${environmentUrl}/api/announcements`,
+      );
 
       if (!response.ok) {
         throw new Error('Something went wrong!');
       }
 
       const resData = await response.json();
-      dispatch({ type: GET_ANNOUNCEMENTS, announcements: resData });
+      dispatch({
+        type: GET_ANNOUNCEMENTS,
+        announcements: resData.announcements,
+      });
     } catch (err) {
       console.log(err);
     }
