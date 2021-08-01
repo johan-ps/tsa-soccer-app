@@ -1,5 +1,5 @@
 import React, { useState, useReducer, useCallback } from 'react';
-import { Text, View, StyleSheet, Modal, ScrollView, Image } from 'react-native';
+import { Text, View, StyleSheet, Modal, ScrollView, Image, Platform } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 
@@ -96,56 +96,113 @@ const CreateAnnouncement = props => {
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
 
   const imagePickerHandler = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 300,
-      cropping: true,
-      includeBase64: true,
-      includeExif: true,
-    })
-      .then(img => {
-        console.log('received base64 img');
-        dispatchFormState({
-          type: FORM_INPUT_UPDATE,
-          value: {
-            uri: `data:${img.mime};base64,` + img.data,
-            width: img.width,
-            height: img.height,
-          },
-          isValid: true,
-          input: 'imageUrl',
-        });
+    if(Platform.OS === 'ios') {
+      setTimeout(() => {
+        ImagePicker.openPicker({
+          width: 300,
+          height: 300,
+          cropping: true,
+          includeBase64: true,
+          includeExif: true,
+        })
+          .then(img => {
+            console.log('received base64 img');
+            dispatchFormState({
+              type: FORM_INPUT_UPDATE,
+              value: {
+                uri: `data:${img.mime};base64,` + img.data,
+                width: img.width,
+                height: img.height,
+              },
+              isValid: true,
+              input: 'imageUrl',
+            });
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }, 400);
+    } else {
+      ImagePicker.openPicker({
+        width: 300,
+        height: 300,
+        cropping: true,
+        includeBase64: true,
+        includeExif: true,
       })
-      .catch(e => {
-        console.log(e);
-      });
+        .then(img => {
+          console.log('received base64 img');
+          dispatchFormState({
+            type: FORM_INPUT_UPDATE,
+            value: {
+              uri: `data:${img.mime};base64,` + img.data,
+              width: img.width,
+              height: img.height,
+            },
+            isValid: true,
+            input: 'imageUrl',
+          });
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    }
   };
 
   const cameraHandler = () => {
-    ImagePicker.openCamera({
-      cropping: true,
-      width: 500,
-      height: 500,
-      includeExif: true,
-      mediaType: 'photo',
-    })
-      .then(img => {
-        console.log('received image', img);
-        dispatchFormState({
-          type: FORM_INPUT_UPDATE,
-          value: {
-            uri: img.path,
-            width: img.width,
-            height: img.height,
-            mime: img.mime,
-          },
-          isValid: true,
-          input: 'imageUrl',
-        });
+    if(Platform.OS === 'ios') {
+      setTimeout(() => {
+        ImagePicker.openCamera({
+          cropping: true,
+          width: 500,
+          height: 500,
+          includeExif: true,
+          mediaType: 'photo',
+        })
+          .then(img => {
+            console.log('received image', img);
+            dispatchFormState({
+              type: FORM_INPUT_UPDATE,
+              value: {
+                uri: img.path,
+                width: img.width,
+                height: img.height,
+                mime: img.mime,
+              },
+              isValid: true,
+              input: 'imageUrl',
+            });
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }, 400);
+    } else {
+      ImagePicker.openCamera({
+        cropping: true,
+        width: 500,
+        height: 500,
+        includeExif: true,
+        mediaType: 'photo',
       })
-      .catch(e => {
-        console.log(e);
-      });
+        .then(img => {
+          console.log('received image', img);
+          dispatchFormState({
+            type: FORM_INPUT_UPDATE,
+            value: {
+              uri: img.path,
+              width: img.width,
+              height: img.height,
+              mime: img.mime,
+            },
+            isValid: true,
+            input: 'imageUrl',
+          });
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    }
   };
 
   const clearImage = () => {
@@ -259,6 +316,7 @@ const CreateAnnouncement = props => {
                 {formState.inputValues.imageUrl ? (
                   <UiButton
                     icon="close"
+                    label="Delete Image"
                     type="primary"
                     primaryClr={theme.buttonSecondaryBg}
                     secondaryClr={theme.buttonSecondaryText}

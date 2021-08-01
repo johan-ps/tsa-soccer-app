@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  ScrollView,
-  FlatList,
   SafeAreaView,
   StatusBar,
   Dimensions,
+  Platform,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import LottieView from 'lottie-react-native';
@@ -34,7 +32,7 @@ import {
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
 const loadingLottieAnim = require('../assets/img/soccer-anim.json');
-import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const windowHeight = Dimensions.get('window').height;
 const statusBarHeight = StatusBar.currentHeight;
@@ -48,6 +46,7 @@ const AnnouncementScreen = () => {
   const theme = useSelector(state => state.theme.colors);
   const activeTheme = useSelector(state => state.theme.activeTheme);
   const announcements = useSelector(state => state.announcements);
+  const userData = useSelector(state => state.userData);
   const dispatch = useDispatch();
 
   const [scrollUpperBound, setScrollUpperBound] = useState(0);
@@ -60,15 +59,15 @@ const AnnouncementScreen = () => {
   const reanimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
-      marginBottom: 70,
+      marginBottom: 90,
     };
   }, []);
   const refreshBound = 90;
+
   const options = {
     enableVibrateFallback: true,
-    ignoreAndroidSystemSettings: false
+    ignoreAndroidSystemSettings: true,
   };
-  
 
   useDerivedValue(() => {
     if (addBtnRef.current && searchBarRef.current) {
@@ -92,23 +91,36 @@ const AnnouncementScreen = () => {
     offsetY.value = translateY.value;
   });
 
-  const loadAnnouncements = useCallback(() => {
-    ReactNativeHapticFeedback.trigger("impactLight", options);
-    dispatch(announcementActions.getAnnouncements());
+  const loadAnnouncements = useCallback(async () => {
+    try {
+      ReactNativeHapticFeedback.trigger(
+        Platform.OS === 'ios' ? 'impactLight' : 'clockTick',
+        options,
+      );
+      await dispatch(announcementActions.getAnnouncements());
+      translateY.value = withSpring(
+        0,
+        {
+          damping: 100,
+          mass: 10,
+          stiffness: 1000,
+          overshootClamping: true,
+          restDisplacementThreshold: 0,
+          restSpeedThreshold: 0,
+        },
+        () => {
+          refreshing.value = false;
+        },
+      );
+    } catch (err) {
+      console.log(err);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   useDerivedValue(() => {
     if (refreshing.value) {
       runOnJS(loadAnnouncements)();
-      refreshing.value = false;
-      translateY.value = withSpring(0, {
-        damping: 100,
-        mass: 10,
-        stiffness: 1000,
-        overshootClamping: true,
-        restDisplacementThreshold: 0,
-        restSpeedThreshold: 0,
-      });
     }
   });
 
@@ -128,14 +140,17 @@ const AnnouncementScreen = () => {
       }
       let ty = event.translationY + context.translateY;
       if (ty > 8) {
-        let friction =
-          Math.pow(1 - Math.min(ty / scrollUpperBound, 1), 2) * 0.6;
+        let friction = Math.pow(1 - Math.min(ty / 3000, 1), 2) * 0.6;
         translateY.value = ty * friction;
       } else {
         translateY.value = ty;
       }
 
-      if (Math.abs(translateY.value) > scrollUpperBound) {
+      if (
+        (Math.abs(translateY.value) > scrollUpperBound &&
+          scrollUpperBound !== 0) ||
+        (scrollUpperBound === 0 && translateY.value < 0)
+      ) {
         translateY.value = -scrollUpperBound;
       }
     },
@@ -145,21 +160,20 @@ const AnnouncementScreen = () => {
       }
       if (context.translateY === 0 && event.translationY > 0) {
         if (event.translationY > refreshBound) {
-          refreshing.value = true;
-          // translateY.value = withSpring(
-          //   refreshBound,
-          //   {
-          //     damping: 100,
-          //     mass: 10,
-          //     stiffness: 1000,
-          //     overshootClamping: true,
-          //     restDisplacementThreshold: 0,
-          //     restSpeedThreshold: 0,
-          //   },
-          //   () => {
-          //     refreshing.value = true;
-          //   },
-          // );
+          translateY.value = withSpring(
+            refreshBound,
+            {
+              damping: 100,
+              mass: 10,
+              stiffness: 1000,
+              overshootClamping: true,
+              restDisplacementThreshold: 0,
+              restSpeedThreshold: 0,
+            },
+            () => {
+              refreshing.value = true;
+            },
+          );
         } else {
           translateY.value = withSpring(0, {
             damping: 100,
@@ -198,7 +212,19 @@ const AnnouncementScreen = () => {
     },
   }) => {
     if (height > windowHeight) {
-      setScrollUpperBound(height - windowHeight + 56 + statusBarHeight);
+      let containerHeight = height - windowHeight + 56 + statusBarHeight;
+      if (Math.abs(translateY.value) > containerHeight) {
+        translateY.value = -containerHeight;
+      }
+      setScrollUpperBound(containerHeight);
+    } else {
+      translateY.value = 0;
+      setScrollUpperBound(0);
+
+      if (addBtnRef.current && searchBarRef.current) {
+        addBtnRef.current.onScrollUp();
+        searchBarRef.current.onScrollUp();
+      }
     }
   };
 
@@ -213,90 +239,111 @@ const AnnouncementScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.navBg }]}>
-      <StatusBar barStyle={activeTheme === 'default' ? 'dark-content' : 'light-content'}/>
-      <View style={{backgroundColor: theme.navBg, height: 50, zIndex: 100 }}></View>
-    <SafeAreaView>
-      <NavHeader
-        ref={searchBarRef}
-        iconListRight={[{ name: 'filter-outline', id: 0 }]}
-        searchable={true}
-        toggleFilter={toggleFilter}
+      <StatusBar
+        barStyle={activeTheme === 'default' ? 'dark-content' : 'light-content'}
       />
-      {announcements.length === 0 ? (
-        <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
-      ) : (
-        <SafeAreaView>
-        <View onLayout={onLayoutHandler}>
-          <LottieView
-            style={styles.lottieView}
-            autoPlay={true}
-            source={loadingLottieAnim}
+      {Platform.OS === 'ios' ? (
+        <View
+          style={[
+            styles.notchOffsetContainer,
+            { backgroundColor: theme.navBg },
+          ]}
+        />
+      ) : null}
+      <SafeAreaView style={announcements.length === 0 ? styles.container : {}}>
+        <NavHeader
+          ref={searchBarRef}
+          iconListRight={[{ name: 'filter-outline', id: 0 }]}
+          searchable={true}
+          toggleFilter={toggleFilter}
+        />
+        {announcements.length === 0 ? (
+          <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
+        ) : (
+          <SafeAreaView>
+            <View onLayout={onLayoutHandler}>
+              <LottieView
+                style={styles.lottieView}
+                autoPlay={true}
+                source={loadingLottieAnim}
+              />
+              <SafeAreaView>
+                <PanGestureHandler onGestureEvent={panGestureEvent}>
+                  <Animated.View
+                    style={[
+                      reanimatedStyle,
+                      { backgroundColor: theme.primaryBg },
+                    ]}>
+                    <View>
+                      {announcements.map(announcement => {
+                        return (
+                          <AnnouncementCard
+                            key={announcement.id}
+                            onDelete={() => {
+                              onDeleteHandler(announcement.id);
+                            }}
+                            image={announcement.imageUrl}
+                            announcementData={announcement}
+                          />
+                        );
+                      })}
+                    </View>
+                  </Animated.View>
+                </PanGestureHandler>
+              </SafeAreaView>
+            </View>
+          </SafeAreaView>
+        )}
+        {userData && userData.accessLevel > 0 ? (
+          <CreateAnnouncement
+            visible={createAnnouncement}
+            onClose={() => {
+              setCreateAnnouncemnt(false);
+            }}
           />
-        <SafeAreaView>
-          <PanGestureHandler onGestureEvent={panGestureEvent}>
-            <Animated.View
-              style={[reanimatedStyle, { backgroundColor: theme.primaryBg }]}>
-              <View>
-                {announcements.map(announcement => {
-                  return (
-                    <AnnouncementCard
-                      key={announcement.id}
-                      onDelete={() => {
-                        onDeleteHandler(announcement.id);
-                      }}
-                      image={announcement.imageUrl}
-                      announcementData={announcement}
-                    />
-                  );
-                })}
-              </View>
-            </Animated.View>
-          </PanGestureHandler>
-        </SafeAreaView>
-        </View>
-        </SafeAreaView>
-      )}
-      <AddButton
-        ref={addBtnRef}
-        onPress={() => {
-          setCreateAnnouncemnt(true);
-        }}
-      />
-      <CreateAnnouncement
-        visible={createAnnouncement}
-        onClose={() => {
-          setCreateAnnouncemnt(false);
-        }}
-      />
-      <UiModal
-        primaryLabel="Confirm"
-        secondaryLabel="Cancel"
-        visible={modalVisible}
-        title="Delete content"
-        content={
-          'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
-        }
-        onCloseHandler={onModalCloseHandler}
-        primaryBtnHandler={deleteAnnouncement}
-      />
-      
-      <UiFilterModal
-        primaryLabel="Apply"
-        secondaryLabel="Cancel"
-        visible={filterVisible}
-        title="Filter Announcements"
-        onCloseHandler={toggleFilter}
-      />
-    </SafeAreaView>
+        ) : null}
+        {userData && userData.accessLevel > 0 ? (
+          <UiModal
+            primaryLabel="Confirm"
+            secondaryLabel="Cancel"
+            visible={modalVisible}
+            title="Delete content"
+            content={
+              'Are you sure you want to remove this content? You can access this file for 7 days in your trash.'
+            }
+            onCloseHandler={onModalCloseHandler}
+            primaryBtnHandler={deleteAnnouncement}
+          />
+        ) : null}
+
+        <UiFilterModal
+          primaryLabel="Apply"
+          secondaryLabel="Cancel"
+          visible={filterVisible}
+          title="Filter Announcements"
+          onCloseHandler={toggleFilter}
+        />
+      </SafeAreaView>
+      {userData && userData.accessLevel > 0 ? (
+        <AddButton
+          ref={addBtnRef}
+          onPress={() => {
+            setCreateAnnouncemnt(true);
+          }}
+        />
+      ) : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  notchOffsetContainer: {
+    height: 50,
+    zIndex: 100,
+  },
   container: {
     width: '100%',
     height: '100%',
-    marginBottom: 70,
   },
   panContainer: {
     width: '100%',
@@ -309,7 +356,7 @@ const styles = StyleSheet.create({
     top: 5,
     left: 0,
     right: 0,
-  },
+  }
 });
 
 export default AnnouncementScreen;

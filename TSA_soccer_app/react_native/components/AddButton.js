@@ -119,21 +119,14 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     overflow: 'hidden',
     position: 'absolute',
-    bottom: 165,
-    ...Platform.select({
-      ios: {
-        bottom: 95,
-      },
-      android: {
-        bottom: 165,
-      },
-    }),
+    bottom: 95,
     right: 25,
     elevation: 10,
     shadowRadius: 10,
     shadowColor: '#F02A4B',
     shadowOpacity: 0.3,
     shadowOffset: { height: 10 },
+    zIndex: 200,
   },
   addBtn: {
     width: 60,

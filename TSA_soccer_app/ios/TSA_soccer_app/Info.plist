@@ -87,6 +87,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Toronto Soccer Association would like to upload photos from your photo gallery</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Toronto Soccer Association requires access to camera for uploading photos to your profile or posts</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

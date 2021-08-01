@@ -1,5 +1,12 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Platform,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import Animated, {
@@ -58,7 +65,10 @@ const NavHeader = forwardRef((props, ref) => {
         })}
       </View> */}
       <View style={styles.iconRightContainer}>
-        <Image style={{height: 30, width: 30}} source={require('../assets/img/CTSA_Logo.png')}/>
+        <Image
+          style={{ height: 30, width: 30 }}
+          source={require('../assets/img/CTSA_Logo.png')}
+        />
       </View>
       <View style={styles.center}>
         {searchable ? (
@@ -109,7 +119,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000000',
     shadowOpacity: 0.3,
     shadowOffset: { height: 2 },
-    zIndex: 100
+    zIndex: 100,
   },
   iconLeftContainer: {
     height: '100%',
@@ -153,7 +163,7 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5,
         borderRadius: 15,
-        height: 40
+        height: 40,
       },
     }),
   },

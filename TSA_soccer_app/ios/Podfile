@@ -14,6 +14,8 @@ target 'TSA_soccer_app' do
 
   pod 'RNReactNativeHapticFeedback', :path => '../node_modules/react-native-haptic-feedback'
 
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
   target 'TSA_soccer_appTests' do
     inherit! :complete
     # Pods for testing

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   View,
@@ -8,14 +8,24 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
+import * as Progress from 'react-native-progress';
 
 const PlayerProfileScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
+  const [border, setBorder] = useState(0)
+
+  useEffect(() => {
+    setTimeout(() => setBorder(0.8), 400)
+  }, []);
 
   // TODO: add name, team, number, position, contact info (email, number)
 
   return (
-    <View style={[styles.container, {backgroundColor: theme.moreScreenOptionsBgClr}]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.moreScreenOptionsBgClr },
+      ]}>
       {/* TODO: Back button */}
       <View style={styles.iconContainer}>
         <Icon
@@ -35,6 +45,7 @@ const PlayerProfileScreen = ({ navigation }) => {
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.headerContainer}>
           <View style={styles.profilePictureContainer}>
+            <Progress.Circle size={120} progress={border} borderWidth={0} animated={true} thickness={3} color={'red'} style={{position: 'absolute'}}/>
             <Image
               style={styles.profilePicture}
               source={{
@@ -136,8 +147,6 @@ const styles = StyleSheet.create({
   },
   profilePictureContainer: {
     borderRadius: 60,
-    borderColor: 'red',
-    borderWidth: 3,
     height: 120,
     width: 120,
     justifyContent: 'center',
@@ -190,7 +199,7 @@ const styles = StyleSheet.create({
         rotate: '-30deg',
       },
     ],
-  }
+  },
 });
 
 export default PlayerProfileScreen;

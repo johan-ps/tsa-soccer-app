@@ -77,12 +77,7 @@ const UiInput = props => {
         },
         elevation: 2,
       });
-    } else if (borderTheme === 'underline') {
-      setShadow({
-        // borderBottomWidth: 0.9,
-        // borderBottomColor: theme.primaryIconClr,
-      });
-    }
+    } 
   };
 
   const underlineAnim = {

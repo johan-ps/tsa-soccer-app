@@ -38,11 +38,11 @@ const UiTextArea = props => {
   return (
     <View>
       {/* <Text style={styles.textTitle}>{props.label}</Text> */}
-      <View style={styles.container}>
+      <View style={[styles.container], props.style}>
         <TextInput
           style={styles.textArea}
           underlineColorAndroid="transparent"
-          placeholder="Enter Details"
+          placeholder={props.placeholder || "Enter Details"}
           placeholderTextColor={'#9E9E9E'}
           numberOfLines={10}
           multiline={true}

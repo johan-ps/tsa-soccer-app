@@ -1,0 +1,70 @@
+{
+    "userData": {
+        "id": 0,
+        "accessLevel": 1,
+        "name": {
+            "first": "Johan",
+            "last": "Sebastiampillai"
+        },
+        "imageUrl": "https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com",
+        "role": "player",
+        "email": "johan-ps@gmail.com",
+        "phoneNumber": "6471231234",
+        "teams": []
+    },
+    "announcements": [
+        {
+            "id": 0,
+            "date": "2020-04-04T05:40:00.000Z",
+            "title": "New Album Release",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,",
+            "type": "info",
+            "author": "Coach Gryffin",
+            "imageUrl": null,
+            "authorImgUrl": "https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com"
+        },{
+            "id": 1,
+            "date": "2020-04-04T05:40:00.000Z",
+            "title": "New Album Release",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,",
+            "type": "info",
+            "author": "Coach Gryffin",
+            "imageUrl": null,
+            "authorImgUrl": "https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com"
+        },
+        {
+            "id": 2,
+            "date": "2020-04-04T05:40:00.000Z",
+            "title": "New Album Release",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,",
+            "type": "info",
+            "author": "Coach Gryffin",
+            "imageUrl": {
+                "uri": "https://images.unsplash.com/photo-1545559054-8f4f9e855781?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
+            },
+            "authorImgUrl": "https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com"
+        },
+        {
+            "id": 3,
+            "date": "2020-04-04T05:40:00.000Z",
+            "title": "New Album Release",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,",
+            "type": "info",
+            "author": "Coach Gryffin",
+            "imageUrl": null,
+            "authorImgUrl": "https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com"
+        },
+        {
+            "id": 4,
+            "date": "2020-04-04T05:40:00.000Z",
+            "title": "New Album Release",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dui sapien, gravida at justo et, dapibus malesuada odio. Morbi eget fermentum lacus. Aenean dictum mauris nibh,",
+            "type": "info",
+            "author": "Coach Gryffin",
+            "imageUrl": {
+                "uri": "https://images.unsplash.com/photo-1558258695-39d4595e049c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
+            },
+            "authorImgUrl": "https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com"
+        }
+    ]
+}
