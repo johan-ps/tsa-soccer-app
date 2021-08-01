@@ -103,6 +103,14 @@ const UiInput = props => {
     };
   });
 
+  const autoCompleteType = () => {
+    if (contentType === 'none') {
+      return 'off';
+    } else {
+      return contentType;
+    }
+  };
+
   return (
     <Pressable onPress={onFocus} style={[styles.inputContainer, props.style]}>
       <TextInput
@@ -117,7 +125,7 @@ const UiInput = props => {
         onBlur={onBlur}
         ref={inputRef}
         textContentType={contentType}
-        autoCompleteType={contentType}
+        autoCompleteType={autoCompleteType()}
         secureTextEntry={contentType === 'password' && !showInput}
       />
       <Animated.Text style={[styles.placeholderContainer, placeholderAnim]}>
