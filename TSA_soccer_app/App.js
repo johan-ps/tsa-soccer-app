@@ -1,16 +1,16 @@
 import 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import RNBootSplash from 'react-native-bootsplash';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import MainNavigator from './react_native/navigation/MainNavigator';
 import ThemeReducer from './react_native/store/reducers/ThemeReducer';
 import AnnouncementReducer from './react_native/store/reducers/AnnouncementReducer';
 import UserReducer from './react_native/store/reducers/UserReducer';
+import * as userActions from './react_native/store/actions/UserActions';
 
 const rootReducer = combineReducers({
   theme: ThemeReducer,
@@ -21,29 +21,19 @@ const rootReducer = combineReducers({
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const App = () => {
-  const [appReady, setAppReady] = useState(false);
-  const [storedCredentials, setStoredCredentials] = useState('');
+  useEffect(() => {
+    const init = async () => {
+      await store.dispatch(userActions.checkAuthToken());
+    };
 
-  const checkLoginCredentials = () => {
-    AsyncStorage.getItem('credentials')
-      .then(res => {
-        if (res) {
-          setStoredCredentials(JSON.parse(res));
-        } else {
-          setStoredCredentials(null);
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
+    init().finally(async () => {
+      await RNBootSplash.hide({ fade: true });
+    });
+  }, []);
 
   return (
     <Provider store={store}>
-      <NavigationContainer
-        onReady={() => {
-          RNBootSplash.hide({ fade: true });
-        }}>
+      <NavigationContainer>
         <MainNavigator />
       </NavigationContainer>
     </Provider>

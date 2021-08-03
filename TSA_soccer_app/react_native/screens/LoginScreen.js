@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useReducer, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,76 @@ import {
   Pressable,
   Keyboard,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { UiInput, UiButton, UiIconButton } from '../components/_components';
+import * as userActions from '../store/actions/UserActions';
+
+const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+
+const formInit = {
+  inputValues: {
+    username: '',
+    password: '',
+  },
+  inputValidities: {
+    username: true,
+    password: true,
+  },
+  formIsValid: true,
+};
+
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value,
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid,
+    };
+    let updatedFormIsValid = true;
+    for (let key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValues: updatedValues,
+      inputValidities: updatedValidities,
+    };
+  } else {
+    return formInit;
+  }
+};
 
 const LoginScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
+  const userData = useSelector(state => state.userData);
+
+  const onChangeText = useCallback(
+    (inputId, inputValue) => {
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: true,
+        input: inputId,
+      });
+    },
+    [dispatchFormState],
+  );
+
+  const loginHandler = async () => {
+    Keyboard.dismiss();
+    await dispatch(
+      userActions.loginUser({
+        username: formState.inputValues.username,
+        password: formState.inputValues.password,
+      }),
+    );
+    navigation.goBack();
+  };
+
   return (
     <KeyboardAvoidingView behavior="position">
       <Pressable
@@ -45,16 +112,25 @@ const LoginScreen = ({ navigation }) => {
         </View>
         <View style={styles.body}>
           <UiInput
+            id="username"
+            initialValue={formState.inputValues.password}
+            inputValidities={formState.inputValidities.username}
             contentType="username"
             placeholder="Username"
             style={styles.marginBottom}
+            onInputChange={onChangeText}
           />
           <UiInput
+            id="password"
+            initialValue={formState.inputValues.password}
+            inputValidities={formState.inputValidities.password}
             contentType="password"
             placeholder="Password"
             icon={{ name: 'eye-outline', altName: 'eye-off-outline', size: 26 }}
+            onInputChange={onChangeText}
           />
           <UiButton
+            onPress={loginHandler}
             label="Login"
             width="100%"
             borderRadius={8}

@@ -24,7 +24,7 @@ const MainNavigator = () => {
 
   const loadUserData = useCallback(async () => {
     try {
-      await dispatch(userActions.getUserData());
+      await dispatch(userActions.loginUser());
     } catch (err) {
       console.log(err);
     }

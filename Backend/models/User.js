@@ -55,13 +55,13 @@ class User {
     }
 
     static findOneByUsername(username) {
-        let sql = `SELECT id, username, password FROM USERS WHERE username = '${ username }' LIMIT 1`;
+        let sql = `SELECT * FROM USERS WHERE username = '${ username }' LIMIT 1`;
 
         return db.execute(sql);
     }
 
     static findOneById(id) {
-        let sql = `SELECT id, username, password FROM USERS WHERE id = '${ id }' LIMIT 1`;
+        let sql = `SELECT * FROM USERS WHERE id = '${ id }' LIMIT 1`;
 
         return db.execute(sql);
     }

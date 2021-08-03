@@ -1,22 +1,20 @@
-import { GET_USER_DATA } from '../actions/UserActions';
+import { LOGIN_USER, LOGOUT_USER } from '../actions/UserActions';
 
 const INITIAL_STATE = {
+  authenticated: false,
   accessLevel: 0,
-  name: {
-    first: 'John',
-    last: 'Doe',
-  },
-  imageUrl: '',
-  role: 'player',
-  email: '',
-  phoneNumber: '',
-  teams: [],
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case GET_USER_DATA:
-      return action.userData;
+    case LOGIN_USER:
+      return {
+        ...action.userData.user,
+        authenticated: action.userData.success,
+        token: action.userData.token,
+      };
+    case LOGOUT_USER:
+      return INITIAL_STATE;
     default:
       return state;
   }

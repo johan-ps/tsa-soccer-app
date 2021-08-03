@@ -1,5 +1,13 @@
 import React, { useState, useReducer, useCallback } from 'react';
-import { Text, View, StyleSheet, Modal, ScrollView, Image, Platform } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Modal,
+  ScrollView,
+  Image,
+  Platform,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 
@@ -96,7 +104,7 @@ const CreateAnnouncement = props => {
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
 
   const imagePickerHandler = () => {
-    if(Platform.OS === 'ios') {
+    if (Platform.OS === 'ios') {
       setTimeout(() => {
         ImagePicker.openPicker({
           width: 300,
@@ -150,7 +158,7 @@ const CreateAnnouncement = props => {
   };
 
   const cameraHandler = () => {
-    if(Platform.OS === 'ios') {
+    if (Platform.OS === 'ios') {
       setTimeout(() => {
         ImagePicker.openCamera({
           cropping: true,
@@ -214,18 +222,12 @@ const CreateAnnouncement = props => {
     });
   };
 
-  const createAnnouncementHandler = () => {
-    dispatch(
+  const createAnnouncementHandler = async () => {
+    await dispatch(
       announcementActions.addAnnouncement({
-        id: Math.random(),
-        date: new Date(),
         title: '',
         description: formState.inputValues.description,
-        type: '',
-        author: 'Gryffin',
-        imageUrl: formState.inputValues.imageUrl,
-        authorImgUrl:
-          'https://cps-static.rovicorp.com/3/JPG_400/MI0004/652/MI0004652833.jpg?partner=allrovi.com',
+        image: formState.inputValues.imageUrl,
         teams: formState.inputValues.teams,
       }),
     );

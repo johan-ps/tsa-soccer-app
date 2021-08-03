@@ -13,22 +13,45 @@ exports.getAllUsers = async (req, res, next) => {
 };
 
 exports.loginUser = async (req, res, next) => {
-    const { username, password } = req.body;
+    const { username = null, password = null } = req.body;
 
     try {
-        const [[user], _] = await User.findOneByUsername(username);
-        // generate hashed password
-        const valid = await bcrypt.compare(password, user.password)
-
-        if (valid) {
-            // generate token
-            const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
-            res.status(200).json({ success: true, user, token });
+        if (username && password) {
+            const [[user], _] = await User.findOneByUsername(username);
+            // generate hashed password
+            const valid = await bcrypt.compare(password, user.password)
+            
+            if (valid) {
+                // generate token
+                const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+                res.status(200).json({ success: true, user, token });
+            } else {
+                res.status(404).json({ success: false, message: "Invalid username or password" });
+            }
+        } else {
+            res.status(404).json({ success: false, message: "Invalid username or password" });
         }
-        
-        res.status(200).json({ success: false, message: "Invalid username or password" });
     } catch (error) {
         next(error);
+    }
+}
+
+exports.session = async (req, res, next) => {
+    if (req.headers && req.headers['x-auth-token'] && req.headers['x-auth-token'].split(' ')[1]) {
+        const token = req.headers['x-auth-token'].split(' ')[1];
+
+        try {
+            const decode = jwt.verify(token, process.env.JWT_SECRET);
+            const [user, _] = await User.findOneById(decode.id);
+
+            if (user && user.length === 1) {
+                res.status(200).json({ success: true, user: user[0] });
+            }
+        } catch (error) {
+            next(error);
+        }
+    } else {
+        res.json({ success: false, message: 'Unauthorized access' })
     }
 }
 

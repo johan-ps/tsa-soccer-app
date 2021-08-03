@@ -15,6 +15,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector, useDispatch } from 'react-redux';
 import { SettingsActionBtn, UiButton } from '../components/_components';
 import * as ThemeActions from '../store/actions/ThemeActions';
+import * as userActions from '../store/actions/UserActions';
 
 const MoreScreen = ({ navigation }) => {
   const STYLES = ['default', 'light-content'];
@@ -87,9 +88,9 @@ const MoreScreen = ({ navigation }) => {
     },
     {
       id: 3,
-      title: userData && userData.accessLevel > 0 ? 'Log Out' : 'Log In',
+      title: userData && userData.authenticated ? 'Log Out' : 'Log In',
       icon: {
-        icon: userData && userData.accessLevel > 0 ? 'log-out' : 'log-in',
+        icon: userData && userData.authenticated ? 'log-out' : 'log-in',
         color: '#eda3bd',
         backgroundColor: '#533159',
         type: 'round',
@@ -101,8 +102,12 @@ const MoreScreen = ({ navigation }) => {
         backgroundColor: '#45426d',
         size: 24,
       },
-      onPress() {
-        navigation.navigate('Login');
+      async onPress() {
+        if (userData && userData.authenticated) {
+          await dispatch(userActions.logoutUser());
+        } else {
+          navigation.navigate('Login');
+        }
       },
     },
   ];
@@ -135,15 +140,19 @@ const MoreScreen = ({ navigation }) => {
         //hidden={hidden}
       />
       <View style={styles.headerContainer}>
-        <Image
-          style={styles.profilePicture}
-          source={{
-            uri: userData.imageUrl,
-          }}
-        />
-        <Text style={[styles.title, { color: theme.cardHClr }]}>
-          {`${userData.name.first} ${userData.name.last}`}
-        </Text>
+        {userData.authenticated ? (
+          <View>
+            <Image
+              style={styles.profilePicture}
+              source={{
+                uri: userData.imageUrl,
+              }}
+            />
+            <Text style={[styles.title, { color: theme.cardHClr }]}>
+              {`${userData.firstName} ${userData.lastName}`}
+            </Text>
+          </View>
+        ) : null}
         {settingsOptions.map(setting => (
           <SettingsActionBtn key={setting.id} {...setting} />
         ))}

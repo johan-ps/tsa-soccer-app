@@ -1,5 +1,7 @@
 import Announcement from '../../models/announcement';
 import { environmentUrl } from '../../constants/Environment';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CONST from '../../constants/Constants';
 
 export const GET_ANNOUNCEMENTS = 'GET_ANNOUNCEMENTS';
 export const ADD_ANNOUNCEMENT = 'ADD_ANNOUNCEMENTS';
@@ -12,14 +14,17 @@ export const getAnnouncements = () => {
         `http://${environmentUrl}/api/announcements`,
       );
 
-      // if (!response.ok) {
-      //   throw new Error('Something went wrong!');
-      // }
+      if (!response.ok) {
+        throw new Error('Something went wrong!');
+      }
 
       const resData = await response.json();
+      const announcements = resData.announcements.sort((a, b) =>
+        a.date < b.date ? 1 : a.date > b.date ? -1 : 0,
+      );
       dispatch({
         type: GET_ANNOUNCEMENTS,
-        announcements: resData.announcements,
+        announcements,
       });
     } catch (err) {
       console.log(err);
@@ -28,19 +33,44 @@ export const getAnnouncements = () => {
 };
 
 export const addAnnouncement = announcementData => {
-  return {
-    type: ADD_ANNOUNCEMENT,
-    announcement: new Announcement(
-      announcementData.id,
-      announcementData.date,
-      announcementData.title,
-      announcementData.description,
-      announcementData.type,
-      announcementData.author,
-      announcementData.imageUrl,
-      announcementData.authorImgUrl,
-      announcementData.teams,
-    ),
+  return async dispatch => {
+    try {
+      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
+
+      if (!authToken) {
+        throw new Error('No token set');
+      }
+
+      const formData = new FormData();
+      for (const key in announcementData) {
+        formData.append(key, announcementData[key]);
+      }
+
+      const response = await fetch(
+        `http://${environmentUrl}/api/announcements/add`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'x-auth-token': `Bearer ${authToken}`,
+          },
+          body: new FormData(),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Something went wrong!');
+      }
+
+      const resData = await response.json();
+
+      dispatch({
+        type: GET_ANNOUNCEMENTS,
+        announcements: resData.announcements,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 };
 

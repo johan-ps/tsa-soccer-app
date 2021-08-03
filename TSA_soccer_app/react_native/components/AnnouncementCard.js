@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
-import { UiMenu } from '../components/_components';
+import { UiMenu, UiImage } from '../components/_components';
 import * as Util from '../Util/utilities';
 
 const AnnouncementCard = props => {
@@ -16,7 +16,7 @@ const AnnouncementCard = props => {
     description,
     type,
     author,
-    imageUrl,
+    image,
     authorImgUrl,
     authorId = 0,
   } = props.announcementData;
@@ -69,16 +69,12 @@ const AnnouncementCard = props => {
           <UiMenu onPress={onSelectOption} options={menuOptions} />
         </View>
         <View style={styles.body}>
-          {imageUrl ? (
-            <View style={styles.imageContainer}>
-              {/* <Image style={styles.image} source={require('../assets/images/kids-playing-soccer.jpg')} resizeMode='cover' /> */}
-              <Image
-                style={styles.image}
-                source={imageUrl}
-                resizeMode="cover"
-              />
-            </View>
-          ) : null}
+          <UiImage
+            imageViewStyle={styles.imageContainer}
+            style={styles.image}
+            source={image}
+            resizeMode="cover"
+          />
           <View style={styles.bodyContentWrapper}>
             <Text
               style={[styles.bodyContent, { color: theme.cardTextContent }]}>
