@@ -34,6 +34,7 @@ const ScheduleClock = props => {
       if (i % 5 === 0) {
         clockHands.push(
           <View
+            key={i + Math.random()}
             style={[
               styles.clockLine,
               { transform: [{ rotate: i * DEG_BETWEEN_HANDS + 'deg' }] },
@@ -42,6 +43,7 @@ const ScheduleClock = props => {
         );
         clockHands.push(
           <View
+            key={i + Math.random()}
             style={[
               styles.clockLineCover,
               {
@@ -54,6 +56,7 @@ const ScheduleClock = props => {
       } else {
         clockHands.push(
           <View
+            key={i + Math.random()}
             style={[
               styles.clockLineSmall,
               { transform: [{ rotate: i * DEG_BETWEEN_HANDS + 'deg' }] },
@@ -62,6 +65,7 @@ const ScheduleClock = props => {
         );
         clockHands.push(
           <View
+            key={i + Math.random()}
             style={[
               styles.clockLineCoverSmall,
               {

@@ -35,6 +35,7 @@ const UiDropdown = props => {
   const [selectedId, setSelectedId] = useState(defaultValue || -1);
   const [selectedLabel, setSelectedLabel] = useState(placeholder);
   const [selectedValues, setSelectedValues] = useState({});
+  const [selectedLabels, setSelectedLabels] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
@@ -86,6 +87,7 @@ const UiDropdown = props => {
   const onSelectOptionHandler = (option, child = null) => {
     if (multiselect) {
       const newSelectedValues = { ...selectedValues };
+      const newSelectedLabels = [ ...selectedLabels ];
       if (selectedValues[option.id] === undefined) {
         newSelectedValues[option.id] = {
           selected: false,
@@ -99,9 +101,16 @@ const UiDropdown = props => {
         ...newSelectedValues[option.id].children,
       };
       if (child) {
-        newSelectedValues[option.id].children[child.id] =
-          !newSelectedValues[option.id].children[child.id];
+        newSelectedValues[option.id].children[child.id] = !newSelectedValues[option.id].children[child.id];
+        const index = newSelectedLabels.indexOf(child.label);
+        if (index !== -1) {
+          newSelectedLabels.splice(index, 1);
+        } else {
+          newSelectedLabels.push(child.label);
+        }
       }
+
+      setSelectedLabels(newSelectedLabels);
       setSelectedValues(newSelectedValues);
       return;
     }
@@ -289,7 +298,14 @@ const UiDropdown = props => {
         onPressIn={onFocusIn}
         onPressOut={onFocusOut}
         style={[styles.dropdownBtn]}>
-        <Text style={{ color: theme.dropdownSClr }}>{selectedLabel}</Text>
+        {selectedLabels.length === 0 && <Text style={{ color: theme.dropdownSClr }}>{selectedLabel}</Text>}
+        <View horizontal={true} style={{flexDirection: 'row', padding: 0, width: 140}}>
+        {selectedLabels.map(label => (
+          <View style={{backgroundColor: 'rgba(201,201,201,0.3)', width: 70, height: 40, borderRadius: 5, alignItems: 'center', justifyContent: 'center', marginRight: 2}}>
+            <Text numberOfLines={1} style={{fontWeight: '500'}}>{label}</Text>
+          </View>
+        ))}
+        </View>
         <Animated.View
           style={[
             styles.iconContainer,

@@ -17,7 +17,7 @@ const ScheduleHeader = props => {
   const { onPress } = props;
   const currentDate = moment();
   const [selectedDate, setSelectedDate] = useState(currentDate);
-  const endDate = moment().endOf('month');
+  const endDate = moment().add(7, 'days');
   const [datesArray, setDatesArray] = useState([]);
 
   useEffect(() => {

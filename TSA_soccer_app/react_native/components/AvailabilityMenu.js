@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, useMemo, forwardRef, useImperativeHandle, useEffect } from 'react';
 import {
   View,
   Text,
@@ -38,38 +38,50 @@ const AvailabilityMenu = forwardRef((props, ref) => {
   const optionWidth = 120;
   const optionHeight = 45;
   const bottomNavHeight = 70;
+  const [openAvailableMenu, setOpenAvailableMenu] = useState(false);
   const defaultOption = {icon: 'information-outline', color: '#1E2630'};
   const options = [{id: 0, label: 'Going', icon: 'checkmark', color: '#4ce660'}, {id: 1, label: 'Maybe', icon: 'help',  color: '#a9a9a9'}, {id: 2, label: 'Unavailable', icon: 'close', color: '#e84343'}];
   const [availability, setAvailability] = useState(defaultOption);
 
+  useEffect(() => {
+    if(props.option){
+      setAvailability(props.option);
+    }
+  }, [props.option])
+
   const onOpenHandler = () => {
-    menuIcon.current.measure((fx, fy, width, height, px, py) => {
-      setOffsetX(windowWidth - px - width);
-      // Flip by Y axis if menu hits bottom screen border
-      const y = py;
-      const x = px;
-      if (
-        y >
-        windowHeight - bottomNavHeight - optionHeight * options.length
-      ) {
-        setFlipY(true);
-        setOffsetY(windowHeight - py - bottomNavHeight);
-      } else {
-        setFlipY(false);
-        setOffsetY(y);
-      }
-      // Flip by X axis if meny hits left screen side
-      if (x - optionWidth < 0){
-        setFlipX(true);
-        setOffsetX(x)
-      }
-    });
-    setShowOptions(true);
-    opacityAnimation.value = withTiming(1, { duration: 250 });
-    menuAnimX.value = withTiming(optionWidth, { duration: 250 });
-    menuAnimY.value = withTiming(optionHeight * options.length, {
-      duration: 250,
-    });
+    if(props.onPress){
+      props.onPress();
+    }
+    else{
+      menuIcon.current.measure((fx, fy, width, height, px, py) => {
+        setOffsetX(windowWidth - px - width);
+        // Flip by Y axis if menu hits bottom screen border
+        const y = py;
+        const x = px;
+        if (
+          y >
+          windowHeight - bottomNavHeight - optionHeight * options.length
+        ) {
+          setFlipY(true);
+          setOffsetY(windowHeight - py - bottomNavHeight);
+        } else {
+          setFlipY(false);
+          setOffsetY(y);
+        }
+        // Flip by X axis if meny hits left screen side
+        if (x - optionWidth < 0){
+          setFlipX(true);
+          setOffsetX(x)
+        }
+      });
+      setShowOptions(true);
+      opacityAnimation.value = withTiming(1, { duration: 250 });
+      menuAnimX.value = withTiming(optionWidth, { duration: 250 });
+      menuAnimY.value = withTiming(optionHeight * options.length, {
+        duration: 250,
+      });
+    }
   };
 
   const optionPosition = useMemo(() => {
@@ -198,7 +210,6 @@ const AvailabilityMenu = forwardRef((props, ref) => {
     }
   };
 
-
   return (
     <View style={styles.menuContainer} ref={menuIcon} onLayout={event => {}}>
       <TouchableOpacity
@@ -233,6 +244,7 @@ export default AvailabilityMenu;
 
 const styles = StyleSheet.create({
   menuContainer: {
+    position: 'relative',
   },
   modalContainer: {
     width: '100%',
@@ -260,4 +272,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Roboto-Regular',
   },
+  absolute: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%'
+  }
 });

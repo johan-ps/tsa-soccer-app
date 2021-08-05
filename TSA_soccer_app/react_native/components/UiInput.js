@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useRef, useState } from 'react';
+import React, { useReducer, useEffect, useRef, useState, useCallback } from 'react';
 import {
   TextInput,
   StyleSheet,
@@ -13,6 +13,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { debounce } from 'lodash'
 
 const INPUT_CHANGE = 'INPUT_CHANGE';
 
@@ -37,6 +38,7 @@ const UiInput = props => {
     openOnFocus,
     closeOnBlur,
     disabled,
+    onChangeText,
     contentType = 'none',
   } = props;
   const translateAnim = useSharedValue(0);
@@ -50,7 +52,12 @@ const UiInput = props => {
   const inputRef = useRef();
   const [showInput, setShowInput] = useState(false);
 
+  const handler = useCallback(debounce((text) => onChangeText(text), 250), []);
+
   const inputHandler = text => {
+    if(onChangeText){
+      handler(text);
+    }
     dispatch({ type: INPUT_CHANGE, value: text, isValid: true });
   };
 
@@ -61,6 +68,13 @@ const UiInput = props => {
       onInputChange(id, inputState.value, inputState.isValid);
     }
   }, [inputState, onInputChange, id]);
+
+  useEffect(() => {
+    if(inputState.value !== ''){
+      translateAnim.value = withTiming(1, { duration: 150 });
+    scaleAnim.value = 1;
+    }
+  }, [])
 
   const onFocus = () => {
     if (inputRef && inputRef.current) {
