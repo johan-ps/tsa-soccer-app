@@ -7,7 +7,6 @@ import AvailabilityMenu from './AvailabilityMenu';
 import MapView, { Marker } from 'react-native-maps';
 import UiInput from './UiInput';
 import { Easing } from 'react-native-reanimated';
-import * as locations from '../data/locations.json'
 
 const EventLocation = props => {
   const { showLocation, closeLocation, onSelect } = props;
