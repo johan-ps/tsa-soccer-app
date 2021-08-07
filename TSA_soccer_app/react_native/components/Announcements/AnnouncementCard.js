@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
-import { UiMenu } from '../components/_components';
-import * as Util from '../Util/utilities';
+import { UiMenu } from '../_components';
+import * as Util from '../../Util/utilities';
 
 const AnnouncementCard = props => {
   const theme = useSelector(state => state.theme.colors);

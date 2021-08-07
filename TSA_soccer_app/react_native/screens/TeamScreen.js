@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import AddButton from '../components/AddButton';
-import PlayerListItem from '../components/PlayerListItem';
+import PlayerListItem from '../components/Schedule/PlayerListItem';
 import { useSelector } from 'react-redux';
 
 const TeamScreen = ({ navigation }) => {

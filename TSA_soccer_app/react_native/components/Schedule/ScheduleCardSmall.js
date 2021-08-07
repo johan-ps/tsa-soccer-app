@@ -151,7 +151,7 @@ const ScheduleCardSmall = props => {
 
 const styles = StyleSheet.create({
   touchableContainer: {
-    height: 200,
+    height: 180,
     width: 130,
     borderRadius: 10,
     backgroundColor: '#1E2630',

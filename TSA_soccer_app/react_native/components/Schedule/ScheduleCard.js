@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Text, StyleSheet, View, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, TouchableHighlight, useWindowDimensions } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ScheduleClock from './ScheduleClock';
@@ -8,7 +8,7 @@ import { BlurView } from "@react-native-community/blur";
 import Modal from 'react-native-modal';
 
 const ScheduleCard = props => {
-  const { onPress } = props;
+  const { onPress, item } = props;
   const [openAvailableMenu, setOpenAvailableMenu] = useState(false);
   const bigCard = useRef();
   const theme = useSelector(state => state.theme.colors);
@@ -17,6 +17,7 @@ const ScheduleCard = props => {
   const [availability, setAvailability] = useState(defaultOption);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  const { width } = useWindowDimensions();
 
   const onSelectOptionHandler = option => {
     setOpenAvailableMenu(false);
@@ -35,11 +36,11 @@ const ScheduleCard = props => {
     <TouchableOpacity
       onPress={onPress}
       ref={bigCard}
-      style={[styles.touchableContainer, {backgroundColor: theme.primaryBg}]}
+      style={[styles.touchableContainer, {backgroundColor: theme.primaryBg, width: width - 40}]}
       underlayColor="#DDDDDD" >
       <View style={{flexDirection: 'row', height: 180}}>
         <View style={{height: '100%', justifyContent: 'center', alignItems: 'center'}}>
-          <ScheduleClock />
+          <ScheduleClock startTime={item.startTime} endTime={item.endTime}/>
         </View>
         <View style={styles.container}>
           <View style={{justifyContent: 'flex-end', alignItems: 'flex-end', width: '100%'}}>
@@ -52,10 +53,10 @@ const ScheduleCard = props => {
                   <Icon name="location-outline" size={20} color="black" />
                 </View>
                 <View style={{ paddingRight: 10 }}>
-                  <Text style={styles.infoTextTop} >ScotiaBank Arena</Text>
+                  <Text style={styles.infoTextTop} >{item.location}</Text>
                 </View>
               </View>
-              <Text style={styles.text}>Practice</Text>
+              <Text style={styles.text}>{item.type === 'Other' ? item.title : item.type}</Text>
             </View>
           </View>
         </View>
@@ -113,7 +114,6 @@ const ScheduleCard = props => {
 const styles = StyleSheet.create({
   touchableContainer: {
     height: 180,
-    width: '90%',
     borderRadius: 10,
     backgroundColor: '#1E2630',
   },
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'black',
     fontWeight: '600',
-    fontSize: 30,
+    fontSize: 25,
     textAlign: 'left',
     marginBottom: 5
   },

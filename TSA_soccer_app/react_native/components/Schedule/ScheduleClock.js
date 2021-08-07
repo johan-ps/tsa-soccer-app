@@ -14,6 +14,7 @@ import ScheduleHeaderItem from './ScheduleHeaderItem';
 import * as Progress from 'react-native-progress';
 
 const ScheduleClock = props => {
+  const { startTime, endTime } = props;
   const theme = useSelector(state => state.theme.colors);
   const DEG_BETWEEN_HANDS = 6;
   const radius = 70;
@@ -88,9 +89,9 @@ const ScheduleClock = props => {
       <View style={styles.infoHeaderContainer}>
         <View style={{ flexDirection: 'column' }}>
           <Text style={styles.infoTextTop}>
-            5:30 <Text style={{ fontSize: 12 }}>pm</Text>
+            {startTime} <Text style={{ fontSize: 12 }}>pm</Text>
           </Text>
-          <Text style={styles.infoTextBottom}>- 6:30 pm</Text>
+          <Text style={styles.infoTextBottom}>- {endTime}</Text>
         </View>
       </View>
     </View>

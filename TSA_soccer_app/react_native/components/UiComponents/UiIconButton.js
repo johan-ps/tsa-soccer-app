@@ -6,7 +6,7 @@ import {
   TouchableHighlight,
   StyleSheet,
 } from 'react-native';
-import UiIcon from './UiIcon';
+import UiIcon from '../UiComponents/UiIcon';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,

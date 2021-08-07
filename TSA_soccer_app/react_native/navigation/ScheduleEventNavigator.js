@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import EventScreen from '../screens/EventScreen';
 import ScheduleScreen from '../screens/ScheduleScreen';
-import CreateEvent from '../components/CreateEvent';
+import CreateEvent from '../components/Schedule/CreateEvent';
 
 const Stack = createStackNavigator();
 

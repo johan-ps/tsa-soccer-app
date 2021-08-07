@@ -3,8 +3,8 @@ import { Text, View, StyleSheet, Modal, ScrollView, Image, Platform } from 'reac
 import { useSelector, useDispatch } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 
-import { UiButton, UiDropdown, UiTextArea, UiModal } from './_components';
-import * as announcementActions from '../store/actions/AnnouncementActions';
+import { UiButton, UiDropdown, UiTextArea, UiModal } from '../_components';
+import * as announcementActions from '../../store/actions/AnnouncementActions';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
