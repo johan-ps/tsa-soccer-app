@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     top: 5,
     left: 0,
     right: 0,
-  }
+  },
 });
 
 export default AnnouncementScreen;

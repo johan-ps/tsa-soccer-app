@@ -25,11 +25,16 @@ const SettingsActionBtn = props => {
       <View style={styles.settingBtnWrapper}>
         <View style={styles.settingsLeft}>
           <UiIcon {...icon} />
-          <Text style={styles.settingsBtnTextLeft}>{title}</Text>
+          <Text style={[styles.settingsBtnTextLeft, { color: props.mainText }]}>
+            {title}
+          </Text>
         </View>
         <View style={styles.settingsRight}>
           {data ? (
-            <Text style={styles.settingsBtnTextRight}>{data}</Text>
+            <Text
+              style={[styles.settingsBtnTextRight, { color: props.subText }]}>
+              {data}
+            </Text>
           ) : null}
           {actionType === 'button' ? (
             <UiIconButton {...iconBtn} onPress={props.onPress} />
@@ -50,6 +55,7 @@ const SettingsActionBtn = props => {
 const styles = StyleSheet.create({
   settingsContainer: {
     width: '100%',
+    paddingHorizontal: 5,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 10,

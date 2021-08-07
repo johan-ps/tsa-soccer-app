@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 
-import { UiMenu } from '../_components';
+import { UiMenu, UiImage } from '../_components';
 import * as Util from '../../Util/utilities';
+import UiIcon from '../UiComponents/UiIcon';
 
 const AnnouncementCard = props => {
   const theme = useSelector(state => state.theme.colors);
@@ -16,7 +17,7 @@ const AnnouncementCard = props => {
     description,
     type,
     author,
-    imageUrl,
+    image,
     authorImgUrl,
     authorId = 0,
   } = props.announcementData;
@@ -49,13 +50,23 @@ const AnnouncementCard = props => {
         <View style={styles.header}>
           <View style={styles.headerContentWrapper}>
             <View style={styles.headerImgWrapper}>
-              <Image
-                style={styles.headerImg}
-                source={{
-                  uri: authorImgUrl,
-                }}
-                resizeMode="cover"
-              />
+              {authorImgUrl ? (
+                <Image
+                  style={styles.headerImg}
+                  source={{
+                    uri: authorImgUrl,
+                  }}
+                  resizeMode="cover"
+                />
+              ) : (
+                <UiIcon
+                  icon="person"
+                  color="#aaa6c3"
+                  backgroundColor={theme.actionBtn}
+                  size={20}
+                  darkBg={theme.name === 'dark'}
+                />
+              )}
             </View>
             <View style={styles.headerContent}>
               <Text style={[styles.name, { color: theme.cardTextHeading }]}>
@@ -69,16 +80,12 @@ const AnnouncementCard = props => {
           <UiMenu onPress={onSelectOption} options={menuOptions} />
         </View>
         <View style={styles.body}>
-          {imageUrl ? (
-            <View style={styles.imageContainer}>
-              {/* <Image style={styles.image} source={require('../assets/images/kids-playing-soccer.jpg')} resizeMode='cover' /> */}
-              <Image
-                style={styles.image}
-                source={imageUrl}
-                resizeMode="cover"
-              />
-            </View>
-          ) : null}
+          <UiImage
+            imageViewStyle={styles.imageContainer}
+            style={styles.image}
+            source={image}
+            resizeMode="cover"
+          />
           <View style={styles.bodyContentWrapper}>
             <Text
               style={[styles.bodyContent, { color: theme.cardTextContent }]}>

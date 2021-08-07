@@ -15,6 +15,8 @@ import UiIcon from './UiComponents/UiIcon';
 import UiIconButton from './UiComponents/UiIconButton';
 import SettingsActionBtn from './SettingsActionBtn';
 import UiSwitch from './UiComponents/UiSwitch';
+import UiImage from './UiComponents/UiImage';
+import ScreenBoilerplate from './ScreenBoilerplate';
 
 export {
   AddButton,
@@ -34,4 +36,6 @@ export {
   UiIconButton,
   SettingsActionBtn,
   UiSwitch,
+  UiImage,
+  ScreenBoilerplate,
 };

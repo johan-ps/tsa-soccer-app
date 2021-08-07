@@ -13,8 +13,13 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector, useDispatch } from 'react-redux';
-import { SettingsActionBtn, UiButton } from '../components/_components';
+import {
+  SettingsActionBtn,
+  UiButton,
+  ScreenBoilerplate,
+} from '../components/_components';
 import * as ThemeActions from '../store/actions/ThemeActions';
+import * as userActions from '../store/actions/UserActions';
 
 const MoreScreen = ({ navigation }) => {
   const STYLES = ['default', 'light-content'];
@@ -27,18 +32,21 @@ const MoreScreen = ({ navigation }) => {
     {
       id: 0,
       title: 'Notifications',
+      mainText: theme.secondaryText,
+      subText: theme.secondaryText,
       icon: {
         icon: 'notifications',
-        color: '#96d8ff',
-        backgroundColor: '#243e83',
+        color: theme.name === 'dark' ? '#9ad9ff' : '#1CA5EC',
         type: 'round',
         size: 24,
+        darkBg: theme.name === 'dark',
       },
       iconBtn: {
         icon: 'chevron-forward',
-        color: '#e3e2ed',
-        backgroundColor: '#45426d',
+        color: theme.iconClr,
+        backgroundColor: theme.actionBtn,
         size: 24,
+        darkBg: theme.name === 'dark',
       },
       onPress() {
         navigation.navigate('Notifications');
@@ -47,18 +55,21 @@ const MoreScreen = ({ navigation }) => {
     {
       id: 1,
       title: 'Dark Mode',
+      mainText: theme.secondaryText,
+      subText: theme.secondaryText,
       icon: {
         icon: 'moon',
-        color: '#bbc6ff',
-        backgroundColor: '#3b3c86',
+        color: theme.name === 'dark' ? '#bac8ff' : '#5732FB',
         type: 'round',
         size: 24,
+        darkBg: theme.name === 'dark',
       },
       iconBtn: {
         icon: 'chevron-forward',
-        color: '#e3e2ed',
-        backgroundColor: '#45426d',
+        color: theme.iconClr,
+        backgroundColor: theme.actionBtn,
         size: 24,
+        darkBg: theme.name === 'dark',
       },
       data: theme.name === 'dark' ? 'On' : 'Off',
       actionType: 'toggle',
@@ -70,42 +81,82 @@ const MoreScreen = ({ navigation }) => {
     {
       id: 2,
       title: 'Help',
+      mainText: theme.secondaryText,
+      subText: theme.secondaryText,
       icon: {
         icon: 'football',
-        color: '#f9b994',
-        backgroundColor: '#4f3a5c',
+        color: theme.name === 'dark' ? '#e7a889' : '#FF6B27',
         type: 'round',
         size: 24,
+        darkBg: theme.name === 'dark',
       },
       iconBtn: {
         icon: 'chevron-forward',
-        color: '#e3e2ed',
-        backgroundColor: '#45426d',
+        color: theme.iconClr,
+        backgroundColor: theme.actionBtn,
         size: 24,
+        darkBg: theme.name === 'dark',
       },
       onPress() {},
     },
     {
       id: 3,
-      title: userData && userData.accessLevel > 0 ? 'Log Out' : 'Log In',
+      title: userData && userData.authenticated ? 'Log Out' : 'Log In',
+      mainText: theme.secondaryText,
+      subText: theme.secondaryText,
       icon: {
-        icon: userData && userData.accessLevel > 0 ? 'log-out' : 'log-in',
-        color: '#eda3bd',
-        backgroundColor: '#533159',
+        icon: userData && userData.authenticated ? 'log-out' : 'log-in',
+        color: theme.name === 'dark' ? '#eda3bd' : '#F42D5B',
         type: 'round',
         size: 24,
+        darkBg: theme.name === 'dark',
       },
       iconBtn: {
         icon: 'chevron-forward',
-        color: '#e3e2ed',
-        backgroundColor: '#45426d',
+        color: theme.iconClr,
+        backgroundColor: theme.actionBtn,
         size: 24,
+        darkBg: theme.name === 'dark',
       },
-      onPress() {
-        navigation.navigate('Login');
+      async onPress() {
+        if (userData && userData.authenticated) {
+          await dispatch(userActions.logoutUser());
+        } else {
+          navigation.navigate('Login');
+        }
       },
     },
   ];
+  const accountOptions = {
+    id: 0,
+    title:
+      userData && userData.authenticated
+        ? `${userData.firstName} ${userData.lastName}`
+        : 'Not Logged In',
+    mainText: theme.secondaryText,
+    subText: theme.secondaryText,
+    icon: {
+      icon: 'person',
+      color: '#aaa6c3',
+      type: 'round',
+      size: 34,
+      darkBg: theme.name === 'dark',
+    },
+    iconBtn: {
+      icon: 'chevron-forward',
+      color: theme.iconClr,
+      backgroundColor: theme.actionBtn,
+      size: 24,
+      darkBg: theme.name === 'dark',
+    },
+    onPress() {
+      if (userData && userData.authenticated) {
+        navigation.navigate('Account');
+      } else {
+        navigation.navigate('Login');
+      }
+    },
+  };
 
   const toggleSwitch = () => {
     let newTheme;
@@ -127,96 +178,32 @@ const MoreScreen = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: '#2f2c55' }]}>
-      <StatusBar
-        //animated={true}
-        //backgroundColor="#61dafb"
-        barStyle={statusBarStyle}
-        //hidden={hidden}
-      />
-      <View style={styles.headerContainer}>
-        <Image
-          style={styles.profilePicture}
-          source={{
-            uri: userData.imageUrl,
-          }}
-        />
-        <Text style={[styles.title, { color: theme.cardHClr }]}>
-          {`${userData.name.first} ${userData.name.last}`}
+    <ScreenBoilerplate
+      headingClr={theme.primaryText}
+      heading="Preferences"
+      style={{ backgroundColor: theme.navBg }}>
+      <View>
+        <Text style={[styles.subheading, { color: theme.primaryText }]}>
+          Account
+        </Text>
+        <SettingsActionBtn {...accountOptions} />
+        <Text style={[styles.subheading, { color: theme.primaryText }]}>
+          Settings
         </Text>
         {settingsOptions.map(setting => (
           <SettingsActionBtn key={setting.id} {...setting} />
         ))}
       </View>
-    </ScrollView>
+    </ScreenBoilerplate>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: '100%',
-    flexDirection: 'column',
-    paddingHorizontal: 30,
-  },
-  optionsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    paddingBottom: 16,
-    width: '100%',
-  },
-  optionContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    borderColor: 'grey',
-    alignItems: 'center',
-    width: '100%',
-    position: 'relative',
-    justifyContent: 'space-between',
-    paddingRight: 20,
-    paddingLeft: 20,
-    height: 45,
-  },
-  options: {
-    color: 'black',
-    fontSize: 16,
-    paddingLeft: 10,
-  },
-  profilePicture: {
-    width: 200,
-    height: 200,
-    borderRadius: 35,
-  },
-  title: {
-    fontSize: 28,
-    paddingTop: 10,
-    paddingBottom: 5,
-    marginBottom: 30,
-  },
-  headerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 50,
-    paddingBottom: 20,
-  },
-  editProfile: {
-    borderRadius: 20,
+  subheading: {
     color: 'white',
-    padding: 12,
-  },
-  editProfileButton: {
-    backgroundColor: '#e84343',
-    borderRadius: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  listHeading: {
-    fontSize: 14,
-    width: '100%',
-    padding: 8,
-    backgroundColor: '#F0F0F0',
-    color: '#696969',
+    fontFamily: 'Roboto-Regular',
+    fontSize: 20,
+    marginVertical: 20,
   },
 });
 

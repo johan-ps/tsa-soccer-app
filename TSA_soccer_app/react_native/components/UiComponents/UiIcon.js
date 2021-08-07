@@ -1,16 +1,21 @@
-import React, { useCallback } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const UiIcon = props => {
-  let {
-    icon,
-    size = 30,
-    color = 'white',
-    backgroundColor = 'black',
-    type,
-    shadow = false,
-  } = props;
+  let { icon, size = 30, type, shadow = false, darkBg = false, color } = props;
+
+  const computeBackgroundColor = () => {
+    if (props.backgroundColor) {
+      return props.backgroundColor;
+    } else {
+      if (darkBg) {
+        return props.color + '25';
+      } else {
+        return props.color + '20';
+      }
+    }
+  };
 
   const computeBorderRadius = () => {
     if (type === 'square') {
@@ -35,7 +40,7 @@ const UiIcon = props => {
       style={[
         styles.chatboxContainer,
         {
-          backgroundColor,
+          backgroundColor: computeBackgroundColor(),
           borderRadius: computeBorderRadius(),
           width: size * 2 + 10,
           height: size * 2 + 10,

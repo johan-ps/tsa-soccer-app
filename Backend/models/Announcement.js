@@ -10,41 +10,52 @@ class Announcement {
     }
 
     save() {
-        let date = new Date();
-        let year = date.getFullYear();
-        let month = date.getMonth() + 1;
-        let day = date.getDate();
-        let hours = date.getHours();
-        let min = date.getMinutes();
-        let sec = date.getSeconds();
-        let dateTimeStr = `${ year }-${ month }-${ day } ${ hours }:${ min }:${ sec }`;
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hours = date.getHours();
+        const min = date.getMinutes();
+        const sec = date.getSeconds();
+        const dateTimeStr = `${ year }-${ month }-${ day } ${ hours }:${ min }:${ sec }`;
 
-        let sql = `
+        let imageInsert = '';
+        let imageData = '';
+
+        if (this.image !== null) {
+            imageInsert = ', image'
+            imageData = `, '${ this.image }'`
+        }
+
+        const sql = `
             INSERT INTO ANNOUNCEMENTS (
                 date,
                 title,
                 description,
                 authorId,
-                teams,
-                image
+                teams
+                ${ imageInsert }
             )
             VALUES (
                 '${ dateTimeStr }',
                 '${ this.title }',
                 '${ this.description }',
                 '${ this.authorId }',
-                '[${ this.teams }]',
-                '${ this.image }'
+                '[${ this.teams }]'
+                ${ imageData }
             );
         `;
-
         return db.execute(sql);
     }
 
     static findAll() {
-        let sql = 'SELECT * FROM ANNOUNCEMENTS';
+        const sql = 'SELECT * FROM ANNOUNCEMENTS';
 
         return db.execute(sql);
+    }
+
+    static findOneByIdAndUpdate() {
+        const sql = '';
     }
 
 
