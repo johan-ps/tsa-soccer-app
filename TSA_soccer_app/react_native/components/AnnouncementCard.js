@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { UiMenu, UiImage } from '../components/_components';
 import * as Util from '../Util/utilities';
+import UiIcon from './UiIcon';
 
 const AnnouncementCard = props => {
   const theme = useSelector(state => state.theme.colors);
@@ -49,13 +50,23 @@ const AnnouncementCard = props => {
         <View style={styles.header}>
           <View style={styles.headerContentWrapper}>
             <View style={styles.headerImgWrapper}>
-              <Image
-                style={styles.headerImg}
-                source={{
-                  uri: authorImgUrl,
-                }}
-                resizeMode="cover"
-              />
+              {authorImgUrl ? (
+                <Image
+                  style={styles.headerImg}
+                  source={{
+                    uri: authorImgUrl,
+                  }}
+                  resizeMode="cover"
+                />
+              ) : (
+                <UiIcon
+                  icon="person"
+                  color="#aaa6c3"
+                  backgroundColor={theme.actionBtn}
+                  size={20}
+                  darkBg={theme.name === 'dark'}
+                />
+              )}
             </View>
             <View style={styles.headerContent}>
               <Text style={[styles.name, { color: theme.cardTextHeading }]}>

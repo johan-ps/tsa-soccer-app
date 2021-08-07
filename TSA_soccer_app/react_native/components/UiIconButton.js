@@ -64,10 +64,25 @@ const UiIconButton = props => {
     }
   };
 
+  const computeShadow = () => {
+    if (shadow) {
+      return {
+        elevation: 20,
+        shadowRadius: 10,
+        shadowColor: '#000000',
+        shadowOpacity: 0.3,
+        shadowOffset: { height: 10 },
+      };
+    } else {
+      return {};
+    }
+  };
+
   const renderPlatformSpecific = () => {
     if (Platform.OS === 'ios') {
       return (
-        <Animated.View style={[styles.buttonWrapper, scale, props.style]}>
+        <Animated.View
+          style={[styles.buttonWrapper, scale, props.style, computeShadow()]}>
           <TouchableHighlight
             onPressIn={onFocusIn}
             onPressOut={onFocusOut}
@@ -88,6 +103,7 @@ const UiIconButton = props => {
               width: size * 2 + 10,
               height: size * 2 + 10,
             },
+            computeShadow(),
           ]}>
           <TouchableNativeFeedback
             onPressIn={onFocusIn}

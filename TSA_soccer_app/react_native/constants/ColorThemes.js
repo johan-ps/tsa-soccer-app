@@ -43,6 +43,9 @@ export default {
     menuBg: '#414141',
     menuText: '#D1D1D1',
 
+    // settings
+    actionBtn: '#414141',
+
     // navigation
     navBg: '#231E20',
     navInputBg: '#414141',
@@ -82,6 +85,9 @@ export default {
     neutralDarkGrey: '#231E20',
     neutralGrey: '#414141',
     neutralLightGrey: '#C9C8C8',
+
+    // settings
+    actionBtn: '#f6f5f8',
 
     // background
     primaryBg: '#f2f2f2',

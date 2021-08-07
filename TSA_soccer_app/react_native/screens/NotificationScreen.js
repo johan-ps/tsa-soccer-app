@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { SettingsActionBtn } from '../components/_components';
+import {
+  SettingsActionBtn,
+  ScreenBoilerplate,
+} from '../components/_components';
 
 const NotificationScreen = ({ navigation }) => {
+  const theme = useSelector(state => state.theme.colors);
   const [shlToggle, setShlToggle] = useState(false);
   const [mhlToggle, setMhlToggle] = useState(false);
   const [ctToggle, setCtToggle] = useState(false);
@@ -11,18 +16,14 @@ const NotificationScreen = ({ navigation }) => {
     {
       id: 0,
       title: 'Scarborough House League',
+      mainText: theme.secondaryText,
+      subText: theme.secondaryText,
       icon: {
         icon: 'football',
-        color: '#bbc6ff',
-        backgroundColor: '#3b3c86',
+        color: theme.name === 'dark' ? '#bac8ff' : '#5732FB',
         type: 'round',
         size: 24,
-      },
-      iconBtn: {
-        icon: 'chevron-forward',
-        color: '#e3e2ed',
-        backgroundColor: '#45426d',
-        size: 24,
+        darkBg: theme.name === 'dark',
       },
       data: shlToggle ? 'On' : 'Off',
       actionType: 'toggle',
@@ -34,18 +35,14 @@ const NotificationScreen = ({ navigation }) => {
     {
       id: 1,
       title: 'Markham House League',
+      mainText: theme.secondaryText,
+      subText: theme.secondaryText,
       icon: {
         icon: 'football',
-        color: '#bbc6ff',
-        backgroundColor: '#3b3c86',
+        color: theme.name === 'dark' ? '#bac8ff' : '#5732FB',
         type: 'round',
         size: 24,
-      },
-      iconBtn: {
-        icon: 'chevron-forward',
-        color: '#e3e2ed',
-        backgroundColor: '#45426d',
-        size: 24,
+        darkBg: theme.name === 'dark',
       },
       data: mhlToggle ? 'On' : 'Off',
       actionType: 'toggle',
@@ -57,18 +54,14 @@ const NotificationScreen = ({ navigation }) => {
     {
       id: 2,
       title: 'Competitive Team',
+      mainText: theme.secondaryText,
+      subText: theme.secondaryText,
       icon: {
         icon: 'football',
-        color: '#bbc6ff',
-        backgroundColor: '#3b3c86',
+        color: theme.name === 'dark' ? '#bac8ff' : '#5732FB',
         type: 'round',
         size: 24,
-      },
-      iconBtn: {
-        icon: 'chevron-forward',
-        color: '#e3e2ed',
-        backgroundColor: '#45426d',
-        size: 24,
+        darkBg: theme.name === 'dark',
       },
       data: ctToggle ? 'On' : 'Off',
       actionType: 'toggle',
@@ -80,26 +73,20 @@ const NotificationScreen = ({ navigation }) => {
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.heading}>
-        <View style={styles.nav}>
-          <Icon
-            name="chevron-back-outline"
-            color="white"
-            size={35}
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        </View>
-        <Text style={styles.headingText}>Notification Preferences</Text>
-      </View>
-      <ScrollView style={styles.options}>
+    <ScreenBoilerplate
+      headingClr={theme.primaryText}
+      heading="Notification Preferences"
+      navLeft
+      style={{ backgroundColor: theme.navBg }}
+      navActionLeft={() => {
+        navigation.goBack();
+      }}>
+      <View>
         {settingsOptions.map(setting => (
           <SettingsActionBtn key={setting.id} {...setting} />
         ))}
-      </ScrollView>
-    </View>
+      </View>
+    </ScreenBoilerplate>
   );
 };
 
@@ -123,7 +110,7 @@ const styles = StyleSheet.create({
   },
   options: {
     marginTop: 40,
-  }
+  },
 });
 
 export default NotificationScreen;
