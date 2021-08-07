@@ -1,7 +1,8 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
-import { Text, View, StyleSheet, Modal, ScrollView, SafeAreaView, TouchableHighlight, Pressable, Animated, Easing, TouchableOpacity, Switch } from 'react-native';
+import { Text, View, StyleSheet, Modal, ScrollView,Button, SafeAreaView, TouchableHighlight, Pressable, Animated, Easing, TouchableOpacity, Switch } from 'react-native';
 import { useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker'
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/Ionicons'
 import moment from "moment";
 
@@ -91,7 +92,6 @@ const CreateEvent = props => {
   const [notifyTeam, setNotifyTeam] = useState(true);
   const [arriveEarly, setArriveEarly] = useState(false);
   const dateAnimation = useRef(new Animated.Value(0)).current;
-  const locationAnimation = useRef(new Animated.Value(0)).current;
 
   const onPressInDate = () => {
     setShowDatePicker(true);
@@ -147,6 +147,13 @@ const CreateEvent = props => {
     borderColor: theme.primaryIconClr,
   }
 
+  // TODO: Add dot scroll in Schedule for multiple events in one day
+  // TODO: Fix up create new event features (fix new location stuff, fix datatimepicker stuff, add different for game/practice/other)
+  // TODO: Add full calender view functionality
+  // TODO: Add infinite scroll in upcoming ? (LIST VIEW IN REACT NATIVE)
+  // TODO: FIX UIDropdown Multiselect to show what you select in the text
+  // TODO: Fix UI for availability modal in event screen
+
   return (
     <SafeAreaView style={{ backgroundColor: 'white'}}>
       <View style={styles.modalContainer}>
@@ -158,6 +165,17 @@ const CreateEvent = props => {
             style={styles.scrollviewContainer}
             decelerationRate="fast">
             <View style={styles.modalBody}>
+              <View style={{flexDirection: 'row', paddingBottom: 20}}>
+                <TouchableOpacity style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderColor: '#A9A9A9'}}>
+                  <Text style={{fontSize: 18, fontWeight: '500'}}>Game</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{flex: 1, alignItems: 'center', padding: 5, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#A9A9A9'}}>
+                  <Text style={{fontSize: 18, fontWeight: '500'}}>Practice</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomRightRadius: 10, borderTopRightRadius: 10, borderColor: '#A9A9A9'}}>
+                  <Text style={{fontSize: 18, fontWeight: '500'}}>Other</Text>
+                </TouchableOpacity>
+              </View>
               <UiInput
                 placeholder="Title"
                 borderTheme="underline"
@@ -166,6 +184,16 @@ const CreateEvent = props => {
               />
               <UiToggle labelLeft="Game" labelRight="Practice" />
               <Text style={styles.formLabels}>Date</Text>
+              {/* <RNDateTimePicker 
+                      value={date || new Date()}
+                      onChange={(event, selectedDate)  => {
+                        const currentDate = selectedDate || date;
+                        setDate(currentDate);
+                      }}
+                      mode={'date'}
+                      style={{color: 'red'}}
+                      display={'default'}
+                    /> */}
               <Pressable 
                 onPress={() => {
                   if(!shadow){ onPressInDate(); setShadow(shadowStyle);} else{ onPressOutDate(); setShadow(null); }

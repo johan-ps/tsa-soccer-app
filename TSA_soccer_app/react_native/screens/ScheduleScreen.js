@@ -22,6 +22,7 @@ const ScheduleScreen = ({ navigation }) => {
   const [createEvent, setCreateEvent] = useState(false);
   const [viewCalender, setViewCalender] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showAddButton, setShowAddButton] = useState(true)
   const theme = useSelector(state => state.theme.colors);
 
   return (
@@ -68,6 +69,7 @@ const ScheduleScreen = ({ navigation }) => {
                     paddingRight: 20,
                   }}>
                   <ScheduleCardSmall
+                    setShowAddButton={setShowAddButton}
                     onPress={() => navigation.navigate('Event')}
                   />
                 </View>
@@ -76,6 +78,7 @@ const ScheduleScreen = ({ navigation }) => {
                     paddingRight: 20,
                   }}>
                   <ScheduleCardSmall
+                    setShowAddButton={setShowAddButton}
                     onPress={() => navigation.navigate('Event')}
                   />
                 </View>
@@ -84,6 +87,7 @@ const ScheduleScreen = ({ navigation }) => {
                     paddingRight: 20,
                   }}>
                   <ScheduleCardSmall
+                    setShowAddButton={setShowAddButton}
                     onPress={() => navigation.navigate('Event')}
                   />
                 </View>
@@ -92,11 +96,13 @@ const ScheduleScreen = ({ navigation }) => {
           </SafeAreaView>
         </View>
       )}
+      { showAddButton &&
       <AddButton
         onPress={() => {
           navigation.navigate('CreateEvent');
         }}
       />
+      }
     </View>
   );
 };
