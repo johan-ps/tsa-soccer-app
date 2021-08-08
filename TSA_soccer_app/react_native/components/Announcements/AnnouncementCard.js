@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
-import RNFetchBlob from 'rn-fetch-blob';
 
 import { UiMenu, UiImage } from '../_components';
 import * as Util from '../../Util/utilities';
