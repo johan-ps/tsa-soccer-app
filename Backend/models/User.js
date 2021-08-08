@@ -66,6 +66,21 @@ class User {
         return db.execute(sql);
     }
 
+    static updateOneById(id, data) {
+        const { firstName, lastName, profileImg, phoneNumber, email } = data;
+        const sql = `
+            UPDATE USERS
+            SET firstName = '${firstName}',
+                lastName = '${lastName}',
+                profileImg = '${profileImg}',
+                phoneNumber = '${phoneNumber}',
+                email = '${email}'
+            WHERE id = '${id}'
+        `;
+
+        return db.execute(sql);
+    }
+
 
 }
 

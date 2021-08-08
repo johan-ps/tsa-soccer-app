@@ -49,7 +49,13 @@ class Announcement {
     }
 
     static findAll() {
-        const sql = 'SELECT * FROM ANNOUNCEMENTS';
+        const sql = `
+            SELECT a.title, a.description, a.authorId,
+                a.teams, u.profileImg, a.date,
+                u.firstName, u.lastName, a.image, a.id
+            FROM ANNOUNCEMENTS as a, USERS as u
+            WHERE a.authorId = u.id
+        `;
 
         return db.execute(sql);
     }

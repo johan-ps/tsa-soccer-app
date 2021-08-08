@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { UiIconButton } from '../components/_components';
 
 const ScreenBoilerplate = props => {
+  const { tabBarVisible = true } = props;
   return (
     <View style={[styles.container, props.style]}>
       <View style={styles.heading}>
@@ -19,7 +20,7 @@ const ScreenBoilerplate = props => {
           {props.navRight ? (
             <UiIconButton
               icon={props.navRight}
-              size={30}
+              size={26}
               color="white"
               backgroundColor="#A9A9A9"
               shadow
@@ -27,13 +28,15 @@ const ScreenBoilerplate = props => {
             />
           ) : null}
         </View>
-        <Text style={[styles.headingText, { color: props.headingClr }]}>
-          {props.heading}
-        </Text>
+        {props.heading ? (
+          <Text style={[styles.headingText, { color: props.headingClr }]}>
+            {props.heading}
+          </Text>
+        ) : null}
       </View>
       <ScrollView
         contentContainerStyle={styles.contentContainer}
-        style={styles.content}>
+        style={[styles.content, !tabBarVisible ? { marginBottom: 0 } : {}]}>
         {props.children}
       </ScrollView>
     </View>

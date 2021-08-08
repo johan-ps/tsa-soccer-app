@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import { UiMenu, UiImage } from '../components/_components';
 import * as Util from '../Util/utilities';
@@ -16,9 +17,10 @@ const AnnouncementCard = props => {
     title,
     description,
     type,
-    author,
+    firstName,
+    lastName,
     image,
-    authorImgUrl,
+    profileImg,
     authorId = 0,
   } = props.announcementData;
 
@@ -32,17 +34,22 @@ const AnnouncementCard = props => {
     const edit = { id: 0, label: 'Edit' };
     const dlt = { id: 1, label: 'Delete' };
     const download = { id: 2, label: 'Download' };
-    let options = [download];
+    let options = [];
 
     if (userData) {
       if (userData.accessLevel === 1 && userData.id === authorId) {
-        options = [edit, dlt, download];
+        options = [edit, dlt];
       } else if (userData.accessLevel > 1) {
-        options = [edit, dlt, download];
+        options = [edit, dlt];
       }
     }
+
+    if (image && image !== 'null') {
+      options.push(download);
+    }
+
     return options;
-  }, [userData, authorId]);
+  }, [userData, authorId, image]);
 
   return (
     <SafeAreaView>
@@ -50,27 +57,25 @@ const AnnouncementCard = props => {
         <View style={styles.header}>
           <View style={styles.headerContentWrapper}>
             <View style={styles.headerImgWrapper}>
-              {authorImgUrl ? (
-                <Image
-                  style={styles.headerImg}
-                  source={{
-                    uri: authorImgUrl,
-                  }}
-                  resizeMode="cover"
-                />
-              ) : (
-                <UiIcon
-                  icon="person"
-                  color="#aaa6c3"
-                  backgroundColor={theme.actionBtn}
-                  size={20}
-                  darkBg={theme.name === 'dark'}
-                />
-              )}
+              <UiImage
+                style={styles.headerImg}
+                source={profileImg}
+                resizeMode="cover"
+                cond={profileImg}
+                alt={
+                  <UiIcon
+                    icon="person"
+                    color="#aaa6c3"
+                    backgroundColor={theme.actionBtn}
+                    size={20}
+                    darkBg={theme.name === 'dark'}
+                  />
+                }
+              />
             </View>
             <View style={styles.headerContent}>
               <Text style={[styles.name, { color: theme.cardTextHeading }]}>
-                {author}
+                {`${firstName} ${lastName}`}
               </Text>
               <Text style={[styles.date, { color: theme.cardTextSubHeading }]}>
                 {Util.getTime(date)}
@@ -84,6 +89,7 @@ const AnnouncementCard = props => {
             imageViewStyle={styles.imageContainer}
             style={styles.image}
             source={image}
+            cond={true}
             resizeMode="cover"
           />
           <View style={styles.bodyContentWrapper}>
