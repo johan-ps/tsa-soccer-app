@@ -67,7 +67,7 @@ const NavHeader = forwardRef((props, ref) => {
       <View style={styles.iconRightContainer}>
         <Image
           style={{ height: 30, width: 30 }}
-          source={require('../assets/img/CTSA_Logo.png')}
+          source={require('../../assets/img/CTSA_Logo.png')}
         />
       </View>
       <View style={styles.center}>

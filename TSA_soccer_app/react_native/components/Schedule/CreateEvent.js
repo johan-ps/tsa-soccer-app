@@ -2,7 +2,7 @@ import React, { useState, useRef, useLayoutEffect } from 'react';
 import { Text, View, StyleSheet, Modal, ScrollView,Button, SafeAreaView, TouchableHighlight, Pressable, Animated, Easing, TouchableOpacity, Switch } from 'react-native';
 import { useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker'
-import RNDateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/Ionicons'
 import moment from "moment";
 
@@ -11,41 +11,13 @@ import {
   UiDropdown,
   UiToggle,
   UiInput,
-} from '../components/_components';
-import UiTextArea from './UiTextArea';
+} from '../_components';
+import UiTextArea from '../UiComponents/UiTextArea';
 import EventLocation from './EventLocation';
 
 const CreateEvent = props => {
   const { visible } = props;
   const theme = useSelector(state => state.theme.colors);
-  const startTime = [
-    { id: 0, label: '01:00' },
-    { id: 1, label: '02:00' },
-    { id: 2, label: '03:00' },
-    { id: 3, label: '04:00' },
-    { id: 4, label: '05:00' },
-    { id: 5, label: '06:00' },
-    { id: 6, label: '07:00' },
-    { id: 7, label: '08:00' },
-    { id: 8, label: '09:00' },
-    { id: 9, label: '10:00' },
-    { id: 10, label: '11:00' },
-    { id: 11, label: '12:00' },
-  ];
-  const endTime = [
-    { id: 12, label: '01:00' },
-    { id: 13, label: '02:00' },
-    { id: 14, label: '03:00' },
-    { id: 15, label: '04:00' },
-    { id: 16, label: '05:00' },
-    { id: 17, label: '06:00' },
-    { id: 18, label: '07:00' },
-    { id: 19, label: '08:00' },
-    { id: 20, label: '09:00' },
-    { id: 21, label: '10:00' },
-    { id: 22, label: '11:00' },
-    { id: 23, label: '12:00' },
-  ];
   const teams = [
     {
       label: 'House League',
@@ -87,11 +59,14 @@ const CreateEvent = props => {
   const [location, setLocation] = useState(false);
   const [locationValue, setLocationValue] = useState('Please Select');
   const [date, setDate] = useState(null)
+  const [startTime, setStartTime] = useState(null);
+  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [shadow, setShadow] = useState(null)
   const [notifyTeam, setNotifyTeam] = useState(true);
   const [arriveEarly, setArriveEarly] = useState(false);
   const dateAnimation = useRef(new Animated.Value(0)).current;
+  const startTimeAnimation = useRef(new Animated.Value(0)).current;
 
   const onPressInDate = () => {
     setShowDatePicker(true);
@@ -107,6 +82,28 @@ const CreateEvent = props => {
   const onPressOutDate = () => {
     setShowDatePicker(false);
     Animated.spring(dateAnimation, {
+      friction: 100,
+      toValue: 0,
+      duration: 100,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const onPressInStartTime = () => {
+    setShowStartTimePicker(true);
+    Animated.spring(startTimeAnimation, {
+      friction: 100,
+      toValue: 100,
+      duration: 100,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: false
+    })
+  }
+
+  const onPressOutStartTime = () => {
+    setShowStartTimePicker(false);
+    Animated.spring(startTimeAnimation, {
       friction: 100,
       toValue: 0,
       duration: 100,
@@ -147,12 +144,13 @@ const CreateEvent = props => {
     borderColor: theme.primaryIconClr,
   }
 
-  // TODO: Add dot scroll in Schedule for multiple events in one day
+  // TODO: Fix dot scroll feature to include space
   // TODO: Fix up create new event features (fix new location stuff, fix datatimepicker stuff, add different for game/practice/other)
   // TODO: Add full calender view functionality
-  // TODO: Add infinite scroll in upcoming ? (LIST VIEW IN REACT NATIVE)
+  // TODO: Add infinite scroll in upcoming ? (FLATLIST VIEW IN REACT NATIVE)
   // TODO: FIX UIDropdown Multiselect to show what you select in the text
   // TODO: Fix UI for availability modal in event screen
+  // TODO: Add feature to redirect to phone and call number
 
   return (
     <SafeAreaView style={{ backgroundColor: 'white'}}>
@@ -184,7 +182,7 @@ const CreateEvent = props => {
               />
               <UiToggle labelLeft="Game" labelRight="Practice" />
               <Text style={styles.formLabels}>Date</Text>
-              {/* <RNDateTimePicker 
+              {/* <DateTimePicker 
                       value={date || new Date()}
                       onChange={(event, selectedDate)  => {
                         const currentDate = selectedDate || date;
@@ -193,12 +191,13 @@ const CreateEvent = props => {
                       mode={'date'}
                       style={{color: 'red'}}
                       display={'default'}
+                      textColor={'red'}
                     /> */}
               <Pressable 
                 onPress={() => {
                   if(!shadow){ onPressInDate(); setShadow(shadowStyle);} else{ onPressOutDate(); setShadow(null); }
                 }} 
-                style={[ifCircle, {marginBottom: 10}, shadow]}
+                style={[ifCircle, {marginBottom: 10}, showDatePicker && shadow]}
               >
                 <View style={{flexDirection: 'column'}}>
                   <View style={[styles.dateContainer]}>
@@ -225,23 +224,36 @@ const CreateEvent = props => {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                 }}>
-                <UiDropdown
-                  modalOffsetY={305}
-                  modalOffsetX={30}
-                  options={startTime}
-                  placeholder="Start"
-                  size="small"
-                />
-                <UiDropdown
-                  modalOffsetY={305}
-                  modalOffsetX={30}
-                  options={endTime}
-                  placeholder="End"
-                  size="small"
-                />
+                  <Pressable 
+                    onPress={() => {
+                      if(!shadow){ onPressInStartTime(); setShadow(shadowStyle);} else{ onPressOutStartTime(); setShadow(null); }
+                    }} 
+                    style={[ifCircle, {marginBottom: 10}, showStartTimePicker && shadow]}
+                  >
+                    <View style={{flexDirection: 'column'}}>
+                      <View style={[styles.dateContainer]}>
+                        <Text style={{color: date ? 'black' : 'grey', shadowOpacity: 0, fontSize: 16}}>{date ? moment(date).format('dddd, D MMM YYYY') : 'Please Select'}</Text>
+                        <View style={styles.iconContainer}>
+                          <Icon color={showStartTimePicker ? '#e51b23' : '#A8A4B8'} name="calendar-outline" size={20} />
+                        </View>
+                      </View>
+                      <Animated.View style={{height: startTimeAnimation, width: 200, paddingRight: 20}}>
+                        { showStartTimePicker ?
+                          <DatePicker
+                            date={date || new Date()}
+                            onDateChange={setDate}
+                            mode={'time'}
+                            minuteInterval={5}
+                          />
+                          :
+                          null
+                        }
+                      </Animated.View>
+                    </View>
+                  </Pressable>
               </View>
               <Text style={styles.formLabels}>Location</Text>
-              <TouchableOpacity onPress={onSelectLocation} style={[ifCircle, {marginBottom: 10}, shadow]}>
+              <TouchableOpacity onPress={onSelectLocation} style={[ifCircle, {marginBottom: 10}]}>
                 <View style={[styles.dateContainer]}>
                   <Text style={{color: locationValue === 'Please Select' ? 'grey' : 'black', shadowOpacity: 0, fontSize: 16}}>{locationValue}</Text>
                   <View style={styles.iconContainer}>

@@ -2,22 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import CONST from '../constants/Constants';
-import UiButton from '../components/UiButton';
+import CONST from '../../constants/Constants';
+import UiButton from '../UiComponents/UiButton';
 
 const ErrorScreen = props => {
   const { error } = props;
   const theme = useSelector(state => state.theme.colors);
-
-  const getImgPath = () => {
-    let path;
-    if (error === CONST.NO_RESULTS) {
-      path = '../assets/img/magnifying-glass.png';
-    } else if (error === CONST.NO_INTERNET) {
-      path = '../assets/img/internet-slash.png';
-    }
-    return path;
-  };
 
   const getHeading = (() => {
     let heading;
@@ -45,13 +35,13 @@ const ErrorScreen = props => {
         {error === CONST.NO_RESULTS ? (
           <Image
             style={styles.image}
-            source={require('../assets/img/magnifying-glass.png')}
+            source={require('../../assets/img/magnifying-glass.png')}
             resizeMode="cover"
           />
         ) : (
           <Image
             style={styles.image}
-            source={require('../assets/img/internet-slash.png')}
+            source={require('../../assets/img/internet-slash.png')}
             resizeMode="cover"
           />
         )}

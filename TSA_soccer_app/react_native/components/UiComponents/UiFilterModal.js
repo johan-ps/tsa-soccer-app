@@ -10,7 +10,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 
-import { UiButton, UiDropdown } from './_components';
+import { UiButton, UiDropdown } from '../_components';
 
 const UiFilterModal = props => {
   let { visible } = props;

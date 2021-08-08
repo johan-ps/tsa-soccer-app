@@ -7,6 +7,7 @@ import {
   TouchableHighlight,
   ScrollView,
   TouchableOpacity,
+  Button
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,7 +15,7 @@ import moment from 'moment';
 import ScheduleHeaderItem from './ScheduleHeaderItem';
 
 const ScheduleHeader = props => {
-  const { onPress } = props;
+  const { onPress, showDates = true } = props;
   const currentDate = moment();
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const endDate = moment().add(7, 'days');
@@ -36,10 +37,11 @@ const ScheduleHeader = props => {
         <View style={{justifyContent: 'flex-end', width: '50%'}}>
         <Text style={styles.header}>{currentDate.format('MMM YYYY')}</Text>
         </View>
-        <TouchableOpacity onPress={() => props.onPress()} style={{justifyContent: 'flex-end', alignItems: 'flex-end', width: '50%', paddingRight: 10}}>
-          <Icon name="calendar-sharp" size={25} color="black" />
+        <TouchableOpacity onPress={onPress} style={{justifyContent: 'flex-end', alignItems: 'flex-end', width: 100, height: 50, paddingRight: 10, zIndex: 100, position: 'relative', left: 60}}>
+          <Icon name="calendar-sharp" size={30} color="black" style={{zIndex: 0}}/>
         </TouchableOpacity>
       </View>
+      {showDates ?
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -47,7 +49,7 @@ const ScheduleHeader = props => {
         {selectedDate
           ? datesArray.map(date => {
               return (
-                <View style={{ alignItems: 'center', marginRight: 10 }}>
+                <View key={date.toString()} style={{ alignItems: 'center', marginRight: 10 }}>
                   <ScheduleHeaderItem
                     onPress={() => setSelectedDate(date)}
                     date={date}
@@ -61,7 +63,10 @@ const ScheduleHeader = props => {
             })
           : null}
       </ScrollView>
-      <Text style={styles.subHeading}>Today</Text>
+      :
+      null
+      }
+      {showDates ? <Text style={styles.subHeading}>Today</Text> : null}
     </View>
   );
 };

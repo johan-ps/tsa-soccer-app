@@ -5,14 +5,24 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
+  Pressable,
+  TouchableOpacity,
+  Linking
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as Progress from 'react-native-progress';
+import call from 'react-native-phone-call'
+
 
 const PlayerProfileScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
   const [border, setBorder] = useState(0)
+
+  const phoneCallArgs = {
+    number: '6479882710', // String value with the number to call
+    prompt: true // Optional boolean property. Determines if the user should be prompt prior to the call 
+  }
 
   useEffect(() => {
     setTimeout(() => setBorder(0.8), 400)
@@ -85,16 +95,16 @@ const PlayerProfileScreen = ({ navigation }) => {
           <Text style={styles.playerInfo}>Point Guard</Text>
         </View>
         {/* <Text>Contact Info</Text> */}
-        <View style={styles.categoryContainer}>
+        <TouchableOpacity style={styles.categoryContainer} onPress={() => Linking.openURL('mailto:kyrieIrving@gmail.com')}>
           <Text style={styles.category}>Email</Text>
           <View style={styles.slash} />
           <Text style={styles.playerInfo}>kyrieIrving@gmail.com</Text>
-        </View>
-        <View style={styles.categoryContainer}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.categoryContainer} onPress={() => call(phoneCallArgs).catch(console.error)}>
           <Text style={styles.category}>Phone</Text>
           <View style={styles.slash} />
           <Text style={styles.playerInfo}>(647)-222-1111</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

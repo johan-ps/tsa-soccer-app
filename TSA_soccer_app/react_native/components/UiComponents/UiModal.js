@@ -10,7 +10,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 
-import UiButton from './UiButton';
+import UiButton from '../UiComponents/UiButton';
 
 const UiModal = props => {
   let { visible } = props;

@@ -4,9 +4,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
 
-import { UiMenu, UiImage } from '../components/_components';
-import * as Util from '../Util/utilities';
-import UiIcon from './UiIcon';
+import { UiMenu, UiImage } from '../_components';
+import * as Util from '../../Util/utilities';
+import UiIcon from '../UiComponents/UiIcon';
 
 const AnnouncementCard = props => {
   const theme = useSelector(state => state.theme.colors);

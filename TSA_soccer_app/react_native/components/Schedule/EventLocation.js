@@ -3,9 +3,8 @@ import React, { useState, useRef } from 'react';
 import { Text, StyleSheet, View, SafeAreaView, Modal, TouchableOpacity, Image, Animated, ScrollView, } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
-import AvailabilityMenu from './AvailabilityMenu';
 import MapView, { Marker } from 'react-native-maps';
-import UiInput from './UiInput';
+import UiInput from '../UiComponents/UiInput';
 import { Easing } from 'react-native-reanimated';
 
 const EventLocation = props => {
@@ -93,7 +92,7 @@ const EventLocation = props => {
           <Text style={[styles.headingText, {fontSize: 20}]} numberOfLines={1}>{!newLocation ? 'Select Location' : 'New Location'}</Text>
           </View>
           <TouchableOpacity onPress={() => {!newLocation ? setEdit(!edit) : !selectedLocation ? setNewLocation(false) : saveLocation()}} style={{alignItems: 'flex-end', width: '25%', padding: 12}}>
-          <Text style={styles.headingText}>{!newLocation ? 'Edit' : !selectedLocation ? 'Back' : 'Save'}</Text>
+          <Text style={styles.headingText}>{!newLocation ? edit ? 'Done' : 'Edit' : !selectedLocation ? 'Back' : 'Save'}</Text>
           </TouchableOpacity>
         </View>
         {!newLocation ?
@@ -107,7 +106,8 @@ const EventLocation = props => {
             </View>
           </TouchableOpacity>
           {preExistingLocations.map(location => {
-            return (<TouchableOpacity style={styles.locationContainer} onPress={() => {onSelect(location.name); closeLocation();}}>
+            return (
+          <TouchableOpacity style={styles.locationContainer} onPress={() => {onSelect(location.name); closeLocation();}}>
             <View>
               <Text style={{color: 'black', fontSize: 18, fontWeight: '500'}}>{location.name}</Text>
               <Text>{location.street}</Text>
@@ -150,9 +150,10 @@ const EventLocation = props => {
               </View>
             </View>
             {edit ? 
-              <View style={{backgroundColor: 'red', width: 100, height: '100%'}}>
-                <Icon name="trash-outline"/>
-              </View>
+              <TouchableOpacity style={{backgroundColor: 'red', width: 80, height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                <Icon name="trash-outline" size={35} color={'white'} />
+                <Text style={{fontSize: 14, color: 'white'}}>Delete</Text>
+              </TouchableOpacity>
               :
               null
             }

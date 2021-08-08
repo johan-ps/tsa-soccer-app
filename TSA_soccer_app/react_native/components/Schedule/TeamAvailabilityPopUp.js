@@ -19,11 +19,14 @@ const TeamAvailabilityPopup = props => {
       animationType="slide"
       >
         <View style={styles.modalContainer}>
-          {/* <View style={{flexDirection: 'row', width: '100%'}}> */}
-            <View style={styles.close}>
+          <View style={{flexDirection: 'row', width: '100%', marginLeft: 20}}>
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+              <Text style={{fontSize: 20, color: 'white'}}>Availability</Text>
+            </View>
+            <View style={[styles.close,  {flex: 0.9}]}>
               <Icon name="close" color="white" size={30} onPress={onClose}/>
             </View>
-          {/* </View> */}
+          </View>
           <View style={styles.availabilityContainer}>
             <View style={[styles.availabilityHeader, {backgroundColor: '#4ce660'}]}>
               <Icon name="checkmark" size={20} color='#1E2630' style={{padding: 5}}/>

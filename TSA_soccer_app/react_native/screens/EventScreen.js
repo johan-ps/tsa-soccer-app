@@ -8,14 +8,13 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import TeamScrollList from '../components/TeamScrollList';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import MapView, { Marker } from 'react-native-maps';
 import LinearGradient from 'react-native-linear-gradient';
-import TeamListPreview from '../components/TeamListPreview';
-import TeamAvailabilityPopup from '../components/TeamAvailabilityPopUp';
-import AvailabilityMenu from '../components/AvailabilityMenu';
+import TeamListPreview from '../components/Schedule/TeamListPreview';
+import TeamAvailabilityPopup from '../components/Schedule/TeamAvailabilityPopUp';
+import AvailabilityMenu from '../components/Schedule/AvailabilityMenu';
 
 // TODO: Complete Going/Maybe/Unaivailable
 
