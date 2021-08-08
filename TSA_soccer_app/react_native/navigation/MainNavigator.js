@@ -22,28 +22,25 @@ const MainNavigator = () => {
   const scheme = useColorScheme(); // get phone's native theme style
   const theme = useSelector(state => state.theme.colors);
 
-  const loadUserData = useCallback(async () => {
-    try {
-      await dispatch(userActions.loginUser());
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
-
   // run function whenever dispatch or scheme changes
   useEffect(() => {
     if (scheme === 'dark') {
       dispatch(ThemeActions.updateTheme(scheme));
     }
-    loadUserData();
-  }, [dispatch, scheme, loadUserData]);
+  }, [dispatch, scheme]);
 
   const getTabBarVisible = route => {
     const routeName = getFocusedRouteNameFromRoute(route);
     // const routeName = route.state
     // ? route.state.routes[route.state.index].name
     // : '';
-    if (routeName === 'Event' || routeName === 'CreateEvent') {
+    if (
+      routeName === 'Event' ||
+      routeName === 'CreateEvent' ||
+      routeName === 'Login' ||
+      routeName === 'Notifications' ||
+      routeName === 'Account'
+    ) {
       return false;
     }
     return true;

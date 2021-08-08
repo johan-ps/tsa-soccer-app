@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const sharp = require('sharp');
 
 exports.getAllUsers = async (req, res, next) => {
     try {
@@ -96,7 +97,25 @@ exports.addUser = async (req, res, next) => {
 }
 
 exports.updateById = async (req, res, next) => {
-    // bcrypt.compare(req.password, user.password)
+    try {
+        const { firstName, lastName, phoneNumber, email } = req.body;
+        let profileImg = null
+        
+        let imageBuffer = req.file;
+        if (imageBuffer && imageBuffer.buffer) {
+            imageBuffer = imageBuffer.buffer
+            const { width, height } = await sharp(imageBuffer).metadata();
+            imageBuffer = await sharp(imageBuffer).resize(90, 90).toBuffer()
+            profileImg = `data:${req.file.mimetype};base64,` + imageBuffer.toString('base64')
+        }
+        
+        const [user, _] = await User.updateOneById(req.user.id, {
+            firstName, lastName, phoneNumber, email, profileImg,
+        })
+        res.status(200).json({ success: true })
+    } catch (error) {
+        next(error);
+    }
     return null
 }
 

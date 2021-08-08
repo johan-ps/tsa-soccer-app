@@ -1,25 +1,49 @@
-import React from 'react';
-import { View, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Image, StyleSheet } from 'react-native';
 import Base64 from 'base-64';
 
 const UiImage = props => {
-  const { resizeMode, imageViewStyle, style, source = null } = props;
+  const {
+    resizeMode,
+    imageViewStyle,
+    style,
+    source = null,
+    alt = null,
+    cond = null,
+  } = props;
+
+  const [imgSrc, setImgSrc] = useState(null);
+
+  useEffect(() => {
+    if (typeof source === 'string') {
+      setImgSrc({ uri: source });
+    } else {
+      setImgSrc(source);
+    }
+  }, [setImgSrc, source]);
 
   return (
     <View>
-      {source ? (
+      {cond ? (
         <View style={imageViewStyle}>
           <Image
-            style={style}
+            style={[styles.defaultImg, style]}
             resizeMode={resizeMode}
-            source={{
-              uri: source,
-            }}
+            source={imgSrc}
           />
         </View>
-      ) : null}
+      ) : (
+        alt
+      )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  defaultImg: {
+    width: 50,
+    height: 50,
+  },
+});
 
 export default UiImage;

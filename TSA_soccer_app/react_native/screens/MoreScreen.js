@@ -135,6 +135,7 @@ const MoreScreen = ({ navigation }) => {
         : 'Not Logged In',
     mainText: theme.secondaryText,
     subText: theme.secondaryText,
+    imageSrc: userData.profileImg,
     icon: {
       icon: 'person',
       color: '#aaa6c3',

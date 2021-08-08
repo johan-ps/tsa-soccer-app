@@ -23,11 +23,42 @@ export const loginUser = (credentials = {}) => {
       });
 
       if (!response.ok) {
-        throw new Error('Something went wrong!');
+        throw new Error('Something went wrong login user!');
       }
 
       const resData = await response.json();
       await AsyncStorage.setItem(CONST.AUTH_TOKEN_KEY, resData.token);
+      dispatch({ type: LOGIN_USER, userData: resData });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const updateUser = id => {
+  return async dispatch => {
+    try {
+      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
+
+      if (!authToken) {
+        throw new Error('No token set');
+      }
+
+      const response = await fetch(`http://${environmentUrl}/api/users/login`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'x-auth-token': `Bearer ${authToken}`,
+        },
+        body: null,
+      });
+
+      if (!response.ok) {
+        throw new Error('Something went wrong check session user!');
+      }
+
+      const resData = await response.json();
       dispatch({ type: LOGIN_USER, userData: resData });
     } catch (error) {
       console.log(error);
@@ -68,7 +99,7 @@ export const checkAuthToken = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong!');
+        throw new Error('Something went wrong check auth token user!');
       }
 
       const resData = await response.json();

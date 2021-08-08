@@ -1,4 +1,4 @@
-import { LOGIN_USER, LOGOUT_USER } from '../actions/UserActions';
+import { LOGIN_USER, LOGOUT_USER, UPDATE_USER } from '../actions/UserActions';
 
 const INITIAL_STATE = {
   authenticated: false,
@@ -13,6 +13,8 @@ const userReducer = (state = INITIAL_STATE, action) => {
         authenticated: action.userData.success,
         token: action.userData.token,
       };
+    case UPDATE_USER:
+      return state;
     case LOGOUT_USER:
       return INITIAL_STATE;
     default:

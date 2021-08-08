@@ -16,13 +16,12 @@ exports.getAnnouncementsByTeam = async (req, res, next) => {
 }
 
 exports.addAnnouncement = async (req, res, next) => {
-    console.log('here add announcement')
     try {
         let { title = null, description, authorId, teams, image = null } = req.body;
         
         let imageBuffer = req.file.buffer;
         const { width, height } = await sharp(imageBuffer).metadata();
-        imageBuffer = await sharp(imageBuffer).resize(Math.round(width * 0.5), Math.round(height * 0.5)).toBuffer()
+        imageBuffer = await sharp(imageBuffer).resize({ height: 300 }).toBuffer()
         image = `data:${req.file.mimetype};base64,` + imageBuffer.toString('base64')
         
         const newAnnouncement = new Announcement(title, description, authorId, teams, image);

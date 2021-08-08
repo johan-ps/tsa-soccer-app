@@ -10,7 +10,10 @@ exports.isAuth = async (req, res, next) => {
             const [user, _] = await User.findOneById(decode.id);
 
             if (user && user.length === 1) {
+                req.user = user[0];
                 next();
+            } else {
+                res.json({ success: false, message: 'Unauthorized access' })
             }
         } catch (error) {
             next(error);

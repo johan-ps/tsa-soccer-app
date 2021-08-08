@@ -113,7 +113,7 @@ const LoginScreen = ({ navigation }) => {
         <View style={styles.body}>
           <UiInput
             id="username"
-            initialValue={formState.inputValues.password}
+            initialValue={formState.inputValues.username}
             inputValidities={formState.inputValidities.username}
             contentType="username"
             placeholder="Username"

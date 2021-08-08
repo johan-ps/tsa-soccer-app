@@ -15,7 +15,7 @@ export const getAnnouncements = () => {
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong!');
+        throw new Error('Something went wrong get announcements!');
       }
 
       const resData = await response.json();
@@ -59,7 +59,7 @@ export const addAnnouncement = announcementData => {
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong!');
+        throw new Error('Something went wrong add announcement!');
       }
 
       const resData = await response.json();

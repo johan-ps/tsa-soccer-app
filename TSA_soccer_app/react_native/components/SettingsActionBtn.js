@@ -1,6 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, Switch, Platform } from 'react-native';
-import { UiIcon, UiIconButton, UiSwitch } from '../components/_components';
+import {
+  UiIcon,
+  UiIconButton,
+  UiSwitch,
+  UiImage,
+} from '../components/_components';
 
 const SettingsActionBtn = props => {
   let {
@@ -10,6 +15,7 @@ const SettingsActionBtn = props => {
     icon,
     iconBtn,
     value = false,
+    imageSrc = null,
   } = props;
 
   const toggleScale = () => {
@@ -24,7 +30,13 @@ const SettingsActionBtn = props => {
     <View style={styles.settingsContainer}>
       <View style={styles.settingBtnWrapper}>
         <View style={styles.settingsLeft}>
-          <UiIcon {...icon} />
+          <UiImage
+            style={styles.leftImg}
+            source={imageSrc}
+            resizeMode="cover"
+            cond={imageSrc && imageSrc !== 'null'}
+            alt={<UiIcon {...icon} />}
+          />
           <Text style={[styles.settingsBtnTextLeft, { color: props.mainText }]}>
             {title}
           </Text>
@@ -86,6 +98,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  leftImg: {
+    width: 90,
+    height: 90,
+    borderRadius: 50,
   },
 });
 
