@@ -26,8 +26,8 @@ const ScheduleClock = props => {
     setTimeout(() => {
       setTopBorder(0.2);
       setBottomBorder(0.2);
-    }, 200)
-  }, [])
+    }, 200);
+  }, []);
 
   useEffect(() => {
     let clockHands = [];
@@ -84,8 +84,23 @@ const ScheduleClock = props => {
   return (
     <View style={[styles.clockContainer, { backgroundColor: theme.primaryBg }]}>
       {clockHandPositions}
-      <Progress.Circle size={160} progress={topBorder} borderWidth={0} animated={true} thickness={5} color={'red'}/>
-      <Progress.Circle size={160} progress={bottomBorder} borderWidth={0} style={{position: 'absolute', transform: [{rotate: '180deg'}]}} animated={true} thickness={5} color={'red'}/>
+      <Progress.Circle
+        size={160}
+        progress={topBorder}
+        borderWidth={0}
+        animated={true}
+        thickness={5}
+        color={'red'}
+      />
+      <Progress.Circle
+        size={160}
+        progress={bottomBorder}
+        borderWidth={0}
+        style={{ position: 'absolute', transform: [{ rotate: '180deg' }] }}
+        animated={true}
+        thickness={5}
+        color={'red'}
+      />
       <View style={styles.infoHeaderContainer}>
         <View style={{ flexDirection: 'column' }}>
           <Text style={styles.infoTextTop}>
@@ -107,7 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 45,
     backgroundColor: '#dedede',
-    position: 'absolute'
+    position: 'absolute',
   },
   clockContainer: {
     width: 140,
@@ -116,7 +131,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 20
   },
   clockLine: {
     height: 130,
@@ -150,7 +164,6 @@ const styles = StyleSheet.create({
   },
   infoTextBottom: {
     fontSize: 10,
-    color: '#ebe8e8',
     textAlign: 'left',
     color: 'black',
   },
