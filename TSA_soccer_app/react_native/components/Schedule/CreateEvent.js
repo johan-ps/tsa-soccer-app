@@ -56,6 +56,36 @@ const CreateEvent = props => {
       ],
     },
   ];
+  const repeat = [
+    {
+      label: 'Every Monday',
+      id: 0,
+    },
+    {
+      label: 'Every Tuesday',
+      id: 1,
+    },
+    {
+      label: 'Every Wednesday',
+      id: 2,
+    },
+    {
+      label: 'Every Thursday',
+      id: 3,
+    },
+    {
+      label: 'Every Friday',
+      id: 4,
+    },
+    {
+      label: 'Every Saturday',
+      id: 5,
+    },
+    {
+      label: 'Every Sunday',
+      id: 6,
+    }];
+  const [type, setType] = useState(false);
   const [location, setLocation] = useState(false);
   const [locationValue, setLocationValue] = useState('Please Select');
   const [date, setDate] = useState(null)
@@ -63,8 +93,10 @@ const CreateEvent = props => {
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [shadow, setShadow] = useState(null)
+  const [timeTbd, setTimeTbd] = useState(false);
   const [notifyTeam, setNotifyTeam] = useState(true);
   const [arriveEarly, setArriveEarly] = useState(false);
+  const [cancelled, setCancelled] = useState(false);
   const dateAnimation = useRef(new Animated.Value(0)).current;
   const startTimeAnimation = useRef(new Animated.Value(0)).current;
 
@@ -150,7 +182,11 @@ const CreateEvent = props => {
   // TODO: Add infinite scroll in upcoming ? (FLATLIST VIEW IN REACT NATIVE)
   // TODO: FIX UIDropdown Multiselect to show what you select in the text
   // TODO: Fix UI for availability modal in event screen
-  // TODO: Add feature to redirect to phone and call number
+  // TODO: Hook up schedule so that it takes in data and prints it
+  // TODO: Make actions and reducer for events
+  // TODO: Use Mock Data to fill schedule screen up
+  // TODO: Add Scroll in EventScreen where image moves up!
+  // TODO: Add edit and delete functionality
 
   return (
     <SafeAreaView style={{ backgroundColor: 'white'}}>
@@ -164,13 +200,13 @@ const CreateEvent = props => {
             decelerationRate="fast">
             <View style={styles.modalBody}>
               <View style={{flexDirection: 'row', paddingBottom: 20}}>
-                <TouchableOpacity style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderColor: '#A9A9A9'}}>
+                <TouchableOpacity onPress={() => setType('Game')} style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderColor: '#A9A9A9', backgroundColor: type === 'Game' ? 'red' : 'white'}}>
                   <Text style={{fontSize: 18, fontWeight: '500'}}>Game</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{flex: 1, alignItems: 'center', padding: 5, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#A9A9A9'}}>
+                <TouchableOpacity onPress={() => setType('Practice')} style={{flex: 1, alignItems: 'center', padding: 5, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#A9A9A9', backgroundColor: type === 'Practice' ? 'red' : 'white'}}>
                   <Text style={{fontSize: 18, fontWeight: '500'}}>Practice</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomRightRadius: 10, borderTopRightRadius: 10, borderColor: '#A9A9A9'}}>
+                <TouchableOpacity onPress={() => setType('Other')} style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomRightRadius: 10, borderTopRightRadius: 10, borderColor: '#A9A9A9', backgroundColor: type === 'Other' ? 'red' : 'white'}}>
                   <Text style={{fontSize: 18, fontWeight: '500'}}>Other</Text>
                 </TouchableOpacity>
               </View>
@@ -178,9 +214,8 @@ const CreateEvent = props => {
                 placeholder="Title"
                 borderTheme="underline"
                 fontSize={18}
-                style={{ marginBottom: 20 }}
+                style={{ marginBottom: 0 }}
               />
-              <UiToggle labelLeft="Game" labelRight="Practice" />
               <Text style={styles.formLabels}>Date</Text>
               {/* <DateTimePicker 
                       value={date || new Date()}
@@ -219,6 +254,12 @@ const CreateEvent = props => {
                   </Animated.View>
                 </View>
               </Pressable>
+              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
+                <Text style={styles.optionLabels}>Time TBD</Text>
+                <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
+                  <Switch value={timeTbd} onChange={() => setTimeTbd(!timeTbd)}/>
+                </View>
+              </View>
               <View
                 style={{
                   flexDirection: 'row',
@@ -261,6 +302,7 @@ const CreateEvent = props => {
                   </View>
                 </View>
               </TouchableOpacity>
+              <UiTextArea placeholder={'Location Details (Ex: Field #11 or Park in Lot #2)'} style={[ifCircle, {padding: 0}]}/>
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown
                 modalOffsetY={80}
@@ -268,23 +310,44 @@ const CreateEvent = props => {
                 options={teams}
                 multiselect={true}
                 group={true}
-                placeholder="Choose teams"
+                placeholder="Choose Teams"
                 size="large"
               />
+              <View style={{marginTop: 10}}>
+                <UiInput placeholder={'Opponent'} style={{height: 55}}/>
+              </View>
+              <View style={{marginTop: 10, marginBottom: 10}}>
+                <UiInput placeholder={'Jersey'} style={{height: 55}}/>
+              </View>
+              <UiToggle labelLeft="Home" labelRight="Away" />
               <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50, marginTop: 10}}>
-                <Text style={styles.optionLabels}>Notify Team</Text>
+                <Text style={styles.optionLabels}>Notify Team(s)</Text>
                 <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
                   <Switch value={notifyTeam} onChange={() => setNotifyTeam(!notifyTeam)}/>
                 </View>
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50, marginBottom: 10}}>
+              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
                 <Text style={styles.optionLabels}>Arrive Early</Text>
                 <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
                   <Switch value={arriveEarly} onChange={() => setArriveEarly(!arriveEarly)}/>
                 </View>
               </View>
-              <View style={[{flexDirection: 'column'}]}>
-                <UiTextArea placeholder={'Extra Notes'} style={ifCircle}/>
+              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
+                <Text style={styles.optionLabels}>Cancelled</Text>
+                <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
+                  <Switch value={cancelled} onChange={() => setCancelled(!cancelled)}/>
+                </View>
+              </View>
+              <Text style={styles.formLabels}>Repeat</Text>
+              <UiDropdown
+                options={repeat}
+                multiselect={true}
+                placeholder="Please Select"
+                size="large"
+              />
+              <View style={[{flexDirection: 'column', marginTop: 20}]}>
+                <Text style={styles.formLabels}>Extra Notes</Text>
+                <UiTextArea placeholder={'(Ex: Don\'t forget to bring consent form.)'} style={ifCircle} height={90}/>
               </View>
             </View>
           </ScrollView>
@@ -325,8 +388,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '93%',
     backgroundColor: 'white',
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25
   },
   modalHeader: {
     padding: 30,
@@ -354,8 +415,8 @@ const styles = StyleSheet.create({
   },
   formLabels: {
     color: '#A19EAE',
-    fontSize: 14,
-    marginTop: 20,
+    fontSize: 16,
+    marginTop: 10,
     marginBottom: 10,
   },
   optionLabels: {

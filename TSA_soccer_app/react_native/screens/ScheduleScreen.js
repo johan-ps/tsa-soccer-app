@@ -29,6 +29,7 @@ const ScheduleScreen = ({ navigation }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const [currentIndex, setCurrentIndex] = useState(0);
   const slidesRef = useRef(null);
+  console.log(Events);
 
   const viewableItemsChanged = useRef(({ viewableItems }) => {
     setCurrentIndex(viewableItems[0].index);
@@ -142,33 +143,18 @@ const ScheduleScreen = ({ navigation }) => {
                   paddingTop: 20,
                   marginRight: 20,
                 }}>
-                <View
-                  style={{
-                    paddingRight: 20,
-                  }}>
-                  <ScheduleCardSmall
-                    setShowAddButton={setShowAddButton}
-                    onPress={() => navigation.navigate('Event')}
-                  />
-                </View>
-                <View
-                  style={{
-                    paddingRight: 20,
-                  }}>
-                  <ScheduleCardSmall
-                    setShowAddButton={setShowAddButton}
-                    onPress={() => navigation.navigate('Event')}
-                  />
-                </View>
-                <View
-                  style={{
-                    paddingRight: 20,
-                  }}>
-                  <ScheduleCardSmall
-                    setShowAddButton={setShowAddButton}
-                    onPress={() => navigation.navigate('Event')}
-                  />
-                </View>
+                {Events.map(event => (
+                    <View
+                    style={{
+                      paddingRight: 20,
+                    }}>
+                    <ScheduleCardSmall
+                      event={event}
+                      setShowAddButton={setShowAddButton}
+                      onPress={() => navigation.navigate('Event')}
+                    />
+                  </View>
+                ))}
               </ScrollView>
             </View>
           </SafeAreaView>

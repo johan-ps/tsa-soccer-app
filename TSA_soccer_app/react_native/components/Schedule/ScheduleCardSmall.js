@@ -6,20 +6,20 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AvailabilityMenu from './AvailabilityMenu';
 import { BlurView } from "@react-native-community/blur";
 import Modal from 'react-native-modal';
+import moment from 'moment';
 
 const ScheduleCardSmall = props => {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
-  const { onPress } = props;
+  const { onPress, event ,cancelled } = props;
   const theme = useSelector(state => state.theme.colors);
   const smallCard = useRef();
   const [openAvailableMenu, setOpenAvailableMenu] = useState(false);
   const defaultOption = {icon: 'information-outline', color: '#1E2630'};
   const options = [{id: 0, label: 'Going', icon: 'checkmark', color: '#4ce660'}, {id: 1, label: 'Maybe', icon: 'help',  color: '#a9a9a9'}, {id: 2, label: 'Unavailable', icon: 'close', color: '#e84343'}];
-  const [availability, setAvailability] = useState(defaultOption);
+  const [availability, setAvailability] = useState(event.defaultOption);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
-
 
   const onSelectOptionHandler = option => {
     setOpenAvailableMenu(false);
@@ -28,17 +28,19 @@ const ScheduleCardSmall = props => {
   };
 
   const openMenu = () => {
-    smallCard.current.measure((fx, fy, width, height, px, py) => {
-      console.log(px);
-      setOffsetX(px);
-      setOffsetY(py+20);
-      if(px > 10 && px <= 240){
-        setOpenAvailableMenu(true);
-        if(px > 200){
-          props.setShowAddButton(false);
+    if(!cancelled){
+      smallCard.current.measure((fx, fy, width, height, px, py) => {
+        console.log(px);
+        setOffsetX(px);
+        setOffsetY(py+20);
+        if(px > 10 && px <= 240){
+          setOpenAvailableMenu(true);
+          if(px > 200){
+            props.setShowAddButton(false);
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   return (
@@ -51,8 +53,8 @@ const ScheduleCardSmall = props => {
         <View style={styles.container}>
           <View style={styles.availableIcon}>
             <View style={{justifyContent: 'flex-end', alignItems: 'flex-start', width: 60}}>
-              <Text style={styles.infoTextTop} numberOfLines={1}>15 May</Text>
-              <Text style={styles.infoTextBottom} numberOfLines={1}>Wed</Text>
+              <Text style={styles.infoTextTop} numberOfLines={1}>{moment(event.date).format('DD MMM')}</Text>
+              <Text style={styles.infoTextBottom} numberOfLines={1}>{moment(event.date).format('ddd')}</Text>
             </View>
             <View style={{justifyContent: 'flex-end', alignItems: 'flex-end'}}>
               <AvailabilityMenu option={availability} onPress={() => openMenu()}/>
@@ -74,22 +76,30 @@ const ScheduleCardSmall = props => {
                 <Text style={styles.infoTextBottom}>- 6:30 pm</Text>
               </View>
             </View> */}
-            {/* <View style={{flexDirection: 'row'}}>
-              <View style={{ paddingRight: 10 }}>
+            <View style={{flexDirection: 'row', marginLeft: 5}}>
+            <View style={{ paddingLeft: 0}}>
                 <Icon name="location-outline" size={20} color="black" />
               </View>
               <View style={{ width: 80 }}>
-                <Text style={styles.infoTextTop} >ScotiaBank Arena</Text>
+                <Text style={styles.infoTextTop}>{event.location}</Text>
               </View>
-            </View> */}
+             
+            </View>
           </View>
         </View>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', marginTop: 10 }}>
           <View style={{ justifyContent: 'center' }}>
-            <Text style={styles.text}>Game</Text>
-            <Text numberOfLines={1} style={styles.versus}>vs. MUMBA</Text>
+            <Text style={styles.text}>{event.type === 'Other' ? event.title : event.type}</Text>
+            <Text numberOfLines={1} style={styles.versus}>{event.type === 'Game' ? `vs. ${event.opponent}` : null}</Text>
           </View>
         </View>
+        {cancelled ?
+          <View style={{justifyContent: 'center', alignItems: 'flex-start', height: 40, marginLeft: 18}}>
+            <Text style={{color: 'red', fontSize: 18, fontWeight: '500'}}>Cancelled</Text>
+          </View>
+          :
+          null
+        }
                   {/* <View
             style={{
               flexDirection: 'column',
