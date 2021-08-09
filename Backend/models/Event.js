@@ -11,7 +11,11 @@ class Event {
     this.locationId = locationId; // id
     this.locationDetails = locationDetails; // string
     this.authorId = authorId; // id
-    this.teams = teams; // array of ids
+    this.teams = teams; // array of UserIds
+    this.going = going; // array of UserIds
+    this.maybe = maybe; // array of UserIds
+    this.unavailable = unavailable; // array of UserIds
+    this.noResponse = noResponse; // array of UserIds
     this.extraNotes = extraNotes; // string
     this.cancelled = cancelled; // boolean
     this.notifyTeam = notifyTeam; // boolean
@@ -84,6 +88,12 @@ static findAll() {
   const sql = 'SELECT * FROM EVENTS';
 
   return db.execute(sql);
+}
+
+static findById(id) {
+  const sql = `SELECT * FROM EVENTS WHERE ID = ${id}`;
+
+  return db.execute(sql)
 }
 
 

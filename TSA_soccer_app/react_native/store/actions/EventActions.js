@@ -3,28 +3,26 @@ import { environmentUrl } from '../../constants/Environment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CONST from '../../constants/Constants';
 
-export const GET_ANNOUNCEMENTS = 'GET_ANNOUNCEMENTS';
-export const ADD_ANNOUNCEMENT = 'ADD_ANNOUNCEMENT';
-export const DELETE_ANNOUNCEMENT = 'DELETE_ANNOUNCEMENT';
+export const GET_EVENTS = 'GET_EVENTS';
+export const ADD_EVENT = 'ADD_EVENT';
+export const DELETE_EVENT = 'DELETE_EVENT';
 
-export const getAnnouncements = () => {
+export const getEvents = () => {
   return async dispatch => {
     try {
       const response = await fetch(
-        `http://${environmentUrl}/api/announcements`,
+        `http://${environmentUrl}/api/events`,
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong get announcements!');
+        throw new Error('Something went wrong get events!');
       }
 
       const resData = await response.json();
-      const announcements = resData.announcements.sort((a, b) =>
-        a.date < b.date ? 1 : a.date > b.date ? -1 : 0,
-      );  // TODO: Sorting should be done in backend
+      const events = resData.events;
       dispatch({
-        type: GET_ANNOUNCEMENTS,
-        announcements,
+        type: GET_EVENTS,
+        events,
       });
     } catch (err) {
       console.log(err);
@@ -32,7 +30,7 @@ export const getAnnouncements = () => {
   };
 };
 
-export const addAnnouncement = announcementData => {
+export const createEvent = eventData => {
   return async dispatch => {
     try {
       let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
@@ -41,20 +39,16 @@ export const addAnnouncement = announcementData => {
         throw new Error('No token set');
       }
 
-      const formData = new FormData();
-      for (const key in announcementData) {
-        formData.append(key, announcementData[key]);
-      }
 
       const response = await fetch(
-        `http://${environmentUrl}/api/announcements/add`,
+        `http://${environmentUrl}/api/events/add`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',
             'x-auth-token': `Bearer ${authToken}`,
           },
-          body: new FormData(),
+          body: eventData,
         },
       );
 
@@ -65,8 +59,8 @@ export const addAnnouncement = announcementData => {
       const resData = await response.json();
 
       dispatch({
-        type: GET_ANNOUNCEMENTS,
-        announcements: resData.announcements,
+        type: ADD_EVENT,
+        events: resData.events,
       });
     } catch (err) {
       console.log(err);
@@ -74,9 +68,9 @@ export const addAnnouncement = announcementData => {
   };
 };
 
-export const deleteAnnouncement = id => {
+export const deleteEvent = id => {
   return {
-    type: DELETE_ANNOUNCEMENT,
-    announcementId: id,
+    type: DELETE_EVENT,
+    eventId: id,
   };
 };

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { StyleSheet, View, useWindowDimensions, Animated } from 'react-native';
+import { Easing } from 'react-native-reanimated';
 
 const Paginator = props => {
   const { data, scrollX, currentIndex } = props;

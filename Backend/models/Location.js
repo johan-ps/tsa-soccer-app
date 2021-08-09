@@ -4,8 +4,8 @@ class Location {
     constructor(title, ageGroup, players, coaches) {
         this.name = title; //string
         this.street = street; //street
-        this.city = street; //city
-        this.postalCode = street; //postalCode
+        this.city = city; //city
+        this.postalCode = postalCode; //postalCode
         this.address = address; //string
         this.description = description //string
         this.latitutde = latitutde; //float
