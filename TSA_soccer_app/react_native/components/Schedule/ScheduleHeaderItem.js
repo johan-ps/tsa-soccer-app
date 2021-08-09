@@ -1,11 +1,6 @@
 import { ThemeProvider } from '@react-navigation/native';
 import React, { useState } from 'react';
-import {
-  Text,
-  StyleSheet,
-  View,
-  TouchableHighlight,
-} from 'react-native';
+import { Text, StyleSheet, View, TouchableHighlight } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -16,15 +11,22 @@ const ScheduleHeaderItem = props => {
   return (
     <TouchableHighlight
       onPress={onPress}
-      style={[styles.touchableContainer, {backgroundColor: current ? '#ed2f2f' : theme.primaryBg }]}
-      underlayColor="#DDDDDD"
-    >
-      <View style={{alignItems: 'center', width: 50}}>
+      style={[
+        styles.touchableContainer,
+        { backgroundColor: current ? '#ed2f2f' : theme.primaryBg },
+      ]}
+      underlayColor="#DDDDDD">
+      <View style={{ alignItems: 'center', width: 50 }}>
         <View style={styles.container}>
-          <Text style={[styles.dayOfWeek, {color: current ? 'white' : 'red'}]}>
+          <Text
+            style={[styles.dayOfWeek, { color: current ? 'white' : 'red' }]}>
             {date.format('dd')[0]}
           </Text>
-          <Text style={[styles.dayOfMonth, {color: current ? 'white' : theme.secondaryBg}]}>
+          <Text
+            style={[
+              styles.dayOfMonth,
+              { color: current ? 'white' : theme.secondaryText },
+            ]}>
             {date.format('D')}
           </Text>
         </View>
@@ -44,17 +46,17 @@ const styles = StyleSheet.create({
     height: 80,
     width: 50,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
-  dayOfWeek:{
+  dayOfWeek: {
     color: 'white',
     fontSize: 16,
-    marginBottom: 3
+    marginBottom: 3,
   },
   dayOfMonth: {
     color: 'white',
-    fontSize: 18
-  }
+    fontSize: 18,
+  },
 });
 
 export default ScheduleHeaderItem;

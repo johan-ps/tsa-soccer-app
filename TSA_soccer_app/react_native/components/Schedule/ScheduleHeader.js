@@ -7,7 +7,7 @@ import {
   TouchableHighlight,
   ScrollView,
   TouchableOpacity,
-  Button
+  Button,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -33,39 +33,55 @@ const ScheduleHeader = props => {
 
   return (
     <View style={styles.container}>
-      <View style={{flexDirection: 'row'}}>
-        <View style={{justifyContent: 'flex-end', width: '50%'}}>
-        <Text style={styles.header}>{currentDate.format('MMM YYYY')}</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ justifyContent: 'flex-end', width: '50%' }}>
+          <Text style={styles.header}>{currentDate.format('MMM YYYY')}</Text>
         </View>
-        <TouchableOpacity onPress={onPress} style={{justifyContent: 'flex-end', alignItems: 'flex-end', width: 100, height: 50, paddingRight: 10, zIndex: 100, position: 'relative', left: 60}}>
-          <Icon name="calendar-sharp" size={30} color="black" style={{zIndex: 0}}/>
+        <TouchableOpacity
+          onPress={onPress}
+          style={{
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end',
+            width: 100,
+            height: 50,
+            paddingRight: 10,
+            zIndex: 100,
+            position: 'relative',
+            left: 60,
+          }}>
+          <Icon
+            name="calendar-sharp"
+            size={30}
+            color="black"
+            style={{ zIndex: 0 }}
+          />
         </TouchableOpacity>
       </View>
-      {showDates ?
-      <ScrollView
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        style={styles.headerContainer}>
-        {selectedDate
-          ? datesArray.map(date => {
-              return (
-                <View key={date.toString()} style={{ alignItems: 'center', marginRight: 10 }}>
-                  <ScheduleHeaderItem
-                    onPress={() => setSelectedDate(date)}
-                    date={date}
-                    current={selectedDate.isSame(date, 'day')}
-                  />
-                  {selectedDate.isSame(date, 'day') ? (
-                    <View style={styles.selected} />
-                  ) : null}
-                </View>
-              );
-            })
-          : null}
-      </ScrollView>
-      :
-      null
-      }
+      {showDates ? (
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          style={styles.headerContainer}>
+          {selectedDate
+            ? datesArray.map(date => {
+                return (
+                  <View
+                    key={date.toString()}
+                    style={{ alignItems: 'center', marginRight: 10 }}>
+                    <ScheduleHeaderItem
+                      onPress={() => setSelectedDate(date)}
+                      date={date}
+                      current={selectedDate.isSame(date, 'day')}
+                    />
+                    {selectedDate.isSame(date, 'day') ? (
+                      <View style={styles.selected} />
+                    ) : null}
+                  </View>
+                );
+              })
+            : null}
+        </ScrollView>
+      ) : null}
       {showDates ? <Text style={styles.subHeading}>Today</Text> : null}
     </View>
   );
