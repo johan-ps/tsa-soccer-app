@@ -31,9 +31,6 @@ const MainNavigator = () => {
 
   const getTabBarVisible = route => {
     const routeName = getFocusedRouteNameFromRoute(route);
-    // const routeName = route.state
-    // ? route.state.routes[route.state.index].name
-    // : '';
     if (
       routeName === 'Event' ||
       routeName === 'CreateEvent' ||
@@ -87,7 +84,7 @@ const MainNavigator = () => {
       <MainNav.Screen name="Home" component={AnnouncementScreen} />
       <MainNav.Screen name="Schedule" component={ScheduleEventNavigator} />
       <MainNav.Screen name="Team" component={TeamRosterNavigator} />
-      <MainNav.Screen name="Messages" component={MessagesScreen} />
+      {/* <MainNav.Screen name="Messages" component={MessagesScreen} /> */}
       <MainNav.Screen name="More" component={SettingsNavigator} />
     </MainNav.Navigator>
   );
