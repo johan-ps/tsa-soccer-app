@@ -6,7 +6,7 @@ export const Events = [
     endTime: '6:30 pm',
     location: 'Scotiabank Arena',
     date: 'May 15, 2021',
-    opponent: null
+    opponent: null,
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ export const Events = [
     endTime: '7:30 pm',
     location: 'Scotiabank Arena',
     date: 'May 15, 2021',
-    opponent: 'MUMBA'
+    opponent: 'MUMBA',
   },
   {
     id: 3,
@@ -25,6 +25,6 @@ export const Events = [
     endTime: '8:30 pm',
     location: 'Scotiabank Arena',
     date: 'May 15, 2021',
-    opponent: null
-  }
-]
+    opponent: null,
+  },
+];

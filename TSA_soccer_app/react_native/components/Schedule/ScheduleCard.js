@@ -53,7 +53,7 @@ const ScheduleCard = props => {
       ref={bigCard}
       style={[
         styles.touchableContainer,
-        { backgroundColor: 'white', width: width - 40 },
+        { backgroundColor: theme.cardBg, width: width - 40 },
       ]}
       activeOpacity={0.8}>
       <View style={{ flexDirection: 'row' }}>

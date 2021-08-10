@@ -125,7 +125,7 @@ export default {
     textDark: '#FFFFFF',
 
     // cards
-    cardBg: '#FFFFFFCC',
+    cardBg: '#FFFFFF',
     cardTextHeading: '#231E20',
     cardTextSubHeading: 'grey',
     cardTextContent: '#00000099',

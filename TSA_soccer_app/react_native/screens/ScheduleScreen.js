@@ -29,7 +29,6 @@ const ScheduleScreen = ({ navigation }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const [currentIndex, setCurrentIndex] = useState(0);
   const slidesRef = useRef(null);
-  console.log(Events);
 
   const viewableItemsChanged = useRef(({ viewableItems }) => {
     setCurrentIndex(viewableItems[0].index);
@@ -38,65 +37,69 @@ const ScheduleScreen = ({ navigation }) => {
   const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
   return (
-    <View style={{ backgroundColor: theme.cardBg }}>
-      {viewCalender ? (
-        <View>
-          <SafeAreaView>
-            <ScheduleHeader
-              onPress={() => setViewCalender(!viewCalender)}
-              showDates={false}
-            />
-            <View style={{ marginTop: 20 }}>
-              <Calendar
-                current={new Date()}
-                style={styles.calender}
-                onDayPress={day => {
-                  console.log('selected day', day);
-                }}
-                disableMonthChange={false}
-                theme={{
-                  todayTextColor: 'red',
-                  selectedDayBackgroundColor: 'red',
-                  textDayFontSize: 20,
-                  textMonthFontSize: 20,
-                  textDayHeaderFontSize: 15,
-                  backgroundColor: theme.cardBg,
-                  calendarBackground: theme.cardBg,
-                  arrowColor: 'red',
-                  textDayFontWeight: '400',
-                  textMonthFontWeight: 'bold',
-                  textDayHeaderFontWeight: '300',
-                }}
-                markingType={'period'}
-                markedDates={{
-                  '2021-08-15': { marked: true, dotColor: 'red' },
-                  '2021-08-16': { marked: true, dotColor: 'red' },
-                  '2021-08-22': {
-                    startingDay: true,
-                    color: 'red',
-                    textColor: 'white',
-                  },
-                  '2021-08-23': {
-                    color: 'red',
-                    textColor: 'white',
-                    marked: true,
-                    dotColor: 'white',
-                  },
-                  '2021-08-24': { color: 'red', textColor: 'white' },
-                  '2021-08-25': {
-                    endingDay: true,
-                    color: 'red',
-                    textColor: 'white',
-                  },
-                }}
+    <View>
+      <ScrollView>
+        {viewCalender ? (
+          <View>
+            <SafeAreaView>
+              <ScheduleHeader
+                onPress={() => setViewCalender(!viewCalender)}
+                showDates={false}
               />
-            </View>
-          </SafeAreaView>
-        </View>
-      ) : (
-        <View>
+              <View style={{ marginTop: 20 }}>
+                <Calendar
+                  current={new Date()}
+                  style={styles.calender}
+                  onDayPress={day => {
+                    console.log('selected day', day);
+                  }}
+                  disableMonthChange={false}
+                  theme={{
+                    todayTextColor: 'red',
+                    selectedDayBackgroundColor: 'red',
+                    textDayFontSize: 20,
+                    textMonthFontSize: 20,
+                    textDayHeaderFontSize: 15,
+                    backgroundColor: theme.cardBg,
+                    calendarBackground: theme.cardBg,
+                    arrowColor: 'red',
+                    textDayFontWeight: '400',
+                    textMonthFontWeight: 'bold',
+                    textDayHeaderFontWeight: '300',
+                  }}
+                  markingType={'period'}
+                  markedDates={{
+                    '2021-08-15': { marked: true, dotColor: 'red' },
+                    '2021-08-16': { marked: true, dotColor: 'red' },
+                    '2021-08-22': {
+                      startingDay: true,
+                      color: 'red',
+                      textColor: 'white',
+                    },
+                    '2021-08-23': {
+                      color: 'red',
+                      textColor: 'white',
+                      marked: true,
+                      dotColor: 'white',
+                    },
+                    '2021-08-24': { color: 'red', textColor: 'white' },
+                    '2021-08-25': {
+                      endingDay: true,
+                      color: 'red',
+                      textColor: 'white',
+                    },
+                  }}
+                />
+              </View>
+            </SafeAreaView>
+          </View>
+        ) : (
           <SafeAreaView>
-            <View style={[styles.container, { backgroundColor: theme.cardBg }]}>
+            <View
+              style={[
+                styles.container,
+                { backgroundColor: theme.primaryBg, marginBottom: 140 },
+              ]}>
               <ScheduleHeader onPress={() => setViewCalender(!viewCalender)} />
               <View style={styles.bodyContainer}>
                 <FlatList
@@ -135,19 +138,17 @@ const ScheduleScreen = ({ navigation }) => {
                 Upcoming
               </Text>
               <ScrollView
+                contentContainerStyle={{
+                  paddingVertical: 20,
+                  paddingHorizontal: 10,
+                }}
                 horizontal={true}
                 showsVerticalScrollIndicator={false}
                 style={{
                   height: 200,
-                  marginLeft: 20,
-                  paddingTop: 20,
-                  marginRight: 20,
                 }}>
                 {Events.map(event => (
-                    <View
-                    style={{
-                      paddingRight: 20,
-                    }}>
+                  <View>
                     <ScheduleCardSmall
                       event={event}
                       setShowAddButton={setShowAddButton}
@@ -158,8 +159,8 @@ const ScheduleScreen = ({ navigation }) => {
               </ScrollView>
             </View>
           </SafeAreaView>
-        </View>
-      )}
+        )}
+      </ScrollView>
       {showAddButton && (
         <AddButton
           onPress={() => {

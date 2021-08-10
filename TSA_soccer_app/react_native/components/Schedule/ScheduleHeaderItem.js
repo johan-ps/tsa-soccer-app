@@ -13,7 +13,7 @@ const ScheduleHeaderItem = props => {
       onPress={onPress}
       style={[
         styles.touchableContainer,
-        { backgroundColor: current ? '#ed2f2f' : theme.primaryBg },
+        { backgroundColor: current ? '#ed2f2f' : theme.cardBg },
       ]}
       underlayColor="#DDDDDD">
       <View style={{ alignItems: 'center', width: 50 }}>

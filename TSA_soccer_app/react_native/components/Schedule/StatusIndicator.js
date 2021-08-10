@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const StatusIndicator = props => {
-  const { label, icon, color } = props;
+  const { label, icon, color, type = 'large' } = props;
 
   const onPressHandler = () => {
     if (props.onPress) {
@@ -16,12 +16,15 @@ const StatusIndicator = props => {
       onPress={onPressHandler}
       style={[
         styles.container,
+        type === 'small' ? styles.smallContainer : {},
         { borderColor: color, backgroundColor: color + '07' },
       ]}>
       {icon ? <Icon name={icon} color={color} size={16} /> : null}
-      <Text style={[styles.status, icon ? { marginLeft: 5 } : {}]}>
-        {label}
-      </Text>
+      {type === 'large' ? (
+        <Text style={[styles.status, icon ? { marginLeft: 5 } : {}]}>
+          {label}
+        </Text>
+      ) : null}
     </Pressable>
   );
 };
@@ -37,6 +40,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 5,
+  },
+  smallContainer: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    width: 40,
   },
   status: {
     fontFamily: 'Roboto-Regular',
