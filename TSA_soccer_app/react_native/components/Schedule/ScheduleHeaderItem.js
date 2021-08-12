@@ -1,37 +1,41 @@
-import { ThemeProvider } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { Text, StyleSheet, View, TouchableHighlight } from 'react-native';
+import React from 'react';
+import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 const ScheduleHeaderItem = props => {
   const { onPress, current, date } = props;
   const theme = useSelector(state => state.theme.colors);
 
   return (
-    <TouchableHighlight
+    <TouchableOpacity
       onPress={onPress}
       style={[
         styles.touchableContainer,
-        { backgroundColor: current ? '#ed2f2f' : theme.cardBg },
-      ]}
-      underlayColor="#DDDDDD">
-      <View style={{ alignItems: 'center', width: 50 }}>
-        <View style={styles.container}>
-          <Text
-            style={[styles.dayOfWeek, { color: current ? 'white' : 'red' }]}>
-            {date.format('dd')[0]}
-          </Text>
-          <Text
-            style={[
-              styles.dayOfMonth,
-              { color: current ? 'white' : theme.secondaryText },
-            ]}>
-            {date.format('D')}
-          </Text>
-        </View>
+        { backgroundColor: current ? theme.schDayBgSelected : theme.schDayBg },
+      ]}>
+      <View style={styles.container}>
+        <Text
+          style={[
+            styles.dayOfWeek,
+            {
+              color: current ? theme.schDaySelectedText : theme.schDayHeader,
+              fontFamily: theme.fontRegular,
+            },
+          ]}>
+          {date.format('dd')[0]}
+        </Text>
+        <Text
+          style={[
+            styles.dayOfMonth,
+            {
+              color: current ? theme.schDaySelectedText : theme.schDayContent,
+              fontFamily: theme.fontRegular,
+            },
+          ]}>
+          {date.format('D')}
+        </Text>
       </View>
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 };
 
@@ -40,6 +44,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     height: 80,
     width: 50,
+    marginHorizontal: 5,
   },
   container: {
     borderRadius: 30,
@@ -49,12 +54,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dayOfWeek: {
-    color: 'white',
     fontSize: 16,
     marginBottom: 3,
   },
   dayOfMonth: {
-    color: 'white',
     fontSize: 18,
   },
 });

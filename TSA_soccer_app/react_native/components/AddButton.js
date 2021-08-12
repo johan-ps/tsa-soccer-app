@@ -56,7 +56,7 @@ const AddButton = forwardRef((props, ref) => {
   };
 
   const themeBgClr = {
-    backgroundColor: theme.buttonPrimaryBg,
+    backgroundColor: theme.addBtnBg,
   };
 
   const containerAnimStyle = useAnimatedStyle(() => {
@@ -88,14 +88,19 @@ const AddButton = forwardRef((props, ref) => {
 
   return (
     <Animated.View
-      style={[styles.addBtnContainer, themeBgClr, containerAnimStyle]}>
+      style={[
+        styles.addBtnContainer,
+        themeBgClr,
+        containerAnimStyle,
+        { shadowColor: theme.addBtnBg },
+      ]}>
       <View style={styles.addBtn}>
         <Ripple
           style={[styles.ripple]}
           onPress={props.onPress}
           onPressIn={onFocusIn}
           onPressOut={onFocusOut}>
-          <Icon name="add-outline" color={theme.buttonPrimaryText} size={28} />
+          <Icon name="add-outline" color={theme.addBtnIcon} size={28} />
         </Ripple>
       </View>
     </Animated.View>
@@ -123,7 +128,6 @@ const styles = StyleSheet.create({
     right: 25,
     elevation: 10,
     shadowRadius: 10,
-    shadowColor: '#F02A4B',
     shadowOpacity: 0.3,
     shadowOffset: { height: 10 },
     zIndex: 200,

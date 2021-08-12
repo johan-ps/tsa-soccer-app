@@ -65,7 +65,9 @@ const MainNavigator = () => {
             <View style={styles.tabBarIconContainer}>
               <Icon
                 name={iconName}
-                color={focused ? theme.primaryIconClr : theme.secondaryIconClr}
+                color={
+                  focused ? theme.bottomNavIconSelect : theme.bottomNavIcon
+                }
                 size={focused ? 23 : 21}
               />
             </View>
@@ -77,15 +79,15 @@ const MainNavigator = () => {
         showLabel: false,
         style: {
           ...styles.tabBar,
-          backgroundColor: theme.primaryBg,
+          backgroundColor: theme.bottomNavBg,
         },
         keyboardHidesTabBar: true,
       }}>
       <MainNav.Screen name="Home" component={AnnouncementScreen} />
       <MainNav.Screen name="Schedule" component={ScheduleEventNavigator} />
-      <MainNav.Screen name="Team" component={TeamRosterNavigator} />
+      {/* <MainNav.Screen name="Team" component={TeamRosterNavigator} /> */}
       {/* <MainNav.Screen name="Messages" component={MessagesScreen} /> */}
-      <MainNav.Screen name="More" component={SettingsNavigator} />
+      {/* <MainNav.Screen name="More" component={SettingsNavigator} /> */}
     </MainNav.Navigator>
   );
 };

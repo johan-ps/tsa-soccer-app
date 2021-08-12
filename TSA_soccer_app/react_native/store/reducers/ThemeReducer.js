@@ -2,9 +2,9 @@ import { UPDATE_THEME } from '../actions/ThemeActions';
 import ColorThemes from '../../constants/ColorThemes';
 
 const INITIAL_STATE = {
-  activeTheme: 'default',
-  possible: ['default', 'dark', 'darkPlus'],
-  colors: ColorThemes.default,
+  activeTheme: 'light',
+  possible: ['light', 'dark', 'darkPlus'],
+  colors: ColorThemes.light,
 };
 
 const themeReducer = (state = INITIAL_STATE, action) => {

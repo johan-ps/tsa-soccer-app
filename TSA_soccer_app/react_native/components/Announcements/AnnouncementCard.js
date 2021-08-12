@@ -65,7 +65,7 @@ const AnnouncementCard = props => {
                   <UiIcon
                     icon="person"
                     color="#aaa6c3"
-                    backgroundColor={theme.actionBtn}
+                    backgroundColor={theme.cardTextHeading}
                     size={20}
                     darkBg={theme.name === 'dark'}
                   />
@@ -73,15 +73,30 @@ const AnnouncementCard = props => {
               />
             </View>
             <View style={styles.headerContent}>
-              <Text style={[styles.name, { color: theme.cardTextHeading }]}>
+              <Text
+                style={[
+                  styles.name,
+                  { color: theme.cardTextHeading, fontFamily: theme.fontBold },
+                ]}>
                 {`${firstName} ${lastName}`}
               </Text>
-              <Text style={[styles.date, { color: theme.cardTextSubHeading }]}>
+              <Text
+                style={[
+                  styles.date,
+                  {
+                    color: theme.cardTextSubHeading,
+                    fontFamily: theme.fontLight,
+                  },
+                ]}>
                 {Util.getTime(date)}
               </Text>
             </View>
           </View>
-          <UiMenu onPress={onSelectOption} options={menuOptions} />
+          <UiMenu
+            onPress={onSelectOption}
+            options={menuOptions}
+            color={theme.cardTextHeading}
+          />
         </View>
         <View style={styles.body}>
           <UiImage
@@ -93,7 +108,10 @@ const AnnouncementCard = props => {
           />
           <View style={styles.bodyContentWrapper}>
             <Text
-              style={[styles.bodyContent, { color: theme.cardTextContent }]}>
+              style={[
+                styles.bodyContent,
+                { color: theme.cardTextContent, fontFamily: theme.fontRegular },
+              ]}>
               {description}
             </Text>
           </View>
@@ -126,12 +144,9 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 15,
-    fontWeight: 'bold',
-    fontFamily: 'Roboto-Bold',
   },
   date: {
     fontSize: 13,
-    fontFamily: 'Roboto-Light',
   },
   headerImgWrapper: {
     overflow: 'hidden',
@@ -165,7 +180,6 @@ const styles = StyleSheet.create({
   },
   bodyContent: {
     fontSize: 14,
-    fontFamily: 'Roboto-Regular',
   },
 });
 

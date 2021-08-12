@@ -238,7 +238,7 @@ const AnnouncementScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.navBg }]}>
+    <View style={[styles.container, { backgroundColor: theme.searchBg }]}>
       <StatusBar
         barStyle={activeTheme === 'default' ? 'dark-content' : 'light-content'}
       />
@@ -246,7 +246,7 @@ const AnnouncementScreen = ({ navigation }) => {
         <View
           style={[
             styles.notchOffsetContainer,
-            { backgroundColor: theme.navBg },
+            { backgroundColor: theme.searchBg },
           ]}
         />
       ) : null}

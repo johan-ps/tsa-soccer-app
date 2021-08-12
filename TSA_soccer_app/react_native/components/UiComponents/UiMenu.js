@@ -183,7 +183,7 @@ const UiMenu = props => {
   return (
     <View style={styles.menuContainer} ref={menuIcon} onLayout={event => {}}>
       <TouchableOpacity style={styles.iconContainer} onPress={onOpenHandler}>
-        <Icon name="ellipsis-vertical" size={20} color={theme.iconClr} />
+        <Icon name="ellipsis-vertical" size={20} color={props.color} />
       </TouchableOpacity>
       <Modal animationType="none" transparent={true} visible={showOptions}>
         <Pressable onPress={onCloseHandler} style={[styles.modalContainer]}>

@@ -1,13 +1,10 @@
-import { ThemeProvider } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
   Text,
   StyleSheet,
   View,
-  TouchableHighlight,
   ScrollView,
   TouchableOpacity,
-  Button,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -20,6 +17,7 @@ const ScheduleHeader = props => {
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const endDate = moment().add(7, 'days');
   const [datesArray, setDatesArray] = useState([]);
+  const theme = useSelector(state => state.theme.colors);
 
   useEffect(() => {
     let newDatesArray = [];
@@ -29,52 +27,48 @@ const ScheduleHeader = props => {
       date.add(1, 'days');
     }
     setDatesArray(newDatesArray);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ justifyContent: 'flex-end', width: '50%' }}>
-          <Text style={styles.header}>{currentDate.format('MMM YYYY')}</Text>
-        </View>
-        <TouchableOpacity
-          onPress={onPress}
-          style={{
-            justifyContent: 'flex-end',
-            alignItems: 'flex-end',
-            width: 100,
-            height: 50,
-            paddingRight: 10,
-            zIndex: 100,
-            position: 'relative',
-            left: 60,
-          }}>
-          <Icon
-            name="calendar-sharp"
-            size={30}
-            color="black"
-            style={{ zIndex: 0 }}
-          />
+      <View style={styles.headerContainer}>
+        <Text
+          style={[
+            styles.header,
+            { color: theme.secondaryText, fontFamily: theme.fontRegular },
+          ]}>
+          {currentDate.format('MMM YYYY')}
+        </Text>
+        <TouchableOpacity onPress={onPress} style={styles.viewCalenderLink}>
+          <Text style={[{ color: theme.link, fontFamily: theme.fontRegular }]}>
+            Calendar
+          </Text>
+          <Icon name="chevron-forward-outline" size={30} color={theme.link} />
         </TouchableOpacity>
       </View>
       {showDates ? (
         <ScrollView
+          contentContainerStyle={styles.dateListInnerContainer}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          style={styles.headerContainer}>
+          style={styles.dateListContainer}>
           {selectedDate
             ? datesArray.map(date => {
                 return (
-                  <View
-                    key={date.toString()}
-                    style={{ alignItems: 'center', marginRight: 10 }}>
+                  <View key={date.toString()} style={styles.dateContainer}>
                     <ScheduleHeaderItem
                       onPress={() => setSelectedDate(date)}
                       date={date}
                       current={selectedDate.isSame(date, 'day')}
                     />
                     {selectedDate.isSame(date, 'day') ? (
-                      <View style={styles.selected} />
+                      <View
+                        style={[
+                          styles.selected,
+                          { backgroundColor: theme.schDayBgSelected },
+                        ]}
+                      />
                     ) : null}
                   </View>
                 );
@@ -82,29 +76,55 @@ const ScheduleHeader = props => {
             : null}
         </ScrollView>
       ) : null}
-      {showDates ? <Text style={styles.subHeading}>Today</Text> : null}
+      {showDates ? (
+        <Text
+          style={[
+            styles.subHeading,
+            { color: theme.secondaryText, fontFamily: theme.fontRegular },
+          ]}>
+          Today
+        </Text>
+      ) : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 20,
-    paddingRight: 20,
+    width: '100%',
   },
-  headerContainer: {
+  dateListContainer: {
     flexDirection: 'row',
     marginTop: 20,
   },
+  dateListInnerContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+  },
+  dateContainer: {
+    alignItems: 'center',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  viewCalenderLink: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   header: {
     fontSize: 20,
-    fontWeight: '600',
-    marginTop: 20,
   },
   subHeading: {
     fontSize: 18,
     fontWeight: '500',
     marginTop: 20,
+    paddingHorizontal: 20,
   },
   selected: {
     backgroundColor: '#cf4444',

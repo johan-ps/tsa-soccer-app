@@ -98,7 +98,7 @@ const ScheduleScreen = ({ navigation }) => {
             <View
               style={[
                 styles.container,
-                { backgroundColor: theme.primaryBg, marginBottom: 140 },
+                { backgroundColor: theme.secondaryBg, marginBottom: 140 },
               ]}>
               <ScheduleHeader onPress={() => setViewCalender(!viewCalender)} />
               <View style={styles.bodyContainer}>
@@ -143,10 +143,7 @@ const ScheduleScreen = ({ navigation }) => {
                   paddingHorizontal: 10,
                 }}
                 horizontal={true}
-                showsVerticalScrollIndicator={false}
-                style={{
-                  height: 200,
-                }}>
+                showsVerticalScrollIndicator={false}>
                 {Events.map(event => (
                   <View>
                     <ScheduleCardSmall

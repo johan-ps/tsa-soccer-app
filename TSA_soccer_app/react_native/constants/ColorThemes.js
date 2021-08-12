@@ -1,6 +1,69 @@
 export default {
   dark: {
     name: 'dark',
+
+    // font
+    fontRegular: 'Roboto-Regular',
+    fontMedium: 'Roboto-Medium',
+    fontLight: 'Roboto-Light',
+    fontThin: 'Roboto-Thin',
+    fontBold: 'Roboto-Bold',
+
+    // text
+    primaryText: '#FFFFFF',
+    secondaryText: '#C9C8C8',
+
+    // links
+    link: '#FEAF35',
+
+    // background
+    primaryBg: '#414141',
+    secondaryBg: '#231E20',
+
+    // cards
+    cardBg: '#231E20',
+    cardTextHeading: '#D1D1D1',
+    cardTextSubHeading: '#C9C8C8',
+    cardTextContent: '#D1D1D1b9',
+
+    // bottomTabNav
+    bottomNavBg: '#414141',
+    bottomNavIcon: '#C9C8C8',
+    bottomNavIconSelect: '#E41B23',
+
+    // search header
+    searchBg: '#231E20',
+    searchInputBg: '#414141',
+    searchText: '#D1D1D1',
+
+    // menu
+    menuBg: '#414141',
+    menuText: '#D1D1D1',
+
+    // add button
+    addBtnBg: '#E41B23',
+    addBtnIcon: '#231E20',
+
+    // schedule
+    schDayBg: '#414141',
+    schDayBgSelected: '#FEAF35',
+    schDayHeader: '#FEAF35',
+    schDayContent: '#C9C8C8',
+    schDaySelectedText: '#231E20',
+
+    schCardBg: '#414141',
+    schCardText: '#C9C8C8',
+    schCardAccent: '#FEAF35',
+  },
+  light: {
+    name: 'light',
+  },
+};
+
+/*
+export default {
+  dark: {
+    name: 'dark',
     primaryClr: '#e51b23',
     primaryTxtClr: '#ffffff',
     primaryBtnClr: '#000000',
@@ -159,3 +222,5 @@ export default {
     moreScreenOptionsBgClr: '#ffffff',
   },
 };
+
+*/

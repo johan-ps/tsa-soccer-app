@@ -1,4 +1,3 @@
-import { ThemeProvider } from '@react-navigation/native';
 import React, { useState, useRef } from 'react';
 import {
   Text,
@@ -6,7 +5,6 @@ import {
   View,
   TouchableHighlight,
   TouchableOpacity,
-  Image,
   Dimensions,
 } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -98,12 +96,30 @@ const ScheduleCardSmall = props => {
     <TouchableOpacity
       ref={smallCard}
       onPress={onPress}
-      style={[styles.touchableContainer, { backgroundColor: theme.cardBg }]}
+      style={[
+        styles.touchableContainer,
+        {
+          backgroundColor: theme.schCardBg,
+          borderTopColor: theme.schCardAccent,
+        },
+      ]}
       activeOpacity={0.8}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.monday}>May</Text>
-          <Text style={styles.date}>24</Text>
+          <Text
+            style={[
+              styles.monday,
+              { color: theme.schCardText, fontFamily: theme.fontRegular },
+            ]}>
+            May
+          </Text>
+          <Text
+            style={[
+              styles.date,
+              { color: theme.schCardText, fontFamily: theme.fontMedium },
+            ]}>
+            24
+          </Text>
         </View>
         <StatusIndicator
           label={availability.label}
@@ -114,16 +130,24 @@ const ScheduleCardSmall = props => {
         />
       </View>
       <View style={styles.body}>
-        <Text style={styles.type}>Practice</Text>
+        <Text
+          style={[
+            styles.type,
+            { color: theme.schCardText, fontFamily: theme.fontRegular },
+          ]}>
+          Practice
+        </Text>
       </View>
       <View style={styles.infoHeaderContainer}>
-        <Text style={styles.time}>5:30 - 6:30 pm</Text>
+        <Text
+          style={[
+            styles.time,
+            { color: theme.schCardText, fontFamily: theme.fontLight },
+          ]}>
+          5:30 - 6:30 pm
+        </Text>
       </View>
-      <TeamListPreview
-        players={playersList}
-        size={35}
-        max={3}
-      />
+      <TeamListPreview players={playersList} size={35} max={3} />
       {/* {cancelled ? (
         <View
           style={{
@@ -227,6 +251,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     padding: 20,
+    borderTopWidth: 6,
+    borderStyle: 'solid',
   },
   header: {
     width: '100%',
@@ -239,19 +265,15 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   month: {
-    fontFamily: 'Roboto-Regular',
     fontSize: 12,
   },
   date: {
-    fontFamily: 'Roboto-Medium',
     fontSize: 24,
   },
   time: {
-    fontFamily: 'Roboto-Light',
     fontSize: 13,
   },
   type: {
-    fontFamily: 'Roboto-Regular',
     fontSize: 20,
   },
   container: {

@@ -54,7 +54,11 @@ const NavHeader = forwardRef((props, ref) => {
 
   return (
     <Animated.View
-      style={[styles.container, { backgroundColor: theme.navBg }, animStyle]}>
+      style={[
+        styles.container,
+        { backgroundColor: theme.searchBg },
+        animStyle,
+      ]}>
       {/* <View style={styles.iconLeftContainer}>
         {iconListLeft.map(icon => {
           return (
@@ -76,18 +80,19 @@ const NavHeader = forwardRef((props, ref) => {
             style={[
               styles.searchbar,
               {
-                borderColor: theme.navText,
-                color: theme.navText,
-                backgroundColor: theme.navInputBg,
+                borderColor: theme.searchText,
+                color: theme.searchText,
+                backgroundColor: theme.searchInputBg,
+                fontFamily: theme.fontRegular,
               },
             ]}
             placeholder="Search..."
-            placeholderTextColor={theme.navText}
+            placeholderTextColor={theme.searchText}
           />
         ) : null}
         {searchable ? (
           <View style={styles.searchbarIcon}>
-            <Icon name="search-outline" color={theme.navText} size={20} />
+            <Icon name="search-outline" color={theme.searchText} size={20} />
           </View>
         ) : null}
       </View>
@@ -98,7 +103,7 @@ const NavHeader = forwardRef((props, ref) => {
               onPress={props.toggleFilter}
               key={icon.id}
               style={styles.iconContainer}>
-              <Icon name={icon.name} color={theme.iconClr} size={20} />
+              <Icon name={icon.name} color={theme.searchText} size={20} />
             </TouchableOpacity>
           );
         })}
