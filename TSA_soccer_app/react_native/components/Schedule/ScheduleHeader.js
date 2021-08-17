@@ -12,7 +12,7 @@ import moment from 'moment';
 import ScheduleHeaderItem from './ScheduleHeaderItem';
 
 const ScheduleHeader = props => {
-  const { onPress, showDates = true } = props;
+  const { onPress, showDates = true, renderScreen } = props;
   const currentDate = moment();
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const endDate = moment().add(7, 'days');
@@ -20,15 +20,22 @@ const ScheduleHeader = props => {
   const theme = useSelector(state => state.theme.colors);
 
   useEffect(() => {
-    let newDatesArray = [];
-    let date = moment();
-    while (endDate.diff(date, 'days') >= 0) {
-      newDatesArray.push(date.clone());
-      date.add(1, 'days');
+    if (showDates) {
+      let newDatesArray = [];
+      let date = moment();
+      while (endDate.diff(date, 'days') >= 0) {
+        newDatesArray.push(date.clone());
+        date.add(1, 'days');
+      }
+      setDatesArray(newDatesArray);
     }
-    setDatesArray(newDatesArray);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [endDate, showDates]);
+
+  useEffect(() => {
+    if (showDates) {
+      renderScreen();
+    }
+  });
 
   return (
     <View style={styles.container}>

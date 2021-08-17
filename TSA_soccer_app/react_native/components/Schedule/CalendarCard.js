@@ -15,10 +15,10 @@ import { BlurView } from '@react-native-community/blur';
 import Modal from 'react-native-modal';
 import StatusIndicator from './StatusIndicator';
 
-const ScheduleCard = props => {
+const CalendarCard = props => {
   const { onPress, item } = props;
   const [openAvailableMenu, setOpenAvailableMenu] = useState(false);
-  const bigCard = useRef();
+  const calanderCard = useRef();
   const theme = useSelector(state => state.theme.colors);
   const defaultOption = {
     label: 'Set Availability',
@@ -40,9 +40,9 @@ const ScheduleCard = props => {
   };
 
   const openMenu = () => {
-    bigCard.current.measure((fx, fy, width, height, px, py) => {
+    calanderCard.current.measure((fx, fy, width, height, px, py) => {
       setOffsetX(px);
-      setOffsetY(py + 40);
+      setOffsetY(py +10);
     });
     setOpenAvailableMenu(true);
   };
@@ -50,21 +50,25 @@ const ScheduleCard = props => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      ref={bigCard}
+      ref={calanderCard}
       style={[
         styles.touchableContainer,
-        { backgroundColor: theme.cardBg, width: width - 40 },
+        { backgroundColor: 'white', width: width - 40 },
       ]}
       activeOpacity={0.8}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row'}}>
         <View
           style={{
-            height: '100%',
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            margin: 10,
+            marginTop: 20
           }}>
-          <ScheduleClock startTime={item.startTime} endTime={item.endTime} />
+          <Text style={{fontSize: 14, color: 'red'}}>{item.startTime}</Text>
+          <Text style={{fontSize: 14, color: 'red'}}>- {item.endTime}</Text>
         </View>
+        <View style={{height: 150, width: 3, backgroundColor: 'red'}}/>
+
         <View style={styles.container}>
           <View
             style={{
@@ -74,48 +78,31 @@ const ScheduleCard = props => {
               width: '100%',
               height: '100%',
             }}>
-            <StatusIndicator
-              label={availability.label}
-              icon={availability.icon}
-              color={availability.color}
-              onPress={() => openMenu()}
-            />
-            <StatusIndicator label={item.type === 'Other' ? item.title : item.type} color="#1e79e3" />
-            <StatusIndicator
-              label={item.location}
-              icon="location-outline"
-              color="#1e79e3"
-            />
-            {/* <View style={styles.availableIcon}>
-              <AvailabilityMenu
-                option={availability}
-                onPress={() => openMenu()}
-              />
-            </View> */}
-            {/* <View
+            <View
               style={{
                 flexDirection: 'column',
                 width: '100%',
-                justifyContent: 'center',
-                alignItems: 'flex-end',
+                height: '100%',
+                paddingTop: 15,
+                paddingLeft: 10
               }}>
+              <Text style={styles.text}>
+                {item.type === 'Other' ? item.title : item.type}
+              </Text>
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   paddingBottom: 10,
                 }}>
-                <View style={{ paddingRight: 0 }}>
+                <View style={{ paddingRight: 5 }}>
                   <Icon name="location-outline" size={20} color="black" />
                 </View>
                 <View style={{ paddingRight: 0 }}>
                   <Text style={styles.infoTextTop}>{item.location}</Text>
                 </View>
               </View>
-              <Text style={styles.text}>
-                {item.type === 'Other' ? item.title : item.type}
-              </Text>
-            </View> */}
+            </View>
           </View>
         </View>
       </View>
@@ -185,7 +172,7 @@ const ScheduleCard = props => {
 
 const styles = StyleSheet.create({
   touchableContainer: {
-    height: 200,
+    height: 150,
     borderRadius: 10,
     elevation: 4,
     shadowRadius: 1,
@@ -193,10 +180,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowOffset: { height: 1 },
     zIndex: 100,
-    marginHorizontal: 20,
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
   },
   container: {
     flexDirection: 'column',
@@ -205,7 +189,7 @@ const styles = StyleSheet.create({
   text: {
     color: 'black',
     fontWeight: '600',
-    fontSize: 25,
+    fontSize: 22,
     textAlign: 'left',
     marginBottom: 5,
   },
@@ -238,7 +222,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 200,
+    height: 110,
     width: '100%',
     borderRadius: 10,
   },
@@ -248,4 +232,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScheduleCard;
+export default CalendarCard;

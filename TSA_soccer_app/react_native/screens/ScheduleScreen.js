@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Text,
   View,
@@ -7,6 +7,8 @@ import {
   Animated,
   ScrollView,
   FlatList,
+  StatusBar,
+  useWindowDimensions,
 } from 'react-native';
 import { AddButton, UiButton } from '../components/_components';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
@@ -21,7 +23,7 @@ import { Events } from '../data/events';
 import Paginator from '../components/Schedule/Paginator';
 
 const ScheduleScreen = ({ navigation }) => {
-  const [createEvent, setCreateEvent] = useState(false);
+  const [renderScreen, setRenderScreen] = useState(false);
   const [viewCalender, setViewCalender] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showAddButton, setShowAddButton] = useState(true);
@@ -37,127 +39,109 @@ const ScheduleScreen = ({ navigation }) => {
   const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
   return (
-    <View>
-      <ScrollView>
-        {viewCalender ? (
-          <View>
-            <SafeAreaView>
+    <View style={{ backgroundColor: theme.cardBg }}>
+      <View style={{ backgroundColor: '#d4d4d4', height: 44 }} />
+      <View
+        style={{
+          backgroundColor: '#d4d4d4',
+          height: 150,
+          width: '100%',
+          position: 'absolute',
+          top: 90,
+          zIndex: 0,
+        }}
+      />
+      {viewCalender ? (
+        <View>
+          <SafeAreaView>
+            <ScheduleHeader
+              onPress={() => setViewCalender(!viewCalender)}
+              showDates={false}
+            />
+            <CalenderScreen />
+          </SafeAreaView>
+        </View>
+      ) : (
+        <View>
+          <SafeAreaView>
+            <View style={[styles.container, { backgroundColor: theme.cardBg }]}>
               <ScheduleHeader
                 onPress={() => setViewCalender(!viewCalender)}
-                showDates={false}
+                renderScreen={() => setRenderScreen(true)}
               />
-              <View style={{ marginTop: 20 }}>
-                <Calendar
-                  current={new Date()}
-                  style={styles.calender}
-                  onDayPress={day => {
-                    console.log('selected day', day);
-                  }}
-                  disableMonthChange={false}
-                  theme={{
-                    todayTextColor: 'red',
-                    selectedDayBackgroundColor: 'red',
-                    textDayFontSize: 20,
-                    textMonthFontSize: 20,
-                    textDayHeaderFontSize: 15,
-                    backgroundColor: theme.cardBg,
-                    calendarBackground: theme.cardBg,
-                    arrowColor: 'red',
-                    textDayFontWeight: '400',
-                    textMonthFontWeight: 'bold',
-                    textDayHeaderFontWeight: '300',
-                  }}
-                  markingType={'period'}
-                  markedDates={{
-                    '2021-08-15': { marked: true, dotColor: 'red' },
-                    '2021-08-16': { marked: true, dotColor: 'red' },
-                    '2021-08-22': {
-                      startingDay: true,
-                      color: 'red',
-                      textColor: 'white',
-                    },
-                    '2021-08-23': {
-                      color: 'red',
-                      textColor: 'white',
-                      marked: true,
-                      dotColor: 'white',
-                    },
-                    '2021-08-24': { color: 'red', textColor: 'white' },
-                    '2021-08-25': {
-                      endingDay: true,
-                      color: 'red',
-                      textColor: 'white',
-                    },
-                  }}
-                />
-              </View>
-            </SafeAreaView>
-          </View>
-        ) : (
-          <SafeAreaView>
-            <View
-              style={[
-                styles.container,
-                { backgroundColor: theme.secondaryBg, marginBottom: 140 },
-              ]}>
-              <ScheduleHeader onPress={() => setViewCalender(!viewCalender)} />
-              <View style={styles.bodyContainer}>
-                <FlatList
-                  contentContainerStyle={{ paddingVertical: 20 }}
-                  data={Events}
-                  renderItem={({ item }) => (
-                    <ScheduleCard
-                      item={item}
-                      onPress={() => navigation.navigate('Event')}
+              {renderScreen ? (
+                <View>
+                  <View
+                    style={[
+                      styles.bodyContainer,
+                      { backgroundColor: 'white' },
+                    ]}>
+                    <FlatList
+                      contentContainerStyle={{ paddingVertical: 20 }}
+                      data={Events}
+                      renderItem={({ item }) => (
+                        <ScheduleCard
+                          item={item}
+                          onPress={() => navigation.navigate('Event')}
+                        />
+                      )}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      pagingEnabled
+                      bounces={false}
+                      keyExtractor={item => item.id}
+                      onScroll={Animated.event(
+                        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                        { useNativeDriver: false },
+                      )}
+                      scrollEventThrottle={32}
+                      onViewableItemsChanged={viewableItemsChanged}
+                      viewabilityConfig={viewConfig}
+                      ref={slidesRef}
                     />
-                  )}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  pagingEnabled
-                  bounces={false}
-                  keyExtractor={item => item.id}
-                  onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                    { useNativeDriver: false },
-                  )}
-                  scrollEventThrottle={32}
-                  onViewableItemsChanged={viewableItemsChanged}
-                  viewabilityConfig={viewConfig}
-                  ref={slidesRef}
-                />
-                <View style={{ marginTop: 10 }}>
-                  <Paginator
-                    data={Events}
-                    scrollX={scrollX}
-                    currentIndex={currentIndex}
-                  />
-                </View>
-              </View>
-              <Text
-                style={[styles.subHeading, { color: theme.cardTextHeading }]}>
-                Upcoming
-              </Text>
-              <ScrollView
-                contentContainerStyle={{
-                  paddingVertical: 20,
-                  paddingHorizontal: 10,
-                }}
-                horizontal={true}
-                showsVerticalScrollIndicator={false}>
-                {Events.map(event => (
-                  <View>
-                    <ScheduleCardSmall
-                      event={event}
-                      setShowAddButton={setShowAddButton}
-                      onPress={() => navigation.navigate('Event')}
-                    />
+                    <View style={{ marginTop: 10 }}>
+                      <Paginator
+                        data={Events}
+                        scrollX={scrollX}
+                        currentIndex={currentIndex}
+                      />
+                    </View>
                   </View>
-                ))}
-              </ScrollView>
+                  <Text
+                    style={[
+                      styles.subHeading,
+                      { color: theme.cardTextHeading },
+                    ]}>
+                    Upcoming
+                  </Text>
+                  <ScrollView
+                    horizontal={true}
+                    showsVerticalScrollIndicator={false}
+                    style={{
+                      height: 200,
+                      marginLeft: 20,
+                      paddingTop: 20,
+                      marginRight: 20,
+                    }}>
+                    {Events.map(event => (
+                      <View
+                        style={{
+                          paddingRight: 20,
+                        }}>
+                        <ScheduleCardSmall
+                          event={event}
+                          setShowAddButton={setShowAddButton}
+                          onPress={() => navigation.navigate('Event')}
+                        />
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+              ) : null}
             </View>
           </SafeAreaView>
-        )}
-      </ScrollView>
+        </View>
+      )}
       {showAddButton && (
         <AddButton
           onPress={() => {
@@ -175,11 +159,6 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'white',
   },
-  calender: {
-    height: '100%',
-    width: 500,
-    marginTop: 100,
-  },
   bodyContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -196,9 +175,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 10,
     flexDirection: 'row',
-  },
-  calender: {
-    height: '93%',
   },
 });
 

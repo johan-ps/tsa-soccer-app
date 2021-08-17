@@ -298,7 +298,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#ebe8e8',
     textAlign: 'left',
-    color: 'black',
   },
   versus: {
     fontSize: 12,
