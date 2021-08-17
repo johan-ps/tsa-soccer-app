@@ -124,9 +124,8 @@ const ScheduleCardSmall = props => {
         <StatusIndicator
           label={availability.label}
           icon={availability.icon}
-          color={availability.color}
           onPress={() => openMenu()}
-          type="small"
+          size="small"
         />
       </View>
       <View style={styles.body}>
@@ -148,89 +147,68 @@ const ScheduleCardSmall = props => {
         </Text>
       </View>
       <TeamListPreview players={playersList} size={35} max={3} />
-      {/* {cancelled ? (
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            height: 40,
-            marginLeft: 18,
-          }}>
-          <Text style={{ color: 'red', fontSize: 18, fontWeight: '500' }}>
-            Cancelled
-          </Text>
-        </View>
-      ) : null} */}
-      {/* <View
-            style={{
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}></View>
-                    <View>
-              <Image style={{height: 50, width: 100}} source={{uri: 'https://spng.pngfind.com/pngs/s/582-5824763_circle-shadow-png-monochrome-transparent-png.png'}}/>
-            </View> */}
-      {/* <View style={styles.bottomHighlight}/> */}
       {openAvailableMenu ? (
-        <BlurView
-          style={styles.absolute}
-          blurType="xlight"
-          blurAmount={1}
-          reducedTransparencyFallbackColor="white">
-          <Modal
-            animationIn={'fadeIn'}
-            animationOut={'fadeOut'}
-            isVisible={openAvailableMenu}
-            backdropColor={'rgba(0,0,0,0)'}
-            onBackdropPress={() => {
-              setOpenAvailableMenu(false);
-              props.setShowAddButton(true);
-            }}
-            style={{ position: 'absolute', top: offsetY, left: offsetX }}>
-            {options.map(option => {
-              return (
-                <View key={option.id}>
-                  <TouchableHighlight
-                    onPress={() => {
-                      onSelectOptionHandler(option);
-                    }}
-                    style={[
-                      {
-                        backgroundColor: '#A9A9A9',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: 90,
-                        height: 40,
-                      },
-                      option.label === 'Going'
-                        ? {
-                            borderTopRightRadius: 10,
-                            borderTopLeftRadius: 10,
-                            borderBottomWidth: 1,
-                            borderBottomColor: 'white',
-                          }
-                        : null,
-                      option.label === 'Unavailable'
-                        ? {
-                            borderBottomLeftRadius: 10,
-                            borderBottomRightRadius: 10,
-                            borderTopWidth: 1,
-                            borderTopColor: 'white',
-                          }
-                        : null,
-                    ]}
-                    underlayColor={option.color}>
-                    <View style={[styles.textWrapper]}>
-                      <Text style={[styles.label, { color: theme.menuText }]}>
-                        {option.label}
-                      </Text>
-                    </View>
-                  </TouchableHighlight>
-                </View>
-              );
-            })}
-          </Modal>
-        </BlurView>
+        <View style={styles.blurContainer}>
+          <BlurView
+            style={styles.absolute}
+            blurType="dark"
+            blurAmount={1}
+            reducedTransparencyFallbackColor="white">
+            <Modal
+              animationIn={'fadeIn'}
+              animationOut={'fadeOut'}
+              isVisible={openAvailableMenu}
+              backdropColor={'rgba(0,0,0,0)'}
+              onBackdropPress={() => {
+                setOpenAvailableMenu(false);
+                props.setShowAddButton(true);
+              }}
+              style={{ position: 'absolute', top: offsetY, left: offsetX }}>
+              {options.map(option => {
+                return (
+                  <View key={option.id}>
+                    <TouchableHighlight
+                      onPress={() => {
+                        onSelectOptionHandler(option);
+                      }}
+                      style={[
+                        {
+                          backgroundColor: '#A9A9A9',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          width: 90,
+                          height: 40,
+                        },
+                        option.label === 'Going'
+                          ? {
+                              borderTopRightRadius: 10,
+                              borderTopLeftRadius: 10,
+                              borderBottomWidth: 1,
+                              borderBottomColor: 'white',
+                            }
+                          : null,
+                        option.label === 'Unavailable'
+                          ? {
+                              borderBottomLeftRadius: 10,
+                              borderBottomRightRadius: 10,
+                              borderTopWidth: 1,
+                              borderTopColor: 'white',
+                            }
+                          : null,
+                      ]}
+                      underlayColor={option.color}>
+                      <View style={[styles.textWrapper]}>
+                        <Text style={[styles.label, { color: theme.menuText }]}>
+                          {option.label}
+                        </Text>
+                      </View>
+                    </TouchableHighlight>
+                  </View>
+                );
+              })}
+            </Modal>
+          </BlurView>
+        </View>
       ) : null}
     </TouchableOpacity>
   );
@@ -259,6 +237,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  blurContainer: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
   },
   body: {
     width: '100%',
@@ -327,9 +310,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 200,
-    width: 130,
-    borderRadius: 10,
   },
   label: {
     fontWeight: '500',
