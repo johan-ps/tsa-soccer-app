@@ -53,8 +53,8 @@ const ScheduleCardSmall = props => {
         <View style={styles.container}>
           <View style={styles.availableIcon}>
             <View style={{justifyContent: 'flex-end', alignItems: 'flex-start', width: 60}}>
-              <Text style={styles.infoTextTop} numberOfLines={1}>{moment(event.date).format('DD MMM')}</Text>
-              <Text style={styles.infoTextBottom} numberOfLines={1}>{moment(event.date).format('ddd')}</Text>
+              <Text style={styles.infoTextTop} numberOfLines={1}>{moment(new Date(event.date)).format('DD MMM')}</Text>
+              <Text style={styles.infoTextBottom} numberOfLines={1}>{moment(new Date(event.date)).format('ddd')}</Text>
             </View>
             <View style={{justifyContent: 'flex-end', alignItems: 'flex-end'}}>
               <AvailabilityMenu option={availability} onPress={() => openMenu()}/>

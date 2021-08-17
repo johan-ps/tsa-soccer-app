@@ -40,6 +40,10 @@ export const createEvent = eventData => {
         throw new Error('No token set');
       }
 
+      const formData = new FormData();
+      for (const key in eventData) {
+        formData.append(key, eventData[key]);
+      }
 
       const response = await fetch(
         `http://${environmentUrl}/api/events/add`,
@@ -49,7 +53,7 @@ export const createEvent = eventData => {
             'Content-Type': 'multipart/form-data',
             'x-auth-token': `Bearer ${authToken}`,
           },
-          body: eventData,
+          body: formData,
         },
       );
 

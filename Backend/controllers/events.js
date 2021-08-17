@@ -11,7 +11,36 @@ exports.getAllEvents = async (req, res, next) => {
 };
 
 exports.getEventsByTeam = async (req, res, next) => {
-    return null
+  try {
+    const {teamId} = req.body;
+    const [events, _] = await Event.findAllByTeam(teamId);
+
+    res.status(200).json({ events });
+  } catch (error) {
+      next(error);
+  }
+}
+
+exports.getEventsOnDate = async (req, res, next) => {
+  try {
+    const {date} = req.body;
+    const [events, _] = await Event.findAllOnDate(date);
+
+    res.status(200).json({ events });
+  } catch (error) {
+      next(error);
+  }
+}
+
+exports.getEventsFromDate = async (req, res, next) => {
+  try {
+    const {date} = req.body;
+    const [events, _] = await Event.findAllFromDate(date);
+
+    res.status(200).json({ events });
+  } catch (error) {
+      next(error);
+  }
 }
 
 exports.createEvent = async (req, res, next) => {
@@ -26,11 +55,27 @@ exports.createEvent = async (req, res, next) => {
 }
 
 exports.updateById = async (req, res, next) => {
+  try {
     let { id, type, title, eventDate, timeTdb, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats } = req.body;
     const event = Event.findById(id);
-    return null
+
+    event.update(type, title, eventDate, timeTdb, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats);
+    res.status(200).json({ event: event, id: event.insertId})
+  }
+  catch(error){
+    next(error);
+  }
 }
 
 exports.deleteById = async (req, res, next) => {
-    return null
+  try {
+    let { id } = req.body;
+    const event = Event.findById(id);
+
+    event.delete();
+    res.status(200).json({ event: event, id: event.insertId})
+  }
+  catch(error){
+    next(error);
+  }
 }

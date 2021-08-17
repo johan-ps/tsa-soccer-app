@@ -2,7 +2,7 @@ export const Events = [
   {
     id: 1,
     type: 'Practice',
-    startTime: '5:30',
+    startTime: '5:30 pm',
     endTime: '6:30 pm',
     location: 'Scotiabank Arena',
     date: 'May 15, 2021',

@@ -176,7 +176,6 @@ const CreateEvent = props => {
     borderColor: theme.primaryIconClr,
   }
 
-  // TODO: Fix dot scroll feature to include space
   // TODO: Fix up create new event features (fix new location stuff, fix datatimepicker stuff, add different for game/practice/other)
   // TODO: Add full calender view functionality
   // TODO: Add infinite scroll in upcoming ? (FLATLIST VIEW IN REACT NATIVE)
