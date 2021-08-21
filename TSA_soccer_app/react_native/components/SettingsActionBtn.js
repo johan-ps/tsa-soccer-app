@@ -6,6 +6,7 @@ import {
   UiSwitch,
   UiImage,
 } from '../components/_components';
+import { useSelector } from 'react-redux';
 
 const SettingsActionBtn = props => {
   let {
@@ -17,6 +18,7 @@ const SettingsActionBtn = props => {
     value = false,
     imageSrc = null,
   } = props;
+  const theme = useSelector(state => state.theme.colors);
 
   const toggleScale = () => {
     if (Platform.OS === 'ios') {
@@ -37,14 +39,21 @@ const SettingsActionBtn = props => {
             cond={imageSrc && imageSrc !== 'null'}
             alt={<UiIcon {...icon} />}
           />
-          <Text style={[styles.settingsBtnTextLeft, { color: props.mainText }]}>
+          <Text
+            style={[
+              styles.settingsBtnTextLeft,
+              { color: props.mainText, fontFamily: theme.fontMedium },
+            ]}>
             {title}
           </Text>
         </View>
         <View style={styles.settingsRight}>
           {data ? (
             <Text
-              style={[styles.settingsBtnTextRight, { color: props.subText }]}>
+              style={[
+                styles.settingsBtnTextRight,
+                { color: props.subText, fontFamily: theme.fontRegular },
+              ]}>
               {data}
             </Text>
           ) : null}
@@ -80,13 +89,11 @@ const styles = StyleSheet.create({
   settingsBtnTextLeft: {
     color: '#cfcdeb',
     marginLeft: 20,
-    fontFamily: 'Roboto-Medium',
     fontSize: 16,
   },
   settingsBtnTextRight: {
     color: '#8c8ab2',
     marginRight: 20,
-    fontFamily: 'Roboto-Regular',
   },
   settingsLeft: {
     flexDirection: 'row',

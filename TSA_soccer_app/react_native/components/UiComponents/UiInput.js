@@ -1,4 +1,10 @@
-import React, { useReducer, useEffect, useRef, useState, useCallback } from 'react';
+import React, {
+  useReducer,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from 'react';
 import {
   TextInput,
   StyleSheet,
@@ -13,7 +19,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { debounce } from 'lodash'
+import { debounce } from 'lodash';
 
 const INPUT_CHANGE = 'INPUT_CHANGE';
 
@@ -30,6 +36,7 @@ const inputReducer = (state, action) => {
 };
 
 const UiInput = props => {
+  const theme = useSelector(state => state.theme.colors);
   const {
     placeholder,
     fontSize,
@@ -39,10 +46,13 @@ const UiInput = props => {
     disabled,
     onChangeText,
     contentType = 'none',
+    bg = '#EAEAEA',
+    color = '#000000',
+    placeholderClr = '#C0C0CA',
+    cursor = theme.cursor,
   } = props;
   const translateAnim = useSharedValue(0);
   const scaleAnim = useSharedValue(0);
-  const theme = useSelector(state => state.theme.colors);
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : '',
     isValid: props.initiallyValid,
@@ -51,10 +61,14 @@ const UiInput = props => {
   const inputRef = useRef();
   const [showInput, setShowInput] = useState(false);
 
-  const handler = useCallback(debounce((text) => onChangeText(text), 250), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handler = useCallback(
+    debounce(text => onChangeText(text), 250),
+    [],
+  );
 
   const inputHandler = text => {
-    if(onChangeText){
+    if (onChangeText) {
       handler(text);
     }
     dispatch({ type: INPUT_CHANGE, value: text, isValid: true });
@@ -69,11 +83,12 @@ const UiInput = props => {
   }, [inputState, onInputChange, id]);
 
   useEffect(() => {
-    if(inputState.value !== ''){
+    if (inputState.value !== '') {
       translateAnim.value = withTiming(1, { duration: 150 });
-    scaleAnim.value = 1;
+      scaleAnim.value = 1;
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onFocus = () => {
     if (inputRef && inputRef.current) {
@@ -125,15 +140,20 @@ const UiInput = props => {
   };
 
   return (
-    <Pressable onPress={onFocus} style={[styles.inputContainer, props.style]}>
+    <Pressable
+      onPress={onFocus}
+      style={[styles.inputContainer, props.style, { backgroundColor: bg }]}>
       <TextInput
-        selectionColor={theme.primaryRed}
-        placeholderTextColor="#A8A4B8"
+        selectionColor={cursor}
+        placeholderTextColor={placeholderClr}
         value={inputState.value}
         onChangeText={inputHandler}
         editable={!disabled}
         selectTextOnFocus={false}
-        style={[styles.input, { fontSize }]}
+        style={[
+          styles.input,
+          { fontSize, fontFamily: theme.fontRegular, color },
+        ]}
         onFocus={onFocus}
         onBlur={onBlur}
         ref={inputRef}
@@ -142,7 +162,11 @@ const UiInput = props => {
         secureTextEntry={contentType === 'password' && !showInput}
       />
       <Animated.Text style={[styles.placeholderContainer, placeholderAnim]}>
-        <Animated.Text style={[styles.placeholder]}>
+        <Animated.Text
+          style={[
+            styles.placeholder,
+            { fontFamily: theme.fontRegular, color: placeholderClr },
+          ]}>
           {placeholder}
         </Animated.Text>
       </Animated.Text>
@@ -151,7 +175,7 @@ const UiInput = props => {
           onPress={toggleShowInput}
           style={styles.iconContainer}>
           <Icon
-            color="#A8A4B8"
+            color={placeholderClr}
             name={
               contentType === 'password' && !showInput
                 ? icon.name
@@ -169,14 +193,12 @@ const styles = StyleSheet.create({
   inputContainer: {
     display: 'flex',
     flexDirection: 'row',
-    backgroundColor: '#EAEAEA',
     position: 'relative',
     width: '100%',
     height: 70,
     borderRadius: 8,
   },
   input: {
-    color: 'black',
     width: '100%',
     height: '100%',
     padding: 0,
@@ -206,8 +228,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   placeholder: {
-    color: '#C0C0CA',
-    fontFamily: 'Roboto-Regular',
     fontSize: 16,
   },
 });

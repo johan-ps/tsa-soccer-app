@@ -212,7 +212,9 @@ const EditProfileScreen = ({ navigation }) => {
       headingClr={theme.primaryText}
       navLeft
       navRight="checkmark"
-      style={{ backgroundColor: theme.navBg }}
+      navRightBg={theme.actionBtnBg}
+      navRightText={theme.actionBtnText}
+      style={{ backgroundColor: theme.secondaryBg }}
       tabBarVisible={false}
       navActionLeft={() => {
         navigation.goBack();
@@ -226,7 +228,7 @@ const EditProfileScreen = ({ navigation }) => {
               borderWidth={0}
               animated={true}
               thickness={3}
-              color={'red'}
+              color={theme.accent}
               style={{ position: 'absolute' }}
             />
             <UiImage
@@ -239,8 +241,8 @@ const EditProfileScreen = ({ navigation }) => {
               alt={
                 <UiIcon
                   icon="person"
-                  color="#aaa6c3"
-                  backgroundColor={theme.actionBtn}
+                  color={theme.actionBtnText}
+                  backgroundColor={theme.actionBtnBg}
                   size={40}
                   type="round"
                   darkBg={theme.name === 'dark'}
@@ -255,16 +257,30 @@ const EditProfileScreen = ({ navigation }) => {
               activeOpacity={1}
               style={styles.editIconOverlay}>
               <Icon color="white" size={16} name="pencil" />
-              <Text style={styles.editIconText}>Edit Image</Text>
+              <Text
+                style={[
+                  styles.editIconText,
+                  { fontFamily: theme.fontRegular },
+                ]}>
+                Edit Image
+              </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.playerNameContainer}>
             <Text
-              style={[styles.playerFirstName, { color: theme.primaryText }]}
+              style={[
+                styles.playerFirstName,
+                { color: theme.primaryText, fontFamily: theme.fontRegular },
+              ]}
               numberOfLines={1}>
               {userData.firstName}
             </Text>
-            <Text style={styles.playerLastName} numberOfLines={1}>
+            <Text
+              style={[
+                styles.playerLastName,
+                { color: theme.secondaryText, fontFamily: theme.fontRegular },
+              ]}
+              numberOfLines={1}>
               {userData.lastName}
             </Text>
           </View>
@@ -276,6 +292,10 @@ const EditProfileScreen = ({ navigation }) => {
               placeholder="First Name"
               style={styles.marginBottom}
               onInputChange={onChangeText}
+              bg={theme.inputBg}
+              color={theme.inputText}
+              placeholderClr={theme.inputPlaceholder}
+              cursor={theme.cursor}
             />
             <UiInput
               id="lastName"
@@ -284,6 +304,10 @@ const EditProfileScreen = ({ navigation }) => {
               placeholder="Last Name"
               style={styles.marginBottom}
               onInputChange={onChangeText}
+              bg={theme.inputBg}
+              color={theme.inputText}
+              placeholderClr={theme.inputPlaceholder}
+              cursor={theme.cursor}
             />
             <UiInput
               id="phoneNumber"
@@ -292,6 +316,10 @@ const EditProfileScreen = ({ navigation }) => {
               placeholder="Phone Number"
               style={styles.marginBottom}
               onInputChange={onChangeText}
+              bg={theme.inputBg}
+              color={theme.inputText}
+              placeholderClr={theme.inputPlaceholder}
+              cursor={theme.cursor}
             />
             <UiInput
               id="email"
@@ -300,6 +328,10 @@ const EditProfileScreen = ({ navigation }) => {
               placeholder="Email"
               style={styles.marginBottom}
               onInputChange={onChangeText}
+              bg={theme.inputBg}
+              color={theme.inputText}
+              placeholderClr={theme.inputPlaceholder}
+              cursor={theme.cursor}
             />
           </View>
         </View>
@@ -367,12 +399,10 @@ const styles = StyleSheet.create({
   },
   playerFirstName: {
     fontSize: 40,
-    fontWeight: '600',
     marginBottom: -15,
   },
   playerLastName: {
     fontSize: 40,
-    color: '#A9A9A9',
   },
   playerInfo: {
     fontSize: 20,

@@ -21,8 +21,8 @@ const ScreenBoilerplate = props => {
             <UiIconButton
               icon={props.navRight}
               size={26}
-              color="white"
-              backgroundColor="#A9A9A9"
+              color={props.navRightText}
+              backgroundColor={props.navRightBg}
               shadow
               onPress={props.navActionRight}
             />

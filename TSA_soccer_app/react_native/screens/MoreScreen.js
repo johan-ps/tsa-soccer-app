@@ -43,8 +43,8 @@ const MoreScreen = ({ navigation }) => {
       },
       iconBtn: {
         icon: 'chevron-forward',
-        color: theme.iconClr,
-        backgroundColor: theme.actionBtn,
+        color: theme.actionBtnText,
+        backgroundColor: theme.actionBtnBg,
         size: 24,
         darkBg: theme.name === 'dark',
       },
@@ -66,8 +66,8 @@ const MoreScreen = ({ navigation }) => {
       },
       iconBtn: {
         icon: 'chevron-forward',
-        color: theme.iconClr,
-        backgroundColor: theme.actionBtn,
+        color: theme.actionBtnText,
+        backgroundColor: theme.actionBtnBg,
         size: 24,
         darkBg: theme.name === 'dark',
       },
@@ -92,8 +92,8 @@ const MoreScreen = ({ navigation }) => {
       },
       iconBtn: {
         icon: 'chevron-forward',
-        color: theme.iconClr,
-        backgroundColor: theme.actionBtn,
+        color: theme.actionBtnText,
+        backgroundColor: theme.actionBtnBg,
         size: 24,
         darkBg: theme.name === 'dark',
       },
@@ -113,8 +113,8 @@ const MoreScreen = ({ navigation }) => {
       },
       iconBtn: {
         icon: 'chevron-forward',
-        color: theme.iconClr,
-        backgroundColor: theme.actionBtn,
+        color: theme.actionBtnText,
+        backgroundColor: theme.actionBtnBg,
         size: 24,
         darkBg: theme.name === 'dark',
       },
@@ -145,8 +145,8 @@ const MoreScreen = ({ navigation }) => {
     },
     iconBtn: {
       icon: 'chevron-forward',
-      color: theme.iconClr,
-      backgroundColor: theme.actionBtn,
+      color: theme.actionBtnText,
+      backgroundColor: theme.actionBtnBg,
       size: 24,
       darkBg: theme.name === 'dark',
     },
@@ -182,13 +182,21 @@ const MoreScreen = ({ navigation }) => {
     <ScreenBoilerplate
       headingClr={theme.primaryText}
       heading="Preferences"
-      style={{ backgroundColor: theme.navBg }}>
+      style={{ backgroundColor: theme.secondaryBg }}>
       <View>
-        <Text style={[styles.subheading, { color: theme.primaryText }]}>
+        <Text
+          style={[
+            styles.subheading,
+            { color: theme.primaryText, fontFamily: theme.fontRegular },
+          ]}>
           Account
         </Text>
         <SettingsActionBtn {...accountOptions} />
-        <Text style={[styles.subheading, { color: theme.primaryText }]}>
+        <Text
+          style={[
+            styles.subheading,
+            { color: theme.primaryText, fontFamily: theme.fontRegular },
+          ]}>
           Settings
         </Text>
         {settingsOptions.map(setting => (
@@ -202,7 +210,6 @@ const MoreScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   subheading: {
     color: 'white',
-    fontFamily: 'Roboto-Regular',
     fontSize: 20,
     marginVertical: 20,
   },

@@ -54,6 +54,7 @@ const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
   const userData = useSelector(state => state.userData);
+  const theme = useSelector(state => state.theme.colors);
 
   const onChangeText = useCallback(
     (inputId, inputValue) => {
@@ -79,17 +80,20 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView behavior="position">
+    <KeyboardAvoidingView
+      behavior="position"
+      style={{ backgroundColor: theme.secondaryBg }}>
       <Pressable
         onPress={() => {
           Keyboard.dismiss();
         }}
-        style={styles.container}>
+        style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
         <View style={styles.closeButton}>
           <UiIconButton
             icon="close-outline"
-            color="#E41B23"
-            backgroundColor="#EAEAEA"
+            color={theme.actionBtnText}
+            backgroundColor={theme.actionBtnBg}
+            // backgroundColor="#EAEAEA"
             size={24}
             darkBg={false}
             onPress={() => {
@@ -105,8 +109,18 @@ const LoginScreen = ({ navigation }) => {
           />
         </View>
         <View style={styles.heading}>
-          <Text style={styles.headingTitle}>Welcome to CTSA!</Text>
-          <Text style={styles.headingSubtitle}>
+          <Text
+            style={[
+              styles.headingTitle,
+              { color: theme.primaryText, fontFamily: theme.fontMedium },
+            ]}>
+            Welcome to CTSA!
+          </Text>
+          <Text
+            style={[
+              styles.headingSubtitle,
+              { color: theme.secondaryText, fontFamily: theme.fontRegular },
+            ]}>
             Join our community of over 100 players in the GTA
           </Text>
         </View>
@@ -119,6 +133,10 @@ const LoginScreen = ({ navigation }) => {
             placeholder="Username"
             style={styles.marginBottom}
             onInputChange={onChangeText}
+            bg={theme.inputBg}
+            color={theme.inputText}
+            placeholderClr={theme.inputPlaceholder}
+            cursor={theme.cursor}
           />
           <UiInput
             id="password"
@@ -128,6 +146,10 @@ const LoginScreen = ({ navigation }) => {
             placeholder="Password"
             icon={{ name: 'eye-outline', altName: 'eye-off-outline', size: 26 }}
             onInputChange={onChangeText}
+            bg={theme.inputBg}
+            color={theme.inputText}
+            placeholderClr={theme.inputPlaceholder}
+            cursor={theme.cursor}
           />
           <UiButton
             onPress={loginHandler}
@@ -135,6 +157,8 @@ const LoginScreen = ({ navigation }) => {
             width="100%"
             borderRadius={8}
             style={styles.button}
+            primaryClr={theme.buttonPrimaryBg}
+            secondaryClr={theme.buttonPrimaryText}
           />
         </View>
         <View style={styles.footer} />
@@ -147,6 +171,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     position: 'relative',
+    height: '100%',
+    width: '100%',
   },
   closeButton: {
     position: 'absolute',
@@ -168,14 +194,10 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   headingTitle: {
-    fontFamily: 'Roboto-Medium',
-    color: 'black',
     fontSize: 24,
     marginBottom: 10,
   },
   headingSubtitle: {
-    fontFamily: 'Roboto-Regular',
-    color: 'rgb(175,176,185)',
     fontSize: 16,
     textAlign: 'center',
   },

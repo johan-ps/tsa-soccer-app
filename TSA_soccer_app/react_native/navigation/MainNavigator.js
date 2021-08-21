@@ -91,7 +91,7 @@ const MainNavigator = () => {
       <MainNav.Screen name="Schedule" component={ScheduleEventNavigator} />
       {/* <MainNav.Screen name="Team" component={TeamRosterNavigator} /> */}
       {/* <MainNav.Screen name="Messages" component={MessagesScreen} /> */}
-      {/* <MainNav.Screen name="More" component={SettingsNavigator} /> */}
+      <MainNav.Screen name="More" component={SettingsNavigator} />
     </MainNav.Navigator>
   );
 };

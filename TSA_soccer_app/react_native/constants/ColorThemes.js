@@ -84,6 +84,18 @@ export default {
 
     // calender
     calenderArrow: '#E41B23',
+
+    // settings
+    actionBtnBg: '#414141',
+    actionBtnText: '#FFFFFF',
+
+    // input
+    cursor: '#E41B23',
+    inputBg: '#414141',
+    inputText: '#FFFFFF',
+    inputPlaceholder: '#C9C8C8',
+
+    accent: '#FEAF35',
   },
   light: {
     name: 'light',
