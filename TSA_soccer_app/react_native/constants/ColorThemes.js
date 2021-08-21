@@ -21,7 +21,7 @@ export default {
     secondaryBg: '#231E20',
 
     // cards
-    cardBg: '#231E20',
+    cardBg: '#1D1E22',
     cardTextHeading: '#D1D1D1',
     cardTextSubHeading: '#C9C8C8',
     cardTextContent: '#D1D1D1b9',
@@ -32,7 +32,7 @@ export default {
     bottomNavIconSelect: '#E41B23',
 
     // search header
-    searchBg: '#231E20',
+    searchBg: '#1D1E22',
     searchInputBg: '#414141',
     searchText: '#D1D1D1',
 
@@ -71,6 +71,8 @@ export default {
     buttonSecondaryText: '#808286',
     buttonTertiaryBg: '#00000000',
     buttonTertiaryText: '#E41B23',
+    button4Bg: '#2F3137',
+    button4Txt: '#F8F9FA',
 
     // dropdown
     ddBgClr: '#4D4B52',

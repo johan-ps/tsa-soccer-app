@@ -126,7 +126,7 @@ const UiFilterModal = props => {
             <Text
               style={[
                 styles.title,
-                { color: theme.cardTextHeading, fontFamily: theme.fontRegular },
+                { color: theme.primaryText, fontFamily: theme.fontMedium },
               ]}>
               {props.title}
             </Text>
@@ -145,19 +145,27 @@ const UiFilterModal = props => {
           </View>
           <View style={styles.buttonContainer}>
             <UiButton
-              primaryClr={theme.buttonSecondaryText}
-              secondaryClr={theme.buttonSecondaryBg}
+              primaryClr={theme.button4Txt}
+              secondaryClr={theme.button4Bg}
               label={props.secondaryLabel}
               onPress={secondaryBtnHandler}
               type="secondary"
               size="medium"
+              borderRadius={10}
+              darkBg={true}
+              width={130}
+              height={50}
             />
             <UiButton
               primaryClr={theme.buttonPrimaryBg}
-              secondaryClr={theme.buttonPrimaryText}
+              secondaryClr={theme.button4Txt}
               label={props.primaryLabel}
               onPress={primaryBtnHandler}
               size="medium"
+              borderRadius={10}
+              darkBg={true}
+              width={130}
+              height={50}
             />
           </View>
         </Animated.View>
@@ -174,11 +182,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    borderRadius: 10,
-    padding: 16,
+    borderRadius: 16,
+    padding: 26,
     width: '90%',
-    maxWidth: 400,
     height: '60%',
+    maxWidth: 350,
     flexDirection: 'column',
     justifyContent: 'space-between',
     elevation: 20,
@@ -186,14 +194,14 @@ const styles = StyleSheet.create({
     shadowColor: '#000000',
     shadowOpacity: 0.3,
     shadowOffset: { height: 20 },
-    zIndex: 10,
+    zIndex: 20,
+    position: 'relative',
   },
   textContainer: {
     padding: 5,
   },
   title: {
-    fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 24,
     marginBottom: 20,
   },
   content: {

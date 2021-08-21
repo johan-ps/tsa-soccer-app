@@ -29,6 +29,7 @@ const UiButton = props => {
     label = null,
     width,
     borderRadius,
+    height,
   } = props;
   const focusAnimation = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
@@ -136,6 +137,7 @@ const UiButton = props => {
             scale,
             props.style,
             width ? { width } : {},
+            height ? { height } : {},
             borderRadius ? { borderRadius } : {},
           ]}>
           <TouchableHighlight
@@ -146,6 +148,7 @@ const UiButton = props => {
               styles.touchable,
               sizeStyles[size],
               width ? { width } : {},
+              height ? { height } : {},
               borderRadius ? { borderRadius } : {},
             ]}>
             <View
@@ -154,6 +157,7 @@ const UiButton = props => {
                 typeStyles[type].textWrapper,
                 sizeStyles[size].button,
                 width ? { width } : {},
+                height ? { height } : {},
                 borderRadius ? { borderRadius } : {},
               ]}>
               <Text
@@ -194,6 +198,7 @@ const UiButton = props => {
                 sizeStyles[size].button,
                 icon ? styles.iconWrapper : {},
                 width ? { width } : {},
+                height ? { height } : {},
                 borderRadius ? { borderRadius } : {},
               ]}>
               {icon ? (

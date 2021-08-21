@@ -20,13 +20,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const StatusIndicator = props => {
-  const {
-    label,
-    icon,
-    size = 'large',
-    modalOffsetX = 0,
-    modalOffsetY = 0,
-  } = props;
+  const { label, icon, size = 'large' } = props;
   const theme = useSelector(state => state.theme.colors);
   const options = [
     { label: 'Going', id: 0 },
@@ -118,12 +112,6 @@ const StatusIndicator = props => {
     });
   };
 
-  const getDropdownXY = event => {
-    const layout = event.nativeEvent.layout;
-    setOffsetY(layout.height + layout.y + modalOffsetY);
-    setOffsetX(layout.x + modalOffsetX);
-  };
-
   const optionPosition = useMemo(() => {
     let position = {};
 
@@ -155,7 +143,7 @@ const StatusIndicator = props => {
   };
 
   return (
-    <View onLayout={getDropdownXY} ref={actionBtn} style={styles.relative}>
+    <View onLayout={() => {}} ref={actionBtn} style={styles.relative}>
       <TouchableOpacity
         onPress={onPressHandler}
         style={[

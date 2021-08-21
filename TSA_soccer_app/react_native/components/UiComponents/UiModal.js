@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Modal, StyleSheet } from 'react-native';
+import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import Animated, {
   useSharedValue,
@@ -11,9 +11,10 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import UiButton from '../UiComponents/UiButton';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const UiModal = props => {
-  let { visible } = props;
+  let { visible, icon, closeable = false } = props;
   const [showModal, setShowModal] = useState(visible);
   const theme = useSelector(state => state.theme.colors);
   const modalAnimation = useSharedValue(0);
@@ -74,38 +75,72 @@ const UiModal = props => {
     }
   };
 
+  const onCloseHandler = () => {
+    if (props.onClose) {
+      props.onClose();
+    }
+  };
   return (
     <Modal transparent={true} visible={showModal}>
       <Animated.View style={[styles.modalViewContainer, opacity]}>
         <Animated.View
           style={[
             styles.modalContainer,
-            { backgroundColor: theme.cardBgClr },
+            { backgroundColor: theme.cardBg },
             animStyle,
           ]}>
+          {closeable && (
+            <TouchableOpacity style={styles.closeBtn} onPress={onCloseHandler}>
+              <Icon name="close-outline" color={theme.primaryText} size={40} />
+            </TouchableOpacity>
+          )}
           <View style={styles.textContainer}>
-            <Text style={{ ...styles.title, color: theme.cardHClr }}>
+            {icon && (
+              <Icon
+                name="file-tray-full-outline"
+                color={theme.primaryText}
+                size={40}
+              />
+            )}
+            <Text
+              style={[
+                styles.title,
+                { color: theme.primaryText, fontFamily: theme.fontMedium },
+                icon ? styles.marginTop : {},
+              ]}>
               {props.title}
             </Text>
-            <Text style={{ ...styles.content, color: theme.cardCClr }}>
+            <Text
+              style={[
+                styles.content,
+                { color: theme.cardTextContent, fontFamily: theme.fontRegular },
+              ]}>
               {props.content}
             </Text>
           </View>
           <View style={styles.buttonContainer}>
             <UiButton
-              primaryClr={theme.buttonSecondaryText}
-              secondaryClr={theme.buttonSecondaryBg}
+              primaryClr={theme.button4Txt}
+              secondaryClr={theme.button4Bg}
               label={props.secondaryLabel}
               onPress={secondaryBtnHandler}
               type="secondary"
               size="medium"
+              borderRadius={10}
+              darkBg={true}
+              width={130}
+              height={50}
             />
             <UiButton
               primaryClr={theme.buttonPrimaryBg}
-              secondaryClr={theme.buttonPrimaryText}
+              secondaryClr={theme.button4Txt}
               label={props.primaryLabel}
               onPress={primaryBtnHandler}
               size="medium"
+              borderRadius={10}
+              darkBg={true}
+              width={130}
+              height={50}
             />
           </View>
         </Animated.View>
@@ -121,35 +156,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  closeBtn: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+  },
   modalContainer: {
-    borderRadius: 10,
-    padding: 16,
+    borderRadius: 16,
+    padding: 26,
     width: '90%',
-    maxWidth: 400,
-    height: '32%',
-    maxHeight: 230,
+    maxWidth: 350,
     flexDirection: 'column',
     justifyContent: 'space-between',
-    backgroundColor: 'white',
     elevation: 20,
     shadowRadius: 10,
     shadowColor: '#000000',
     shadowOpacity: 0.3,
     shadowOffset: { height: 20 },
-    zIndex: 10,
+    zIndex: 20,
+    position: 'relative',
   },
   textContainer: {
     padding: 5,
   },
   title: {
-    fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 24,
     marginBottom: 20,
+  },
+  marginTop: {
+    marginTop: 30,
   },
   content: {
     fontSize: 15,
-    marginBottom: 15,
-    color: '#848484',
+    marginBottom: 25,
+    lineHeight: 20,
   },
   buttonContainer: {
     flexDirection: 'row',

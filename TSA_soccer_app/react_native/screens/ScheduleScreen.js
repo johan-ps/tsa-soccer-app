@@ -13,14 +13,29 @@ import ScheduleCardSmall from '../components/Schedule/ScheduleCardSmall';
 import { useSelector } from 'react-redux';
 import { Events } from '../data/events';
 import CalendarCard from '../components/Schedule/CalendarCard';
+import AnimScrollView from '../components/AnimScrollView';
+const loadingLottieAnim = require('../assets/img/spinning-anim.json');
 
 const ScheduleScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
+  const [refreshEnabled, setRefreshEnabled] = useState(true);
+
+  const onScrollHandler = ({ nativeEvent }) => {
+    if (nativeEvent.contentOffset.y <= 0) {
+      if (!refreshEnabled) {
+        setRefreshEnabled(true);
+      }
+    } else {
+      if (refreshEnabled) {
+        setRefreshEnabled(false);
+      }
+    }
+  };
 
   return (
     <View style={{ backgroundColor: theme.cardBg }}>
-      <ScrollView style={styles.container}>
+      <ScrollView onScroll={onScrollHandler} style={styles.container}>
         <SafeAreaView>
           <View
             style={[
@@ -34,13 +49,19 @@ const ScheduleScreen = ({ navigation }) => {
               }}
             />
             <View>
-              <View style={[styles.bodyContainer]}>
-                {Events.map((event, i) => (
-                  <View key={i} style={styles.calendarCardContainer}>
-                    <CalendarCard item={event} key={i} />
-                  </View>
-                ))}
-              </View>
+              <AnimScrollView
+                loadingLottieAnim={loadingLottieAnim}
+                backgroundColor={theme.secondaryBg}
+                enabled={refreshEnabled}
+                onlyPullToRefresh={true}>
+                <View style={[styles.bodyContainer]}>
+                  {Events.map((event, i) => (
+                    <View key={i} style={styles.calendarCardContainer}>
+                      <CalendarCard item={event} key={i} />
+                    </View>
+                  ))}
+                </View>
+              </AnimScrollView>
               <Text
                 style={[styles.subHeading, { color: theme.cardTextHeading }]}>
                 Upcoming
@@ -93,7 +114,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
     borderStyle: 'solid',
     marginLeft: 20,
-    marginVertical: 20,
+    marginBottom: 20,
   },
   cardListInnerContainer: {
     paddingVertical: 20,
