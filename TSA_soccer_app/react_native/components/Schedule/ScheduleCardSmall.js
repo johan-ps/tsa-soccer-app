@@ -1,18 +1,6 @@
-import React, { useState, useRef } from 'react';
-import {
-  Text,
-  StyleSheet,
-  View,
-  TouchableHighlight,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import React, { useState } from 'react';
+import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
-import Icon from 'react-native-vector-icons/Ionicons';
-import AvailabilityMenu from './AvailabilityMenu';
-import { BlurView } from '@react-native-community/blur';
-import Modal from 'react-native-modal';
-import moment from 'moment';
 import StatusIndicator from './StatusIndicator';
 import TeamListPreview from './TeamListPreview';
 
@@ -50,16 +38,12 @@ const playersList = [
 ];
 
 const ScheduleCardSmall = props => {
-  const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
   const { onPress, event, cancelled } = props;
   const theme = useSelector(state => state.theme.colors);
-  const smallCard = useRef();
-  const [openAvailableMenu, setOpenAvailableMenu] = useState(false);
   const defaultOption = {
     label: 'Set Availability',
     icon: 'information-outline',
-    color: '#1E2630',
+    color: '#FEAF35',
   };
   const options = [
     { id: 0, label: 'Going', icon: 'checkmark-done', color: '#4ce660' },
@@ -67,149 +51,73 @@ const ScheduleCardSmall = props => {
     { id: 2, label: 'Unavailable', icon: 'close', color: '#e84343' },
   ];
   const [availability, setAvailability] = useState(defaultOption);
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
 
-  const onSelectOptionHandler = option => {
-    setOpenAvailableMenu(false);
-    setAvailability(option);
-    props.setShowAddButton(true);
-  };
-
-  const openMenu = () => {
-    if (!cancelled) {
-      smallCard.current.measure((fx, fy, width, height, px, py) => {
-        console.log(px);
-        setOffsetX(px);
-        setOffsetY(py + 20);
-        if (px > 10 && px <= 240) {
-          setOpenAvailableMenu(true);
-          if (px > 200) {
-            props.setShowAddButton(false);
-          }
-        }
-      });
-    }
+  const onChangeAvailabilityHandler = id => {
+    setAvailability(options[id]);
   };
 
   return (
     <TouchableOpacity
-      ref={smallCard}
       onPress={onPress}
       style={[
         styles.touchableContainer,
         {
-          backgroundColor: theme.schCardBg,
-          borderTopColor: theme.schCardAccent,
+          backgroundColor: availability.color,
         },
       ]}
       activeOpacity={0.8}>
-      <View style={styles.header}>
-        <View>
+      <View
+        style={[
+          styles.cardContainer,
+          {
+            borderTopColor: availability.color,
+            backgroundColor: theme.schCardBg,
+          },
+        ]}>
+        <View style={styles.header}>
+          <View>
+            <Text
+              style={[
+                styles.monday,
+                { color: theme.schCardText, fontFamily: theme.fontRegular },
+              ]}>
+              May
+            </Text>
+            <Text
+              style={[
+                styles.date,
+                { color: theme.schCardText, fontFamily: theme.fontMedium },
+              ]}>
+              24
+            </Text>
+          </View>
+          <StatusIndicator
+            label={availability.label}
+            icon={availability.icon}
+            onPress={onChangeAvailabilityHandler}
+            size="small"
+          />
+        </View>
+        <View style={styles.body}>
           <Text
             style={[
-              styles.monday,
+              styles.type,
               { color: theme.schCardText, fontFamily: theme.fontRegular },
             ]}>
-            May
+            Practice
           </Text>
+        </View>
+        <View style={styles.infoHeaderContainer}>
           <Text
             style={[
-              styles.date,
-              { color: theme.schCardText, fontFamily: theme.fontMedium },
+              styles.time,
+              { color: theme.schCardText, fontFamily: theme.fontLight },
             ]}>
-            24
+            5:30 - 6:30 pm
           </Text>
         </View>
-        <StatusIndicator
-          label={availability.label}
-          icon={availability.icon}
-          onPress={() => openMenu()}
-          size="small"
-        />
+        <TeamListPreview players={playersList} size={35} max={3} />
       </View>
-      <View style={styles.body}>
-        <Text
-          style={[
-            styles.type,
-            { color: theme.schCardText, fontFamily: theme.fontRegular },
-          ]}>
-          Practice
-        </Text>
-      </View>
-      <View style={styles.infoHeaderContainer}>
-        <Text
-          style={[
-            styles.time,
-            { color: theme.schCardText, fontFamily: theme.fontLight },
-          ]}>
-          5:30 - 6:30 pm
-        </Text>
-      </View>
-      <TeamListPreview players={playersList} size={35} max={3} />
-      {openAvailableMenu ? (
-        <View style={styles.blurContainer}>
-          <BlurView
-            style={styles.absolute}
-            blurType="dark"
-            blurAmount={1}
-            reducedTransparencyFallbackColor="white">
-            <Modal
-              animationIn={'fadeIn'}
-              animationOut={'fadeOut'}
-              isVisible={openAvailableMenu}
-              backdropColor={'rgba(0,0,0,0)'}
-              onBackdropPress={() => {
-                setOpenAvailableMenu(false);
-                props.setShowAddButton(true);
-              }}
-              style={{ position: 'absolute', top: offsetY, left: offsetX }}>
-              {options.map(option => {
-                return (
-                  <View key={option.id}>
-                    <TouchableHighlight
-                      onPress={() => {
-                        onSelectOptionHandler(option);
-                      }}
-                      style={[
-                        {
-                          backgroundColor: '#A9A9A9',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          width: 90,
-                          height: 40,
-                        },
-                        option.label === 'Going'
-                          ? {
-                              borderTopRightRadius: 10,
-                              borderTopLeftRadius: 10,
-                              borderBottomWidth: 1,
-                              borderBottomColor: 'white',
-                            }
-                          : null,
-                        option.label === 'Unavailable'
-                          ? {
-                              borderBottomLeftRadius: 10,
-                              borderBottomRightRadius: 10,
-                              borderTopWidth: 1,
-                              borderTopColor: 'white',
-                            }
-                          : null,
-                      ]}
-                      underlayColor={option.color}>
-                      <View style={[styles.textWrapper]}>
-                        <Text style={[styles.label, { color: theme.menuText }]}>
-                          {option.label}
-                        </Text>
-                      </View>
-                    </TouchableHighlight>
-                  </View>
-                );
-              })}
-            </Modal>
-          </BlurView>
-        </View>
-      ) : null}
     </TouchableOpacity>
   );
 };
@@ -226,11 +134,14 @@ const styles = StyleSheet.create({
     shadowOffset: { height: 1 },
     zIndex: 100,
     marginHorizontal: 10,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+  },
+  cardContainer: {
+    height: 230,
+    width: 160,
     padding: 20,
-    borderTopWidth: 6,
+    borderTopWidth: 2,
     borderStyle: 'solid',
+    borderRadius: 10,
   },
   header: {
     width: '100%',
@@ -309,6 +220,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    height: 100,
+    width: 100,
+    borderRadius: 10,
   },
   label: {
     fontWeight: '500',

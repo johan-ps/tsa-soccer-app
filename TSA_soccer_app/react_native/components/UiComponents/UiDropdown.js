@@ -87,7 +87,7 @@ const UiDropdown = props => {
   const onSelectOptionHandler = (option, child = null) => {
     if (multiselect) {
       const newSelectedValues = { ...selectedValues };
-      const newSelectedLabels = [ ...selectedLabels ];
+      const newSelectedLabels = [...selectedLabels];
       if (selectedValues[option.id] === undefined) {
         newSelectedValues[option.id] = {
           selected: false,
@@ -101,7 +101,8 @@ const UiDropdown = props => {
         ...newSelectedValues[option.id].children,
       };
       if (child) {
-        newSelectedValues[option.id].children[child.id] = !newSelectedValues[option.id].children[child.id];
+        newSelectedValues[option.id].children[child.id] =
+          !newSelectedValues[option.id].children[child.id];
         const index = newSelectedLabels.indexOf(child.label);
         if (index !== -1) {
           newSelectedLabels.splice(index, 1);
@@ -128,7 +129,7 @@ const UiDropdown = props => {
   };
 
   const buttonBorder = {
-    borderColor: theme.dropdownBorderClr,
+    borderColor: theme.ddBorderClr,
     shadowColor: '#e51b23',
   };
 
@@ -176,16 +177,16 @@ const UiDropdown = props => {
               style={[
                 styles.optionsContainer,
                 width,
-                { backgroundColor: theme.dropdownBgClr },
+                { backgroundColor: theme.ddBgClr },
                 positionStyle,
                 optionsAnimStyles,
-                optionSize === 'large' ? { maxHeight: 320 } : {},
+                optionSize === 'large' ? styles.maxHeight : {},
               ]}>
               <ScrollView
                 style={[
                   styles.optionsScrollContainer,
-                  { backgroundColor: theme.dropdownBgClr },
-                  optionSize === 'large' ? { maxHeight: 320 } : {},
+                  { backgroundColor: theme.ddBgClr },
+                  optionSize === 'large' ? styles.maxHeight : {},
                 ]}>
                 {options.map(option => {
                   return (
@@ -200,15 +201,17 @@ const UiDropdown = props => {
                             selectedValues[option.id] &&
                             selectedValues[option.id].selected === true) ||
                           (!multiselect && option.id === selectedId)
-                            ? { backgroundColor: theme.dropdownOptSClr }
+                            ? { backgroundColor: theme.ddOptSClr }
                             : {},
                         ]}>
                         <Text
                           style={[
                             option.id === selectedId
-                              ? { color: theme.dropdownOptSTxtClr }
-                              : { color: theme.dropdownOptTxtClr },
-                            group ? { fontWeight: 'bold' } : {},
+                              ? { color: theme.ddOptSTxtClr }
+                              : { color: theme.ddOptTxtClr },
+                            group
+                              ? { fontFamily: theme.fontBold }
+                              : { fontFamily: theme.fontRegular },
                           ]}>
                           {option.label}
                         </Text>
@@ -219,7 +222,7 @@ const UiDropdown = props => {
                           <Icon
                             name="checkmark-outline"
                             size={20}
-                            color="red"
+                            color={theme.ddBorderClr}
                           />
                         ) : null}
                       </Ripple>
@@ -238,21 +241,22 @@ const UiDropdown = props => {
                                   selectedValues[option.id].children[
                                     child.id
                                   ] === true
-                                    ? { backgroundColor: theme.dropdownOptSClr }
+                                    ? { backgroundColor: theme.ddOptSClr }
                                     : {},
                                 ]}
                                 key={child.id}>
                                 <Text
-                                  style={
+                                  style={[
                                     multiselect &&
                                     selectedValues[option.id] &&
                                     selectedValues[option.id].children &&
                                     selectedValues[option.id].children[
                                       child.id
                                     ] === true
-                                      ? { color: theme.dropdownOptSTxtClr }
-                                      : { color: theme.dropdownOptTxtClr }
-                                  }>
+                                      ? { color: theme.ddOptSTxtClr }
+                                      : { color: theme.ddOptTxtClr },
+                                    { fontFamily: theme.fontRegular },
+                                  ]}>
                                   {child.label}
                                 </Text>
                                 {multiselect &&
@@ -263,7 +267,7 @@ const UiDropdown = props => {
                                   <Icon
                                     name="checkmark-outline"
                                     size={20}
-                                    color="red"
+                                    color={theme.ddBorderClr}
                                   />
                                 ) : null}
                               </Ripple>
@@ -288,7 +292,7 @@ const UiDropdown = props => {
       style={[
         styles.dropdownContainer,
         widthStyle(),
-        { backgroundColor: theme.dropdownBgClr },
+        { backgroundColor: theme.ddBgClr },
         showOptions ? buttonBorder : {},
         scale,
         props.style,
@@ -298,23 +302,36 @@ const UiDropdown = props => {
         onPressIn={onFocusIn}
         onPressOut={onFocusOut}
         style={[styles.dropdownBtn]}>
-        {selectedLabels.length === 0 && <Text style={{ color: theme.dropdownSClr }}>{selectedLabel}</Text>}
-        <View horizontal={true} style={{flexDirection: 'row', padding: 0, width: 140}}>
-        {selectedLabels.map(label => (
-          <View style={{backgroundColor: 'rgba(201,201,201,0.3)', width: 70, height: 40, borderRadius: 5, alignItems: 'center', justifyContent: 'center', marginRight: 2}}>
-            <Text numberOfLines={1} style={{fontWeight: '500'}}>{label}</Text>
-          </View>
-        ))}
+        {selectedLabels.length === 0 && (
+          <Text style={{ color: theme.ddSClr }}>{selectedLabel}</Text>
+        )}
+        <View horizontal={true} style={styles.selectLabelsContainer}>
+          {selectedLabels.map(label => (
+            <View
+              style={[
+                styles.selectLabels,
+                { backgroundColor: theme.ddSelectLabelBg },
+              ]}>
+              <Text
+                numberOfLines={1}
+                style={{
+                  fontFamily: theme.fontRegular,
+                  color: theme.ddSelectLabelText,
+                }}>
+                {label}
+              </Text>
+            </View>
+          ))}
         </View>
         <Animated.View
           style={[
             styles.iconContainer,
-            { backgroundColor: theme.dropdownBgClr },
+            { backgroundColor: theme.ddBgClr },
             iconAnimStyles,
           ]}>
           <Icon
             name="chevron-down-outline"
-            color={showOptions ? theme.dropdownBorderClr : theme.dropdownSClr}
+            color={showOptions ? theme.ddBorderClr : theme.ddSClr}
             size={24}
           />
         </Animated.View>
@@ -325,6 +342,23 @@ const UiDropdown = props => {
 };
 
 const styles = StyleSheet.create({
+  maxHeight: {
+    maxHeight: 320,
+  },
+  selectLabels: {
+    width: 70,
+    height: 40,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 5,
+    padding: 2,
+  },
+  selectLabelsContainer: {
+    flexDirection: 'row',
+    padding: 0,
+    width: 140,
+  },
   dropdownContainer: {
     borderRadius: 10,
     height: 50,
@@ -338,7 +372,6 @@ const styles = StyleSheet.create({
     shadowOffset: { height: 2 },
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: '#A8A4B8',
     overflow: 'hidden',
   },
   dropdownBtn: {
@@ -350,9 +383,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    // borderColor: '#fff',
-    // borderWidth: 2,
-    // borderStyle: 'solid',
   },
   selectedText: {
     color: '#A29FAF',

@@ -12,7 +12,7 @@ import moment from 'moment';
 import ScheduleHeaderItem from './ScheduleHeaderItem';
 
 const ScheduleHeader = props => {
-  const { onPress, showDates = true, renderScreen } = props;
+  const { onPress, showDates = true } = props;
   const currentDate = moment();
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const endDate = moment().add(7, 'days');
@@ -29,23 +29,25 @@ const ScheduleHeader = props => {
       }
       setDatesArray(newDatesArray);
     }
-  }, [endDate, showDates]);
-
-  useEffect(() => {
-    if (showDates) {
-      renderScreen();
-    }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.schBg }]}>
+      <Text
+        style={[
+          styles.team,
+          { color: theme.primaryText, fontFamily: theme.fontRegular },
+        ]}>
+        U8 Markham Houseleague
+      </Text>
       <View style={styles.headerContainer}>
         <Text
           style={[
             styles.header,
-            { color: theme.secondaryText, fontFamily: theme.fontRegular },
+            { color: theme.schText, fontFamily: theme.fontBold },
           ]}>
-          {currentDate.format('MMM YYYY')}
+          {currentDate.format('MMMM')}
         </Text>
         <TouchableOpacity onPress={onPress} style={styles.viewCalenderLink}>
           <Text style={[{ color: theme.link, fontFamily: theme.fontRegular }]}>
@@ -54,44 +56,33 @@ const ScheduleHeader = props => {
           <Icon name="chevron-forward-outline" size={30} color={theme.link} />
         </TouchableOpacity>
       </View>
-      {showDates ? (
-        <ScrollView
-          contentContainerStyle={styles.dateListInnerContainer}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          style={styles.dateListContainer}>
-          {selectedDate
-            ? datesArray.map(date => {
-                return (
-                  <View key={date.toString()} style={styles.dateContainer}>
-                    <ScheduleHeaderItem
-                      onPress={() => setSelectedDate(date)}
-                      date={date}
-                      current={selectedDate.isSame(date, 'day')}
+      <ScrollView
+        contentContainerStyle={styles.dateListInnerContainer}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        style={styles.dateListContainer}>
+        {selectedDate
+          ? datesArray.map(date => {
+              return (
+                <View key={date.toString()} style={styles.dateContainer}>
+                  <ScheduleHeaderItem
+                    onPress={() => setSelectedDate(date)}
+                    date={date}
+                    current={selectedDate.isSame(date, 'day')}
+                  />
+                  {selectedDate.isSame(date, 'day') ? (
+                    <View
+                      style={[
+                        styles.selected,
+                        { backgroundColor: theme.schDayBgSelected },
+                      ]}
                     />
-                    {selectedDate.isSame(date, 'day') ? (
-                      <View
-                        style={[
-                          styles.selected,
-                          { backgroundColor: theme.schDayBgSelected },
-                        ]}
-                      />
-                    ) : null}
-                  </View>
-                );
-              })
-            : null}
-        </ScrollView>
-      ) : null}
-      {showDates ? (
-        <Text
-          style={[
-            styles.subHeading,
-            { color: theme.secondaryText, fontFamily: theme.fontRegular },
-          ]}>
-          Today
-        </Text>
-      ) : null}
+                  ) : null}
+                </View>
+              );
+            })
+          : null}
+      </ScrollView>
     </View>
   );
 };
@@ -99,15 +90,21 @@ const ScheduleHeader = props => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    marginLeft: 10,
+    paddingTop: 50,
+    paddingLeft: 20,
+    paddingBottom: 30,
+    borderBottomLeftRadius: 30,
+  },
+  team: {
+    fontSize: 18,
+    marginBottom: 20,
   },
   dateListContainer: {
     flexDirection: 'row',
-    marginTop: 20,
+    marginTop: 30,
   },
-  dateListInnerContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-  },
+  dateListInnerContainer: {},
   dateContainer: {
     alignItems: 'center',
   },
@@ -117,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginTop: 20,
-    paddingHorizontal: 20,
+    paddingRight: 20,
   },
   viewCalenderLink: {
     flexDirection: 'row',
@@ -125,7 +122,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    fontSize: 20,
+    fontSize: 32,
   },
   subHeading: {
     fontSize: 18,

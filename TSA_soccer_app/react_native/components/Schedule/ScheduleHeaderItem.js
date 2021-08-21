@@ -19,17 +19,17 @@ const ScheduleHeaderItem = props => {
             styles.dayOfWeek,
             {
               color: current ? theme.schDaySelectedText : theme.schDayHeader,
-              fontFamily: theme.fontRegular,
+              fontFamily: theme.fontMedium,
             },
           ]}>
-          {date.format('dd')[0]}
+          {date.format('ddd').toUpperCase()}
         </Text>
         <Text
           style={[
             styles.dayOfMonth,
             {
               color: current ? theme.schDaySelectedText : theme.schDayContent,
-              fontFamily: theme.fontRegular,
+              fontFamily: theme.fontLight,
             },
           ]}>
           {date.format('D')}
@@ -41,24 +41,26 @@ const ScheduleHeaderItem = props => {
 
 const styles = StyleSheet.create({
   touchableContainer: {
-    borderRadius: 30,
-    height: 80,
-    width: 50,
+    borderRadius: 20,
+    height: 75,
+    width: 60,
     marginHorizontal: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   container: {
-    borderRadius: 30,
-    height: 80,
-    width: 50,
+    borderRadius: 20,
+    height: 75,
+    width: 60,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dayOfWeek: {
-    fontSize: 16,
-    marginBottom: 3,
+    fontSize: 14,
+    marginTop: 5,
   },
   dayOfMonth: {
-    fontSize: 18,
+    fontSize: 24,
   },
 });
 

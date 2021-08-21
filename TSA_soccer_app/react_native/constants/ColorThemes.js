@@ -44,16 +44,46 @@ export default {
     addBtnBg: '#E41B23',
     addBtnIcon: '#231E20',
 
-    // schedule
+    // schedule date list
     schDayBg: '#414141',
     schDayBgSelected: '#FEAF35',
-    schDayHeader: '#FEAF35',
-    schDayContent: '#C9C8C8',
+    schDayHeader: 'white',
+    schDayContent: 'white',
     schDaySelectedText: '#231E20',
 
+    // schedule card
     schCardBg: '#414141',
     schCardText: '#C9C8C8',
     schCardAccent: '#FEAF35',
+
+    // schedule header
+    schBg: '#414141',
+    schText: '#FFFFFF',
+
+    // touchableBg
+    touchableBgDark: '#ffffff2a',
+    touchableBgLight: '#0000001a',
+
+    // buttons
+    buttonPrimaryBg: '#E41B23',
+    buttonPrimaryText: '#231E20',
+    buttonSecondaryBg: '#EEF1F7',
+    buttonSecondaryText: '#808286',
+    buttonTertiaryBg: '#00000000',
+    buttonTertiaryText: '#E41B23',
+
+    // dropdown
+    ddBgClr: '#4D4B52',
+    ddBorderClr: '#e51b23',
+    ddOptSClr: '#2c2c2c',
+    ddOptTxtClr: '#f2f3f2',
+    ddOptSTxtClr: '#D9DADB',
+    ddSClr: '#F9F9F9',
+    ddSelectLabelBg: '#8A8A8A',
+    ddSelectLabelText: '#f2f3f2',
+
+    // calender
+    calenderArrow: '#E41B23',
   },
   light: {
     name: 'light',
@@ -77,12 +107,12 @@ export default {
     cardBgClr: '#424242',
     cardHClr: '#ffffff',
     cardCClr: '#a2a2a2',
-    dropdownBgClr: '#4D4B52',
-    dropdownBorderClr: '#e51b23',
-    dropdownOptSClr: '#000000',
-    dropdownOptTxtClr: '#f2f3f2',
-    dropdownOptSTxtClr: '#D9DADB',
-    dropdownSClr: '#F9F9F9',
+    ddBgClr: '#4D4B52',
+    ddBorderClr: '#e51b23',
+    ddOptSClr: '#000000',
+    ddOptTxtClr: '#f2f3f2',
+    ddOptSTxtClr: '#D9DADB',
+    ddSClr: '#F9F9F9',
 
     primaryRed: '#E41B23',
     primaryYellow: '#FEAF35',
@@ -212,12 +242,12 @@ export default {
     cardBgClr: '#ffffff',
     cardHClr: '#000000',
     cardCClr: '#848484',
-    dropdownBgClr: '#ffffff',
-    dropdownBorderClr: '#e51b23',
-    dropdownOptSClr: '#ffe4e5',
-    dropdownOptTxtClr: '#000000',
-    dropdownOptSTxtClr: '#e51b23',
-    dropdownSClr: '#A8A4B8',
+    ddBgClr: '#ffffff',
+    ddBorderClr: '#e51b23',
+    ddOptSClr: '#ffe4e5',
+    ddOptTxtClr: '#000000',
+    ddOptSTxtClr: '#e51b23',
+    ddSClr: '#A8A4B8',
     moreScreenSettingsBgClr: '#F0F0F0',
     moreScreenOptionsBgClr: '#ffffff',
   },

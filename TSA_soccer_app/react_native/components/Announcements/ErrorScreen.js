@@ -30,7 +30,7 @@ const ErrorScreen = props => {
   })();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
       <View style={styles.imageContainer}>
         {error === CONST.NO_RESULTS ? (
           <Image
@@ -47,10 +47,18 @@ const ErrorScreen = props => {
         )}
       </View>
       <View style={styles.textContainer}>
-        <Text style={[styles.heading, { color: theme.secondaryText }]}>
+        <Text
+          style={[
+            styles.heading,
+            { color: theme.secondaryText, fontFamily: theme.fontBold },
+          ]}>
           {getHeading}
         </Text>
-        <Text style={[styles.subHeading, { color: theme.primaryText }]}>
+        <Text
+          style={[
+            styles.subHeading,
+            { color: theme.primaryText, fontFamily: theme.fontRegular },
+          ]}>
           {getSubHeading}
         </Text>
       </View>
@@ -94,14 +102,12 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 30,
-    fontFamily: 'Roboto-Bold',
     textAlign: 'center',
     lineHeight: 60,
     marginVertical: 20,
   },
   subHeading: {
     fontSize: 18,
-    fontFamily: 'Roboto-Regular',
     textAlign: 'center',
     lineHeight: 30,
   },

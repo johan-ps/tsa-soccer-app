@@ -21,8 +21,8 @@ const UiButton = props => {
   const {
     type = 'primary',
     size = 'large',
-    primaryClr = '#E41B23',
-    secondaryClr = '#ffffff',
+    primaryClr,
+    secondaryClr,
     border = false,
     darkBg = false,
     icon = null,
@@ -101,7 +101,7 @@ const UiButton = props => {
       },
       text: {
         fontSize: 14,
-        fontFamily: 'Roboto-Medium',
+        fontFamily: theme.fontMedium,
       },
     },
     medium: {
@@ -111,7 +111,7 @@ const UiButton = props => {
       },
       text: {
         fontSize: 16,
-        fontFamily: 'Roboto-Medium',
+        fontFamily: theme.fontMedium,
       },
     },
     large: {
@@ -122,7 +122,7 @@ const UiButton = props => {
       text: {
         fontWeight: 'bold',
         fontSize: 16,
-        fontFamily: 'Roboto-Bold',
+        fontFamily: theme.fontBold,
       },
     },
   };

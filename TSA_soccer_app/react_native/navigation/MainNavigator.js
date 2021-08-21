@@ -30,7 +30,11 @@ const MainNavigator = () => {
   }, [dispatch, scheme]);
 
   const getTabBarVisible = route => {
-    const routeName = getFocusedRouteNameFromRoute(route);
+    if (!route) {
+      return true;
+    }
+    const routeName = getFocusedRouteNameFromRoute(route) || route.name;
+
     if (
       routeName === 'Event' ||
       routeName === 'CreateEvent' ||

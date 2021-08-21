@@ -119,11 +119,15 @@ const UiFilterModal = props => {
         <Animated.View
           style={[
             styles.modalContainer,
-            { backgroundColor: theme.cardBgClr },
+            { backgroundColor: theme.cardBg },
             animStyle,
           ]}>
           <View style={styles.textContainer}>
-            <Text style={{ ...styles.title, color: theme.cardHClr }}>
+            <Text
+              style={[
+                styles.title,
+                { color: theme.cardTextHeading, fontFamily: theme.fontRegular },
+              ]}>
               {props.title}
             </Text>
             <View>
@@ -177,7 +181,6 @@ const styles = StyleSheet.create({
     height: '60%',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    backgroundColor: 'white',
     elevation: 20,
     shadowRadius: 10,
     shadowColor: '#000000',
@@ -196,7 +199,6 @@ const styles = StyleSheet.create({
   content: {
     fontSize: 15,
     marginBottom: 15,
-    color: '#848484',
   },
   buttonContainer: {
     flexDirection: 'row',
