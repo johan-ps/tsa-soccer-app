@@ -15,6 +15,8 @@ import {
 import UiTextArea from '../UiComponents/UiTextArea';
 import EventLocation from './EventLocation';
 
+import * as eventActions from '../../store/actions/EventActions'
+
 const CreateEvent = props => {
   const { visible } = props;
   const theme = useSelector(state => state.theme.colors);
@@ -172,9 +174,42 @@ const CreateEvent = props => {
     shadowOffset: { height: 2 },
     backgroundColor: 'white'
   };
+
   const shadowStyle = {
     borderColor: theme.primaryIconClr,
   }
+
+  const createEventHandler = async () => {
+    await dispatch(
+      eventActions.createEvent({
+        type: type,
+        title: title,
+        eventDate: eventDate, 
+        timeTbd: timeTbd,
+        startTime: startTime,
+        endTime: endTime, 
+        locationId: locationId,
+        locationDetails: locationDetails, 
+        authorId: authorId,
+        teams: teams,
+        going: going, 
+        maybe: maybe, 
+        unavailable: unavailable,
+        noResponse: noResponse,
+        extraNotes: extraNotes,
+        cancelled: cancelled,
+        notifyTeam: notifyTeam,
+        opponent: opponent,
+        jersey: jersey,
+        homeOrAway: homeOrAway,
+        arriveEarly: arriveEarly,
+        repeats: repeats
+      }),
+    );
+    props.navigation.goBack();
+    dispatchFormState({ type: 'reset' });
+  };
+
 
   // TODO: Fix up create new event features (fix new location stuff, fix datatimepicker stuff, add different for game/practice/other)
   // TODO: Add full calender view functionality
@@ -364,7 +399,7 @@ const CreateEvent = props => {
             type="tertiary"
             primaryClr={theme.buttonTertiaryText}
             secondaryClr={theme.buttonTertiaryBg}
-            onPress={() => {}}
+            onPress={() => createEventHandler()}
           />
         </View>
       </View>

@@ -1,14 +1,14 @@
 const db = require('../config/db');
 
 class Location {
-    constructor(title, ageGroup, players, coaches) {
-        this.name = title; //string
-        this.street = street; //street
-        this.city = city; //city
-        this.postalCode = postalCode; //postalCode
-        this.address = address; //string
-        this.description = description //string
-        this.latitutde = latitutde; //float
+    constructor(name, street, city, province, postalCode, country, latitude, longitude) {
+        this.name = name; //string
+        this.street = street; //string
+        this.city = city; //string
+        this.province = province; //string
+        this.postalCode = postalCode; //sring
+        this.country = country; //string
+        this.latitutde = latitude; //float
         this.longitude = longitude; //flaot
 
         // TODO: Find location required params
@@ -26,17 +26,23 @@ class Location {
 
         const sql = `
             INSERT INTO TEAMS (
-                title,
-                ageGroup,
-                players,
-                coaches,
-                createdAt
+                name,
+                street,
+                city,
+                province,
+                postalCode,
+                country,
+                latitude,
+                longitude
             )
             VALUES (
-                '${ this.title }',
-                '${ this.ageGroup }',
-                '[${ this.players }]'
-                '[${ this.coaches }]'
+                '${ this.name }',
+                '${ this.street }',
+                '${ this.city }'
+                '${ this.province }',
+                '${ this.postalCode }',
+                '${ this.latitude }',
+                '${ this.longitude }',
                 '${ dateTimeStr }'
             );
         `;
@@ -47,6 +53,20 @@ class Location {
         const sql = 'SELECT * FROM TEAM';
 
         return db.execute(sql);
+    }
+
+    static findById(id) {
+        const sql = `SELECT * FROM TEAM WHERE id = ${id}`;
+
+        return db.execute(sql);
+    }
+
+    static updateById(id) {
+
+    }
+
+    static deleteById(id){
+
     }
 
 }
