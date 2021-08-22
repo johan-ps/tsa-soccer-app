@@ -3,7 +3,7 @@ import ColorThemes from '../../constants/ColorThemes';
 
 const INITIAL_STATE = {
   activeTheme: 'light',
-  possible: ['light', 'dark', 'darkPlus'],
+  possible: ['light', 'dark'],
   colors: ColorThemes.light,
 };
 
