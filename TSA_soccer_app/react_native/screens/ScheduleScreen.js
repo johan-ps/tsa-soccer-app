@@ -34,14 +34,14 @@ const ScheduleScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={{ backgroundColor: theme.cardBg }}>
+    <View style={{ backgroundColor: theme.secondaryBg }}>
       <ScrollView onScroll={onScrollHandler} style={styles.container}>
         <SafeAreaView>
           <View
             style={[
               styles.container,
               styles.tabBarOffset,
-              { backgroundColor: theme.cardBg },
+              { backgroundColor: theme.secondaryBg },
             ]}>
             <ScheduleHeader
               onPress={route => {

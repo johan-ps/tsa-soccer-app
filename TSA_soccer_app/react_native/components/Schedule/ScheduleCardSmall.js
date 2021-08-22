@@ -43,7 +43,7 @@ const ScheduleCardSmall = props => {
   const defaultOption = {
     label: 'Set Availability',
     icon: 'information-outline',
-    color: '#FEAF35',
+    color: theme.schCardAccent,
   };
   const options = [
     { id: 0, label: 'Going', icon: 'checkmark-done', color: '#4ce660' },
