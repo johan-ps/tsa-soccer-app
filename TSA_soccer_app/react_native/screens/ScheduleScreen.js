@@ -44,12 +44,13 @@ const ScheduleScreen = ({ navigation }) => {
               { backgroundColor: theme.cardBg },
             ]}>
             <ScheduleHeader
-              onPress={() => {
-                navigation.navigate('Calender');
+              onPress={route => {
+                navigation.navigate(route);
               }}
             />
             <View>
               <AnimScrollView
+                scrollOffset={0}
                 loadingLottieAnim={loadingLottieAnim}
                 backgroundColor={theme.secondaryBg}
                 enabled={refreshEnabled}
@@ -61,24 +62,24 @@ const ScheduleScreen = ({ navigation }) => {
                     </View>
                   ))}
                 </View>
+                <Text
+                  style={[styles.subHeading, { color: theme.cardTextHeading }]}>
+                  Upcoming
+                </Text>
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.cardListInnerContainer}>
+                  {Events.map((event, i) => (
+                    <View key={i} style={{}}>
+                      <ScheduleCardSmall
+                        event={event}
+                        onPress={() => navigation.navigate('Event')}
+                      />
+                    </View>
+                  ))}
+                </ScrollView>
               </AnimScrollView>
-              <Text
-                style={[styles.subHeading, { color: theme.cardTextHeading }]}>
-                Upcoming
-              </Text>
-              <ScrollView
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.cardListInnerContainer}>
-                {Events.map((event, i) => (
-                  <View key={i} style={{}}>
-                    <ScheduleCardSmall
-                      event={event}
-                      onPress={() => navigation.navigate('Event')}
-                    />
-                  </View>
-                ))}
-              </ScrollView>
             </View>
           </View>
         </SafeAreaView>
@@ -108,12 +109,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   bodyContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderLeftColor: '#414141',
-    borderLeftWidth: 1,
-    borderStyle: 'solid',
-    marginLeft: 20,
     marginBottom: 20,
   },
   cardListInnerContainer: {

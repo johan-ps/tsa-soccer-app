@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import {
   Text,
@@ -13,6 +14,7 @@ import CalendarCard from '../components/Schedule/CalendarCard';
 import { Events } from '../data/events';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
+import DropdownSwitch from '../components/Schedule/DropdownSwitch';
 
 const CalendarScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
@@ -21,9 +23,17 @@ const CalendarScreen = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(CURRENT_DATE);
   const [markedDates, setMarkedDates] = useState({});
   const theme = useSelector(state => state.theme.colors);
+  const options = useMemo(() => {
+    return [
+      { label: 'Calender', id: 0 },
+      { label: 'Daily', id: 1 },
+    ];
+  }, []);
+  const [mode, setMode] = useState(options[0]);
 
   useEffect(() => {
     getSelectedDayEvents(moment().format('YYYY-MM-DD'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getSelectedDayEvents = date => {
@@ -40,6 +50,19 @@ const CalendarScreen = ({ navigation }) => {
     setMarkedDates(newMarkedDates);
   };
 
+  const onChangeRouteHandler = id => {
+    setMode(options[id]);
+    if (id === 1) {
+      navigation.navigate('Daily');
+    } else {
+      navigation.navigate('Calender');
+    }
+  };
+
+  useFocusEffect(() => {
+    setMode(options[0]);
+  });
+
   return (
     <SafeAreaView style={{ backgroundColor: theme.schBg }}>
       <View style={styles.headerContainer}>
@@ -50,16 +73,11 @@ const CalendarScreen = ({ navigation }) => {
           ]}>
           U8 Markham Houseleague
         </Text>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Schedule');
-          }}
-          style={styles.viewCalenderLink}>
-          <Text style={[{ color: theme.link, fontFamily: theme.fontRegular }]}>
-            Calendar
-          </Text>
-          <Icon name="chevron-forward-outline" size={30} color={theme.link} />
-        </TouchableOpacity>
+        <DropdownSwitch
+          value={mode}
+          options={options}
+          onPress={onChangeRouteHandler}
+        />
       </View>
       <View style={styles.headerOffsetContainer}>
         <View
@@ -174,11 +192,6 @@ const styles = StyleSheet.create({
   },
   team: {
     fontSize: 18,
-  },
-  viewCalenderLink: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
 

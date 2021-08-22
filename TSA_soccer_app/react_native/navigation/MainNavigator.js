@@ -23,11 +23,11 @@ const MainNavigator = () => {
   const theme = useSelector(state => state.theme.colors);
 
   // run function whenever dispatch or scheme changes
-  useEffect(() => {
-    if (scheme === 'dark') {
-      dispatch(ThemeActions.updateTheme(scheme));
-    }
-  }, [dispatch, scheme]);
+  // useEffect(() => {
+  //   if (scheme === 'dark') {
+  //     dispatch(ThemeActions.updateTheme(scheme));
+  //   }
+  // }, [dispatch, scheme]);
 
   const getTabBarVisible = route => {
     if (!route) {

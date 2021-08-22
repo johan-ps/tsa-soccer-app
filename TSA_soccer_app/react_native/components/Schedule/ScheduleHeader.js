@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   Text,
   StyleSheet,
@@ -10,6 +11,7 @@ import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import ScheduleHeaderItem from './ScheduleHeaderItem';
+import DropdownSwitch from './DropdownSwitch';
 
 const ScheduleHeader = props => {
   const { onPress, showDates = true } = props;
@@ -18,6 +20,14 @@ const ScheduleHeader = props => {
   const endDate = moment().add(7, 'days');
   const [datesArray, setDatesArray] = useState([]);
   const theme = useSelector(state => state.theme.colors);
+  const [mode, setMode] = useState(0);
+
+  const options = useMemo(() => {
+    return [
+      { label: 'Daily', id: 0 },
+      { label: 'Calender', id: 1 },
+    ];
+  }, []);
 
   useEffect(() => {
     if (showDates) {
@@ -31,6 +41,21 @@ const ScheduleHeader = props => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const onChangeRouteHandler = id => {
+    if (props.onPress) {
+      setMode(options[id]);
+      if (id === 0) {
+        props.onPress('Daily', id);
+      } else {
+        props.onPress('Calender', id);
+      }
+    }
+  };
+
+  useFocusEffect(() => {
+    setMode(options[0]);
+  });
 
   return (
     <View style={[styles.container, { backgroundColor: theme.schBg }]}>
@@ -49,12 +74,11 @@ const ScheduleHeader = props => {
           ]}>
           {currentDate.format('MMMM')}
         </Text>
-        <TouchableOpacity onPress={onPress} style={styles.viewCalenderLink}>
-          <Text style={[{ color: theme.link, fontFamily: theme.fontRegular }]}>
-            Calendar
-          </Text>
-          <Icon name="chevron-forward-outline" size={30} color={theme.link} />
-        </TouchableOpacity>
+        <DropdownSwitch
+          options={options}
+          value={mode}
+          onPress={onChangeRouteHandler}
+        />
       </View>
       <ScrollView
         contentContainerStyle={styles.dateListInnerContainer}
@@ -115,11 +139,6 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 20,
     paddingRight: 20,
-  },
-  viewCalenderLink: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   header: {
     fontSize: 32,

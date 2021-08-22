@@ -32,6 +32,7 @@ const AnimScrollView = props => {
     onlyPullToRefresh = false,
     enabled = true,
     loadingLottieAnim = require('../assets/img/soccer-anim.json'),
+    scrollOffset = 90,
   } = props;
 
   const [scrollUpperBound, setScrollUpperBound] = useState(0);
@@ -43,7 +44,7 @@ const AnimScrollView = props => {
   const reanimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
-      marginBottom: 90,
+      marginBottom: scrollOffset,
     };
   }, []);
   const refreshBound = 90;

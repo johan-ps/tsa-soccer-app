@@ -12,7 +12,7 @@ const ScheduleTopNavigator = () => {
       screenOptions={() => ({
         tabBarVisible: false,
       })}>
-      <SchNav.Screen name="Schedule" component={ScheduleScreen} />
+      <SchNav.Screen name="Daily" component={ScheduleScreen} />
       <SchNav.Screen name="Calender" component={CalendarScreen} />
     </SchNav.Navigator>
   );
