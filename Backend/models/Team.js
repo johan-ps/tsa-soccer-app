@@ -43,6 +43,12 @@ class Team {
         return db.execute(sql);
     }
 
+    static findById(id){
+        const sql = `SELECT * FROM TEAM WHERE id = ${id}`;
+
+        return db.execute(sql);
+    }
+
 }
 
 module.exports = Team;

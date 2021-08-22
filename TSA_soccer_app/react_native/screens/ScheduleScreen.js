@@ -33,6 +33,34 @@ const ScheduleScreen = ({ navigation }) => {
     }
   };
 
+  const loadEventsFromDate = useCallback(async date => {
+    try {
+      await dispatch(eventsActions.getEventsFromDate(date));
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch]);
+
+  const loadEventsOnDate = useCallback(async date => {
+    try {
+      await dispatch(announcementActions.getEventsOnDate(date));
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch]);
+
+  const onRegionChange = region => {
+    setRegion(region);
+  };
+
+  useEffect(() => {
+    loadEventsFromDate();
+  }, [dispatch, loadEventsFromDate]);
+
+  // useEffect(() => {
+  //   loadEventsOnDate();
+  // }, [dispatch, loadEventsOnDate])
+
   return (
     <View style={{ backgroundColor: theme.secondaryBg }}>
       <ScrollView onScroll={onScrollHandler} style={styles.container}>
@@ -54,6 +82,7 @@ const ScheduleScreen = ({ navigation }) => {
                 loadingLottieAnim={loadingLottieAnim}
                 backgroundColor={theme.secondaryBg}
                 enabled={refreshEnabled}
+                load={loadEventsFromDate}
                 onlyPullToRefresh={true}>
                 <View style={[styles.bodyContainer]}>
                   {Events.map((event, i) => (

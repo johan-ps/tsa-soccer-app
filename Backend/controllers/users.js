@@ -13,6 +13,17 @@ exports.getAllUsers = async (req, res, next) => {
     }
 };
 
+exports.getUserById = async (req, res, next) => {
+    try {
+        const { id } = req.body;
+        const [user, _] = await User.findOneById(id);
+        
+        res.status(200).json({ user })
+    } catch (error) {
+        next (error);
+    }
+}
+
 exports.loginUser = async (req, res, next) => {
     const { username = null, password = null } = req.body;
 

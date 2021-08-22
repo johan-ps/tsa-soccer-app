@@ -60,6 +60,7 @@ const EventLocation = props => {
     const apiUrl = `${GOOGLE_PLACES_API_BASE_URL}/details/json?key=AIzaSyB-HOOioh0lR-hXaggyEzYXVFKdylnbpFk&libraries=places&place_id=${encodeURIComponent(placeId)}`;
     fetch(apiUrl).then((response) => response.json())
     .then((data) => {
+      console.log("Joell data", data.result.formatted_address);
       setSelectedLocation(data.result)
     })
     .catch((error) => {
@@ -190,7 +191,10 @@ const EventLocation = props => {
           :
             <View>
               <UiInput placeholder={'Title'} initialValue={selectedLocation.name} fontSize={18} onChangeText={() => {}}/>
-              <UiInput placeholder={'Location'} initialValue={selectedLocation.formatted_address} fontSize={16} onChangeText={() => {}}/>
+              <UiInput placeholder={'Street'} initialValue={selectedLocation.formatted_address} fontSize={16} onChangeText={() => {}}/>
+              <UiInput placeholder={'City'} initialValue={selectedLocation.formatted_address} fontSize={16} onChangeText={() => {}}/>
+              <UiInput placeholder={'Province'} initialValue={selectedLocation.formatted_address} fontSize={16} onChangeText={() => {}}/>
+              <UiInput placeholder={'Postal Code'} initialValue={selectedLocation.formatted_address} fontSize={16} onChangeText={() => {}}/>
             </View>
           )
         }

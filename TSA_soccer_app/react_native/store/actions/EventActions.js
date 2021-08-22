@@ -12,7 +12,7 @@ export const getEvents = () => {
   return async dispatch => {
     try {
       const response = await fetch(
-        `http://${environmentUrl}/api/events`,
+        `http://${environmentUrl}/api/events/`,
       );
 
       if (!response.ok) {
@@ -31,6 +31,93 @@ export const getEvents = () => {
   };
 };
 
+export const getEventsOnDate = date => {
+  return async dispatch => {
+    try {
+      const response = await fetch(
+        `http://${environmentUrl}/api/events/startingFrom`,
+        {
+          method: 'GET',
+          body: {date: date}
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Something went wrong getEventsonDate!');
+      }
+
+      const resData = await response.json();
+      const events = resData.events;
+
+      dispatch({
+        type: GET_EVENTS,
+        events,
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
+
+export const getEventsFromDate = date => {
+  return async dispatch => {
+    try {
+      const response = await fetch(
+        `http://${environmentUrl}/api/events/date`,
+        {
+          method: 'GET',
+          body: {date: date}
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Something went wrong getEventsonDate!');
+      }
+
+      const resData = await response.json();
+      const events = resData.events;
+
+      dispatch({
+        type: GET_EVENTS,
+        events,
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
+
+export const getEventById = id => {
+  return async dispatch => {
+    try {
+      const response = await fetch(
+        `http://${environmentUrl}/api/events/date`,
+        {
+          method: 'GET',
+          body: {id: id}
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Something went wrong getEventById!');
+      }
+
+      const resData = await response.json();
+      const event = resData.event;
+
+      dispatch({
+        type: GET_EVENT,
+        event,
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
+
 export const createEvent = eventData => {
   return async dispatch => {
     try {
@@ -46,7 +133,7 @@ export const createEvent = eventData => {
       }
 
       const response = await fetch(
-        `http://${environmentUrl}/api/events/add`,
+        `http://${environmentUrl}/api/events/create`,
         {
           method: 'POST',
           headers: {
@@ -58,7 +145,7 @@ export const createEvent = eventData => {
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong add announcement!');
+        throw new Error('Something went wrong add event!');
       }
 
       const resData = await response.json();
