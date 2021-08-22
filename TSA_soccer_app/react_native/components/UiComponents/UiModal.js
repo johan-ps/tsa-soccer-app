@@ -95,13 +95,7 @@ const UiModal = props => {
             </TouchableOpacity>
           )}
           <View style={styles.textContainer}>
-            {icon && (
-              <Icon
-                name="file-tray-full-outline"
-                color={theme.primaryText}
-                size={40}
-              />
-            )}
+            {icon && <Icon name={icon} color={theme.primaryText} size={40} />}
             <Text
               style={[
                 styles.title,
