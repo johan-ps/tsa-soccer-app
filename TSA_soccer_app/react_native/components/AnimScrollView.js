@@ -33,6 +33,7 @@ const AnimScrollView = props => {
     enabled = true,
     loadingLottieAnim = require('../assets/img/soccer-anim.json'),
     scrollOffset = 90,
+    time = 5000,
   } = props;
 
   const [scrollUpperBound, setScrollUpperBound] = useState(0);
@@ -77,6 +78,29 @@ const AnimScrollView = props => {
     offsetY.value = translateY.value;
   });
 
+  const loadFailHandler = () => {
+    if (refreshing.value === true) {
+      cancelAnimation(translateY.value);
+      if (props.loadFail) {
+        props.loadFail();
+      }
+      translateY.value = withSpring(
+        0,
+        {
+          damping: 100,
+          mass: 10,
+          stiffness: 1000,
+          overshootClamping: true,
+          restDisplacementThreshold: 0,
+          restSpeedThreshold: 0,
+        },
+        () => {
+          refreshing.value = false;
+        },
+      );
+    }
+  };
+
   const loadData = useCallback(async () => {
     try {
       ReactNativeHapticFeedback.trigger(
@@ -84,6 +108,9 @@ const AnimScrollView = props => {
         options,
       );
       if (load) {
+        setTimeout(() => {
+          loadFailHandler();
+        }, time);
         await load();
       }
       translateY.value = withSpring(
@@ -101,6 +128,7 @@ const AnimScrollView = props => {
         },
       );
     } catch (err) {
+      loadFailHandler();
       console.log(err);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -21,7 +21,7 @@ export const getAnnouncements = () => {
       const resData = await response.json();
       const announcements = resData.announcements.sort((a, b) =>
         a.date < b.date ? 1 : a.date > b.date ? -1 : 0,
-      );  // TODO: Sorting should be done in backend
+      ); // TODO: Sorting should be done in backend
       dispatch({
         type: GET_ANNOUNCEMENTS,
         announcements,
