@@ -10,7 +10,7 @@ const CalendarCard = props => {
   const theme = useSelector(state => state.theme.colors);
   const defaultOption = {
     label: 'Set Availability',
-    color: '#FEAF35',
+    color: theme.schCardAccent,
   };
   const options = [
     { id: 0, label: 'Going', icon: 'checkmark-done', color: '#4ce660' },
@@ -56,7 +56,7 @@ const CalendarCard = props => {
           />
         </View>
         <View style={styles.itemContainer}>
-          <Icon name="timer-outline" size={20} color="white" />
+          <Icon name="timer-outline" size={20} color={theme.secondaryText} />
           <Text
             style={[
               styles.itemContent,
@@ -66,7 +66,7 @@ const CalendarCard = props => {
           </Text>
         </View>
         <View style={styles.itemContainer}>
-          <Icon name="navigate-outline" size={20} color="white" />
+          <Icon name="navigate-outline" size={20} color={theme.secondaryText} />
           <Text
             style={[
               styles.itemContent,

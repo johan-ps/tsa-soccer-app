@@ -50,11 +50,11 @@ const StatusIndicator = props => {
     } else if (label === 'Maybe') {
       color = '#a9a9a9';
     } else {
-      color = '#FEAF35';
+      color = theme.schCardAccent;
     }
 
     return color;
-  }, [label]);
+  }, [label, theme.schCardAccent]);
 
   const containerStyle = useMemo(() => {
     let color = primaryClr;
@@ -66,7 +66,7 @@ const StatusIndicator = props => {
       };
     } else {
       return {
-        backgroundColor: color + '07',
+        backgroundColor: color + '12',
         borderColor: color,
       };
     }
@@ -166,7 +166,12 @@ const StatusIndicator = props => {
       <Modal animationType="none" visible={showOptions} transparent={true}>
         <Pressable onPress={onCloseHandler} style={styles.menuContainer}>
           <Animated.View
-            style={[styles.optionsContainer, optionsStyle, optionPosition]}>
+            style={[
+              styles.optionsContainer,
+              optionsStyle,
+              optionPosition,
+              { backgroundColor: theme.secondaryBg },
+            ]}>
             {options.map(option => {
               return (
                 <View style={styles.option} key={option.id}>
@@ -176,7 +181,7 @@ const StatusIndicator = props => {
                     }}
                     style={[styles.touchable]}
                     background={TouchableNativeFeedback.Ripple(
-                      option.darkBg
+                      theme.name === 'dark'
                         ? theme.touchableBgDark
                         : theme.touchableBgLight,
                       false,
@@ -185,7 +190,10 @@ const StatusIndicator = props => {
                       <Text
                         style={[
                           styles.optionText,
-                          { color: contentClr, fontFamily: theme.fontRegular },
+                          {
+                            color: theme.menuText,
+                            fontFamily: theme.fontRegular,
+                          },
                         ]}>
                         {option.label}
                       </Text>
@@ -218,12 +226,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  touchable: {
-    // height: 33,
-    // width: 144,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-  },
+  touchable: {},
   optionText: {
     fontSize: 16,
   },
@@ -234,11 +237,15 @@ const styles = StyleSheet.create({
     height: 33,
     width: 144,
     position: 'absolute',
-    backgroundColor: '#a9a9a9',
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.14,
+    shadowRadius: 2,
+    elevation: 8,
   },
   container: {
     borderStyle: 'solid',

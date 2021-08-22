@@ -114,11 +114,11 @@ export default {
     secondaryText: '#231E20',
 
     // links
-    link: '#FEAF35',
+    link: '#E41B23',
 
     // background
     primaryBg: '#f2f2f2',
-    secondaryBg: '#FFFFFF',
+    secondaryBg: '#EEF1F7',
 
     // cards
     cardBg: '#FFFFFF',
@@ -127,14 +127,14 @@ export default {
     cardTextContent: '#00000099',
 
     // bottomTabNav
-    bottomNavBg: '#414141',
+    bottomNavBg: '#FFFFFF',
     bottomNavIcon: '#C9C8C8',
     bottomNavIconSelect: '#E41B23',
 
     // search header
     searchBg: '#FFFFFF',
     searchInputBg: '#FFFFFF',
-    searchText: '#D1D1D1',
+    searchText: '#C9C8C8',
 
     // menu
     menuBg: '#FFFFFF',
@@ -145,20 +145,20 @@ export default {
     addBtnIcon: '#FFFFFF',
 
     // schedule date list
-    schDayBg: '#414141',
-    schDayBgSelected: '#FEAF35',
-    schDayHeader: 'white',
-    schDayContent: 'white',
-    schDaySelectedText: '#231E20',
+    schDayBg: '#FFFFFF',
+    schDayBgSelected: '#E41B23',
+    schDayHeader: '#414141',
+    schDayContent: '#414141',
+    schDaySelectedText: '#FFFFFF',
 
     // schedule card
-    schCardBg: '#414141',
-    schCardText: '#C9C8C8',
-    schCardAccent: '#FEAF35',
+    schCardBg: '#FFFFFF',
+    schCardText: '#414141',
+    schCardAccent: '#E41B23',
 
     // schedule header
-    schBg: '#414141',
-    schText: '#FFFFFF',
+    schBg: '#FFFFFF',
+    schText: '#414141',
 
     // touchableBg
     touchableBgDark: '#ffffff2a',
@@ -171,197 +171,39 @@ export default {
     buttonSecondaryText: '#808286',
     buttonTertiaryBg: '#00000000',
     buttonTertiaryText: '#E41B23',
-    button4Bg: '#2F3137',
-    button4Txt: '#F8F9FA',
+    button4Bg: '#EEF1F7',
+    button4Txt: '#231E20',
 
     // dropdown
-    ddBgClr: '#4D4B52',
+    ddBgClr: '#EEF1F7',
     ddBorderClr: '#e51b23',
-    ddOptSClr: '#2c2c2c',
-    ddOptTxtClr: '#f2f3f2',
-    ddOptSTxtClr: '#D9DADB',
-    ddSClr: '#F9F9F9',
-    ddSelectLabelBg: '#8A8A8A',
-    ddSelectLabelText: '#f2f3f2',
+    ddOptSClr: '#ffdcde',
+    ddOptTxtClr: '#231E20',
+    ddOptSTxtClr: '#231E20',
+    ddSClr: '#231E20',
+    ddSelectLabelBg: '#FFFFFF',
+    ddSelectLabelText: '#231E20',
 
     // calender
     calenderArrow: '#E41B23',
 
     // settings
-    actionBtnBg: '#414141',
-    actionBtnText: '#FFFFFF',
+    actionBtnBg: '#C9C8C8',
+    actionBtnText: '#231E20',
 
     // input
     cursor: '#E41B23',
-    inputBg: '#414141',
+    inputBg: '#C9C8C8',
     inputText: '#FFFFFF',
-    inputPlaceholder: '#C9C8C8',
+    inputPlaceholder: '#EEF1F7',
 
     accent: '#FEAF35',
   },
 };
 
-/*
-export default {
-  dark: {
-    name: 'dark',
-    primaryClr: '#e51b23',
-    primaryTxtClr: '#ffffff',
-    primaryBtnClr: '#000000',
-    secondaryBtnClr: '#808286',
-    primaryBtnBgClr: '#e51b23',
-    secondaryBtnBgClr: '#EEF1F7',
-    primaryIconClr: '#e51b23',
-    secondaryIconClr: '#bfbfbf',
-    primaryBgClr: '#000000',
-    primaryTxtInputBackgroundClr: '#414142',
-    cardBgClr: '#424242',
-    cardHClr: '#ffffff',
-    cardCClr: '#a2a2a2',
-    ddBgClr: '#4D4B52',
-    ddBorderClr: '#e51b23',
-    ddOptSClr: '#000000',
-    ddOptTxtClr: '#f2f3f2',
-    ddOptSTxtClr: '#D9DADB',
-    ddSClr: '#F9F9F9',
-
-    primaryRed: '#E41B23',
-    primaryYellow: '#FEAF35',
-    neutralBlack: '#000000',
-    neutralDarkGrey: '#231E20',
-    neutralGrey: '#414141',
-    neutralLightGrey: '#C9C8C8',
-
-    // background
-    primaryBg: '#414141',
-
-    // text
-    primaryText: '#FFFFFF',
-    secondaryText: '#C9C8C8',
-
-    // touchableBg
-    touchableBgDark: '#ffffff40',
-    touchableBgLight: '#0000001a',
-
-    // menu
-    menuBg: '#414141',
-    menuText: '#D1D1D1',
-
-    // settings
-    actionBtn: '#414141',
-
-    // navigation
-    navBg: '#231E20',
-    navInputBg: '#414141',
-    navText: '#D1D1D1',
-
-    // buttons
-    buttonPrimaryBg: '#E41B23',
-    buttonPrimaryText: '#231E20',
-    buttonSecondaryBg: '#EEF1F7',
-    buttonSecondaryText: '#808286',
-    buttonTertiaryBg: '#00000000',
-    buttonTertiaryText: '#E41B23',
-
-    // icons
-    iconClr: '#D1D1D1',
-
-    // text
-    textLight: '#231E20',
-    textDark: '#FFFFFF',
-
-    // cards
-    // cardBg: '#231E20CC',
-    cardBg: '#231E20',
-    cardTextHeading: '#D1D1D1',
-    cardTextSubHeading: '#C9C8C8',
-    cardTextContent: '#D1D1D1b9',
-
-    // modal
-    moreScreenSettingsBgClr: '#4D4B52',
-    moreScreenOptionsBgClr: '#1f1f1f',
-  },
-  default: {
-    name: 'default',
-    primaryRed: '#E41B23',
-    primaryYellow: '#FEAF35',
-    neutralBlack: '#000000',
-    neutralDarkGrey: '#231E20',
-    neutralGrey: '#414141',
-    neutralLightGrey: '#C9C8C8',
-
-    // settings
-    actionBtn: '#f6f5f8',
-
-    // background
-    primaryBg: '#f2f2f2',
-
-    // text
-    primaryText: '#000000',
-    secondaryText: '#231E20',
-
-    // touchableBg
-    touchableBgDark: '#ffffff2a',
-    touchableBgLight: '#0000001a',
-
-    // menu
-    menuBg: '#FFFFFF',
-    menuText: '#231E20',
-
-    // navigation
-    navBg: '#FFFFFF',
-    navInputBg: '#FFFFFF',
-    navText: '#D1D1D1',
-
-    // buttons
-    buttonPrimaryBg: '#E41B23',
-    buttonPrimaryText: '#FFFFFF',
-    buttonSecondaryBg: '#FFFFFF',
-    buttonSecondaryText: '#E41B23',
-    buttonTertiaryBg: '#00000000',
-    buttonTertiaryText: '#E41B23',
-
-    // icons
-    iconClr: '#231E20',
-
-    // text
-    textLight: '#231E20',
-    textDark: '#FFFFFF',
-
-    // cards
-    cardBg: '#FFFFFF',
-    cardTextHeading: '#231E20',
-    cardTextSubHeading: 'grey',
-    cardTextContent: '#00000099',
-
-    // modal
-
-    primaryClr: '#e51b23', //red
-    primaryColor2: '#f2bb2b', //yellow
-    primaryColor3: '#414142', //grey
-    primaryColor4: '#231f20', //black
-    disabled: '#00000061',
-    primaryTxtClr: '#ffffff',
-    primaryBtnClr: '#ffffff',
-    secondaryBtnClr: '#808286',
-    primaryBtnBgClr: '#e51b23',
-    secondaryBtnBgClr: '#EEF1F7',
-    primaryIconClr: '#e51b23',
-    secondaryIconClr: '#808080',
-    primaryBgClr: '#ffffff',
-    primaryTxtInputBackgroundClr: '#ffffff',
-    cardBgClr: '#ffffff',
-    cardHClr: '#000000',
-    cardCClr: '#848484',
-    ddBgClr: '#ffffff',
-    ddBorderClr: '#e51b23',
-    ddOptSClr: '#ffe4e5',
-    ddOptTxtClr: '#000000',
-    ddOptSTxtClr: '#e51b23',
-    ddSClr: '#A8A4B8',
-    moreScreenSettingsBgClr: '#F0F0F0',
-    moreScreenOptionsBgClr: '#ffffff',
-  },
-};
-
-*/
+// primaryRed: '#E41B23',
+// primaryYellow: '#FEAF35',
+// neutralBlack: '#000000',
+// neutralDarkGrey: '#231E20',
+// neutralGrey: '#414141',
+// neutralLightGrey: '#C9C8C8',
