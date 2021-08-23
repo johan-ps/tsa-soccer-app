@@ -10,9 +10,9 @@ import {
 import Ripple from 'react-native-material-ripple';
 
 const UiToggle = props => {
-  const { labelLeft, labelRight } = props;
+  const { labelLeft, labelRight, value, onInputChange } = props;
+  const selectedLabel = value || labelLeft;
   const [selectedId, setSelectedId] = useState(0);
-  const [selectedLabel, setSelectedLabel] = useState(labelLeft);
   const [focused, setFocused] = useState(false);
   const toggleAnimation = useRef(new Animated.Value(0)).current;
   const focusAnimation = useRef(new Animated.Value(0)).current;
@@ -46,7 +46,7 @@ const UiToggle = props => {
         duration: 200,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start(() => setSelectedLabel(labelRight));
+      }).start(() => onInputChange(labelRight));
     } else {
       setSelectedId(0);
       Animated.timing(toggleAnimation, {
@@ -54,7 +54,7 @@ const UiToggle = props => {
         duration: 200,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start(() => setSelectedLabel(labelLeft));
+      }).start(() => onInputChange(labelLeft));
     }
   };
 

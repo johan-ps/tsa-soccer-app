@@ -29,6 +29,7 @@ const inputReducer = (state, action) => {
       return {
         ...state,
         value: action.value,
+        isValid: action.isValid
       };
     default:
       return state;
@@ -78,7 +79,7 @@ const UiInput = props => {
 
   useEffect(() => {
     if (onInputChange) {
-      onInputChange(id, inputState.value);
+      onInputChange(id, inputState.value, inputState.isValid);
     }
   }, [inputState, onInputChange, id]);
 

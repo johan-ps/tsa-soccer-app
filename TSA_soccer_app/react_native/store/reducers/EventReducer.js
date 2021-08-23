@@ -1,8 +1,9 @@
 import {
-  GET_ANNOUNCEMENTS,
-  ADD_ANNOUNCEMENT,
-  DELETE_ANNOUNCEMENT,
-} from '../actions/AnnouncementActions';
+  GET_EVENTS,
+  ADD_EVENT,
+  DELETE_EVENT,
+  EDIT_EVENT
+} from '../actions/EventActions';
 
 const INITIAL_STATE = [];
 

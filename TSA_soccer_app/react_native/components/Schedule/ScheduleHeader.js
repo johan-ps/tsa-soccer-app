@@ -6,6 +6,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Platform
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,7 +15,7 @@ import ScheduleHeaderItem from './ScheduleHeaderItem';
 import DropdownSwitch from './DropdownSwitch';
 
 const ScheduleHeader = props => {
-  const { onPress, showDates = true } = props;
+  const { onPress, showDates = true, value, onChange, loadEventsFromDate } = props;
   const currentDate = moment();
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const endDate = moment().add(7, 'days');
@@ -39,6 +40,9 @@ const ScheduleHeader = props => {
       }
       setDatesArray(newDatesArray);
     }
+    if(value){
+      setSelectedDate(value);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -52,6 +56,11 @@ const ScheduleHeader = props => {
       }
     }
   };
+
+  const onSelectDate = date => {
+    onChange(date);
+    loadEventsFromDate(date);
+  }
 
   useFocusEffect(() => {
     setMode(options[0]);
@@ -90,7 +99,7 @@ const ScheduleHeader = props => {
               return (
                 <View key={date.toString()} style={styles.dateContainer}>
                   <ScheduleHeaderItem
-                    onPress={() => setSelectedDate(date)}
+                    onPress={() => onSelectDate(date)}
                     date={date}
                     current={selectedDate.isSame(date, 'day')}
                   />
@@ -123,6 +132,11 @@ const styles = StyleSheet.create({
   team: {
     fontSize: 18,
     marginBottom: 20,
+    ...Platform.select({
+      ios: {
+        marginTop: 20,
+      },
+    }),
   },
   dateListContainer: {
     flexDirection: 'row',

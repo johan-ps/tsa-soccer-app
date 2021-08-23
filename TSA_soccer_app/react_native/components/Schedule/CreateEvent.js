@@ -1,10 +1,11 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useReducer, useCallback } from 'react';
 import { Text, View, StyleSheet, Modal, ScrollView,Button, SafeAreaView, TouchableHighlight, Pressable, Animated, Easing, TouchableOpacity, Switch } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import DatePicker from 'react-native-date-picker'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/Ionicons'
 import moment from "moment";
+import REPEATS from '../../constants/Constants'
 
 import {
   UiButton,
@@ -15,7 +16,77 @@ import {
 import UiTextArea from '../UiComponents/UiTextArea';
 import EventLocation from './EventLocation';
 
-import * as eventActions from '../../store/actions/EventActions'
+import * as eventActions from '../../store/actions/EventActions';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
+
+const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+
+const formInit = {
+  inputValues: {
+    type: '',
+    title: '',
+    date: null,
+    timeTbd: false,
+    startTime: null,
+    endTime: null,
+    locationId: null,
+    locationDetails: '',
+    teamIds: [],
+    opponent: '',
+    jersey: '',
+    homeOrAway: null,
+    notifyTeam: true,
+    arriveEarly: false,
+    cancelled: false,
+    repeats: [],
+    extraNotes: ''
+  },
+  inputValidities: {
+    type: true,
+    title: true,
+    date: true,
+    timeTbd: true,
+    startTime: true,
+    endTime: true,
+    locationId: true,
+    locationDetails: true,
+    teamIds: true,
+    opponent: true,
+    jersey: true,
+    homeOrAway: true,
+    notifyTeam: true,
+    arriveEarly: true,
+    cancelled: true,
+    repeats: true,
+    extraNotes: true
+  },
+  formIsValid: true,
+};
+
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value,
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid,
+    };
+    let updatedFormIsValid = true;
+    for (let key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValues: updatedValues,
+      inputValidities: updatedValidities,
+    };
+  } else {
+    return formInit;
+  }
+};
+
 
 const CreateEvent = props => {
   const { visible } = props;
@@ -58,47 +129,29 @@ const CreateEvent = props => {
       ],
     },
   ];
-  const repeat = [
-    {
-      label: 'Every Monday',
-      id: 0,
+  const dispatch = useDispatch();
+  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
+
+  const onChange = useCallback(
+    (inputId, inputValue, inputValidity) => {
+      console.log("Joell input:", inputId, inputValue, inputValidity);
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputId,
+      });
     },
-    {
-      label: 'Every Tuesday',
-      id: 1,
-    },
-    {
-      label: 'Every Wednesday',
-      id: 2,
-    },
-    {
-      label: 'Every Thursday',
-      id: 3,
-    },
-    {
-      label: 'Every Friday',
-      id: 4,
-    },
-    {
-      label: 'Every Saturday',
-      id: 5,
-    },
-    {
-      label: 'Every Sunday',
-      id: 6,
-    }];
-  const [type, setType] = useState(false);
+    [dispatchFormState],
+  );
+
+
   const [location, setLocation] = useState(false);
   const [locationValue, setLocationValue] = useState('Please Select');
-  const [date, setDate] = useState(null)
-  const [startTime, setStartTime] = useState(null);
-  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [shadow, setShadow] = useState(null)
-  const [timeTbd, setTimeTbd] = useState(false);
-  const [notifyTeam, setNotifyTeam] = useState(true);
-  const [arriveEarly, setArriveEarly] = useState(false);
-  const [cancelled, setCancelled] = useState(false);
   const dateAnimation = useRef(new Animated.Value(0)).current;
   const startTimeAnimation = useRef(new Animated.Value(0)).current;
 
@@ -150,6 +203,11 @@ const CreateEvent = props => {
     setLocation(true);
   }
 
+  const onReturnLocation = location => {
+    setLocationValue(location.name);
+    onChange('locationId', location.id, true);
+  }
+
   const dateAnimStyle = {
     transform: [
       {
@@ -180,6 +238,7 @@ const CreateEvent = props => {
   }
 
   const createEventHandler = async () => {
+    const {type, title, eventDate, timeTbd, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats} = formState.inputValues;
     await dispatch(
       eventActions.createEvent({
         type: type,
@@ -234,21 +293,23 @@ const CreateEvent = props => {
             decelerationRate="fast">
             <View style={styles.modalBody}>
               <View style={{flexDirection: 'row', paddingBottom: 20}}>
-                <TouchableOpacity onPress={() => setType('Game')} style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderColor: '#A9A9A9', backgroundColor: type === 'Game' ? 'red' : 'white'}}>
+                <TouchableOpacity onPress={() => onChange('type', 'Game', true)} style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderColor: '#A9A9A9', backgroundColor: formState.inputValues.type === 'Game' ? 'red' : 'white'}}>
                   <Text style={{fontSize: 18, fontWeight: '500'}}>Game</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setType('Practice')} style={{flex: 1, alignItems: 'center', padding: 5, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#A9A9A9', backgroundColor: type === 'Practice' ? 'red' : 'white'}}>
+                <TouchableOpacity onPress={() => onChange('type', 'Practice', true)} style={{flex: 1, alignItems: 'center', padding: 5, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#A9A9A9', backgroundColor: formState.inputValues.type === 'Practice' ? 'red' : 'white'}}>
                   <Text style={{fontSize: 18, fontWeight: '500'}}>Practice</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setType('Other')} style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomRightRadius: 10, borderTopRightRadius: 10, borderColor: '#A9A9A9', backgroundColor: type === 'Other' ? 'red' : 'white'}}>
+                <TouchableOpacity onPress={() => onChange('type', 'Other', true)} style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomRightRadius: 10, borderTopRightRadius: 10, borderColor: '#A9A9A9', backgroundColor: formState.inputValues.type === 'Other' ? 'red' : 'white'}}>
                   <Text style={{fontSize: 18, fontWeight: '500'}}>Other</Text>
                 </TouchableOpacity>
               </View>
               <UiInput
+                id="title"
                 placeholder="Title"
                 borderTheme="underline"
                 fontSize={18}
                 style={{ marginBottom: 0 }}
+                onInputChange={onChange}
               />
               <Text style={styles.formLabels}>Date</Text>
               {/* <DateTimePicker 
@@ -270,7 +331,7 @@ const CreateEvent = props => {
               >
                 <View style={{flexDirection: 'column'}}>
                   <View style={[styles.dateContainer]}>
-                    <Text style={{color: date ? 'black' : 'grey', shadowOpacity: 0, fontSize: 16}}>{date ? moment(date).format('dddd, D MMM YYYY') : 'Please Select'}</Text>
+                    <Text style={{color: formState.inputValues.date ? 'black' : 'grey', shadowOpacity: 0, fontSize: 16}}>{formState.inputValues.date ? moment(formState.inputValues.date).format('dddd, D MMM YYYY') : 'Please Select'}</Text>
                     <View style={styles.iconContainer}>
                       <Icon color={showDatePicker ? '#e51b23' : '#A8A4B8'} name="calendar-outline" size={20} />
                     </View>
@@ -278,8 +339,8 @@ const CreateEvent = props => {
                   <Animated.View style={{height: dateAnimation, width: '100%', paddingRight: 20}}>
                     { showDatePicker ?
                       <DatePicker
-                        date={date || new Date()}
-                        onDateChange={setDate}
+                        date={formState.inputValues.date || new Date()}
+                        onDateChange={(date) => onChange("date", date, true)}
                         mode={'date'}
                       />
                       :
@@ -291,42 +352,43 @@ const CreateEvent = props => {
               <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
                 <Text style={styles.optionLabels}>Time TBD</Text>
                 <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
-                  <Switch value={timeTbd} onChange={() => setTimeTbd(!timeTbd)}/>
+                  <Switch value={formState.inputValues.timeTbd} onValueChange={(value) => onChange('timeTbd', value, true)}/>
                 </View>
               </View>
+              {!formState.inputValues.timeTbd ?
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                 }}>
-                  <Pressable 
-                    onPress={() => {
-                      if(!shadow){ onPressInStartTime(); setShadow(shadowStyle);} else{ onPressOutStartTime(); setShadow(null); }
-                    }} 
-                    style={[ifCircle, {marginBottom: 10}, showStartTimePicker && shadow]}
-                  >
-                    <View style={{flexDirection: 'column'}}>
-                      <View style={[styles.dateContainer]}>
-                        <Text style={{color: date ? 'black' : 'grey', shadowOpacity: 0, fontSize: 16}}>{date ? moment(date).format('dddd, D MMM YYYY') : 'Please Select'}</Text>
-                        <View style={styles.iconContainer}>
-                          <Icon color={showStartTimePicker ? '#e51b23' : '#A8A4B8'} name="calendar-outline" size={20} />
-                        </View>
-                      </View>
-                      <Animated.View style={{height: startTimeAnimation, width: 200, paddingRight: 20}}>
-                        { showStartTimePicker ?
-                          <DatePicker
-                            date={date || new Date()}
-                            onDateChange={setDate}
-                            mode={'time'}
-                            minuteInterval={5}
-                          />
-                          :
-                          null
-                        }
-                      </Animated.View>
-                    </View>
-                  </Pressable>
+                  <View style={{width: '50%', justifyContent: 'center'}}>
+                    <Text style={styles.formLabels}>Start Time</Text>
+                    <RNDateTimePicker 
+                      mode={'time'}
+                      display={'default'}
+                      onChange={(event, date) => {
+                        setStartTime(date);
+                        onChange('startTime', moment(date).format('h:m'), true);
+                      }}
+                      value={startTime || new Date()}
+                    />
+                  </View>
+                  <View style={{width: '50%', justifyContent: 'center'}}>
+                    <Text style={styles.formLabels}>End Time</Text>
+                    <RNDateTimePicker 
+                      mode={'time'}
+                      display={'default'}
+                      onChange={(event, date) => {
+                        setEndTime(date);
+                        onChange('endTime', moment(date).format('h:m'), true);
+                      }}
+                      value={endTime|| new Date()}
+                    />
+                  </View>
               </View>
+              :
+              null
+              }
               <Text style={styles.formLabels}>Location</Text>
               <TouchableOpacity onPress={onSelectLocation} style={[ifCircle, {marginBottom: 10}]}>
                 <View style={[styles.dateContainer]}>
@@ -336,7 +398,7 @@ const CreateEvent = props => {
                   </View>
                 </View>
               </TouchableOpacity>
-              <UiTextArea placeholder={'Location Details (Ex: Field #11 or Park in Lot #2)'} style={[ifCircle, {padding: 0}]}/>
+              <UiTextArea placeholder={'Location Details (Ex: Field #11 or Park in Lot #2)'} style={[ifCircle, {padding: 0}]} id="locationDetails" onInputChange={onChange}/>
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown
                 modalOffsetY={80}
@@ -348,40 +410,39 @@ const CreateEvent = props => {
                 size="large"
               />
               <View style={{marginTop: 10}}>
-                <UiInput placeholder={'Opponent'} style={{height: 55}}/>
+                <UiInput id="opponent" placeholder={'Opponent'} style={{height: 55}} onInputChange={onChange}/>
               </View>
               <View style={{marginTop: 10, marginBottom: 10}}>
-                <UiInput placeholder={'Jersey'} style={{height: 55}}/>
+                <UiInput id="jersey" placeholder={'Jersey'} style={{height: 55}} onInputChange={onChange}/>
               </View>
-              <UiToggle labelLeft="Home" labelRight="Away" />
               <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50, marginTop: 10}}>
                 <Text style={styles.optionLabels}>Notify Team(s)</Text>
                 <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
-                  <Switch value={notifyTeam} onChange={() => setNotifyTeam(!notifyTeam)}/>
+                  <Switch value={formState.inputValues.notifyTeam} onValueChange={(value) => onChange('notifyTeam', value, true)}/>
                 </View>
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
                 <Text style={styles.optionLabels}>Arrive Early</Text>
                 <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
-                  <Switch value={arriveEarly} onChange={() => setArriveEarly(!arriveEarly)}/>
+                  <Switch value={formState.inputValues.arriveEarly} onValueChange={(value) => onChange('arriveEarly', value, true)}/>
                 </View>
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
                 <Text style={styles.optionLabels}>Cancelled</Text>
                 <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
-                  <Switch value={cancelled} onChange={() => setCancelled(!cancelled)}/>
+                  <Switch value={formState.inputValues.cancelled} onValueChange={(value) => onChange('cancelled', value, true)}/>
                 </View>
               </View>
               <Text style={styles.formLabels}>Repeat</Text>
               <UiDropdown
-                options={repeat}
+                options={REPEATS}
                 multiselect={true}
                 placeholder="Please Select"
                 size="large"
               />
               <View style={[{flexDirection: 'column', marginTop: 20}]}>
                 <Text style={styles.formLabels}>Extra Notes</Text>
-                <UiTextArea placeholder={'(Ex: Don\'t forget to bring consent form.)'} style={ifCircle} height={90}/>
+                <UiTextArea placeholder={'(Ex: Don\'t forget to bring consent form.)'} style={ifCircle} height={90} onInputChange={onChange}/>
               </View>
             </View>
           </ScrollView>
@@ -403,7 +464,7 @@ const CreateEvent = props => {
           />
         </View>
       </View>
-      <EventLocation showLocation={location} closeLocation={() => setLocation(false)} onSelect={(aValue) => setLocationValue(aValue)}/>
+      <EventLocation showLocation={location} closeLocation={() => setLocation(false)} onSelect={onReturnLocation}/>
     </SafeAreaView>
   );
 };

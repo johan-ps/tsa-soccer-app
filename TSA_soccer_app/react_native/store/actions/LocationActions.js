@@ -28,6 +28,8 @@ export const getLocations = () => {
 export const createLocation = locationData => {
   return async dispatch => {
     try {
+      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
+
       const response = await fetch(
         `http://${environmentUrl}/api/locations/create`,
         {

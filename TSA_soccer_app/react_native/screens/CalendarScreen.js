@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Text,
   View,
@@ -23,6 +23,7 @@ const CalendarScreen = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(CURRENT_DATE);
   const [markedDates, setMarkedDates] = useState({});
   const theme = useSelector(state => state.theme.colors);
+  const events = useSelector(state => state.events);
   const options = useMemo(() => {
     return [
       { label: 'Calender', id: 0 },
@@ -30,11 +31,25 @@ const CalendarScreen = ({ navigation }) => {
     ];
   }, []);
   const [mode, setMode] = useState(options[0]);
+  const dispatch = useDispatch();
+
+
+  const loadEventsOnDate = useCallback(async date => {
+    try {
+      await dispatch(announcementActions.getEventsOnDate(date));
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     getSelectedDayEvents(moment().format('YYYY-MM-DD'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    loadEventsOnDate();
+  }, [dispatch, loadEventsOnDate])
 
   const getSelectedDayEvents = date => {
     let newMarkedDates = { ...markedDates };
@@ -48,6 +63,7 @@ const CalendarScreen = ({ navigation }) => {
     };
     setSelectedDate(date);
     setMarkedDates(newMarkedDates);
+    loadEventsOnDate(date);
   };
 
   const onChangeRouteHandler = id => {

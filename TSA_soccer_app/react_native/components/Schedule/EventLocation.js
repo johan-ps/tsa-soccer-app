@@ -1,11 +1,12 @@
 import { ThemeProvider } from '@react-navigation/native';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useReducer } from 'react';
 import { Text, StyleSheet, View, SafeAreaView, Modal, TouchableOpacity, Image, Animated, ScrollView, } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MapView, { Marker } from 'react-native-maps';
 import UiInput from '../UiComponents/UiInput';
 import { Easing } from 'react-native-reanimated';
+import * as locationActions from '../../store/actions/LocationActions'
 
 const EventLocation = props => {
   const { showLocation, closeLocation, onSelect } = props;
@@ -13,10 +14,13 @@ const EventLocation = props => {
   const theme = useSelector(state => state.theme.colors);
   const [edit, setEdit] = useState(false);
   const [search, setSearch] = useState('')
-  const [newLocation, setNewLocation] = useState(false)
-  const [preExistingLocations, setPreExistingLocations] = useState([{name: 'Scotiabank Arena', street: '40 Bay St.', city: 'Toronto, ON', postalCode: 'L6E 1P6'}])
+  const [newLocation, setNewLocation] = useState(false);
+  const preExistingLocations = useSelector(state => state.locations);
+  // const [preExistingLocations, setPreExistingLocations] = useState([{name: 'Scotiabank Arena', street: '40 Bay St.', city: 'Toronto, ON', postalCode: 'L6E 1P6'}])
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const dispatch = useDispatch();
+  // const [formState, dispatchFormState] = useReducer(formReducer, formInit);
 
 
   const [region, setRegion] = useState({
@@ -33,6 +37,18 @@ const EventLocation = props => {
       longitude: -79.3791203596054,
     },
   });
+
+  const loadLocations = useCallback(async () => {
+    try {
+      await dispatch(locationActions.getLocations());
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    loadLocations();
+  }, [dispatch, loadLocations]);
 
   const searchPlaces = async (aSearchString) => {
     setSearch(aSearchString);
@@ -60,23 +76,89 @@ const EventLocation = props => {
     const apiUrl = `${GOOGLE_PLACES_API_BASE_URL}/details/json?key=AIzaSyB-HOOioh0lR-hXaggyEzYXVFKdylnbpFk&libraries=places&place_id=${encodeURIComponent(placeId)}`;
     fetch(apiUrl).then((response) => response.json())
     .then((data) => {
-      console.log("Joell data", data.result.formatted_address);
-      setSelectedLocation(data.result)
+        console.log("Joell data", data.result.address_components);
+      let number = data.result.address_components.[data.result.address_components.findIndex(component => {
+        console.log(component);
+        if(component.types.includes('street_number')){
+          return true;
+        }
+        return false;
+      })];
+      number = number && number.long_name;
+      let street = data.result.address_components[data.result.address_components.findIndex(component => {
+        if(component.types.includes('route')){
+          return true;
+        }
+        return false;
+      })];
+      street = street && street.long_name;
+      let city = data.result.address_components[data.result.address_components.findIndex(component => {
+        if(component.types.includes('locality')){
+          return true;
+        }
+        return false;
+      })];
+      city = city && city.long_name;
+      let province = data.result.address_components[data.result.address_components.findIndex(component => {
+        if(component.types.includes('administrative_area_level_1')){
+          return true;
+        }
+        return false;
+      })];
+      province = province && province.long_name;
+      let postalCode = data.result.address_components[data.result.address_components.findIndex(component => {
+        if(component.types.includes('postal_code')){
+          return true;
+        }
+        return false;
+      })]
+      postalCode = postalCode && postalCode.long_name;
+      let country = data.result.address_components[data.result.address_components.findIndex(component => {
+        if(component.types.includes('country')){
+          return true;
+        }
+        return false;
+      })];
+      country = country && country.long_name;
+      setSelectedLocation({name: data.result.name, street: number + ' ' + street, city, province, postalCode, country})
     })
     .catch((error) => {
       console.log(error);
     });
   }
 
+  const changeSelectedLocation = (key, value) => {
+    let location = {...selectedLocation};
+    location[key] = value;
+    setSelectedLocation(location);
+  }
+
   const saveLocation = () => {
-    let x = [...preExistingLocations];
-    x.push({name: selectedLocation.name, street: selectedLocation.address_components[1].long_name + selectedLocation.address_components[2].long_name, city: selectedLocation.address_components[3].long_name+', ' + selectedLocation.address_components[4].short_name, postalCode: selectedLocation.address_components[selectedLocation.address_components.length-1].long_name});
-    setPreExistingLocations(x)
-    closeLocation();
+    createLocationHandler(selectedLocation);
     setNewLocation(false);
     setSelectedLocation(null);
-    onSelect(selectedLocation.name)
+    onSelect('locationName', selectedLocation.name, true)
   }
+
+  const createLocationHandler = async () => {
+    try {
+      await dispatch(
+        locationActions.createLocation(selectedLocation)
+      );
+      closeLocation();
+      dispatchFormState({ type: 'reset' });
+    } catch (err) {
+      console.log("error", err);
+    }
+    
+  };
+
+  const deleteLocationHandler = async (id) => {
+    await dispatch(
+      locationActions.deleteLocation(id)
+    );
+  }
+
 
   return (
     <SafeAreaView>
@@ -106,7 +188,7 @@ const EventLocation = props => {
               </View>
             </View>
           </TouchableOpacity>
-          {preExistingLocations.map(location => {
+          {preExistingLocations && preExistingLocations.map(location => {
             return (
           <TouchableOpacity style={styles.locationContainer} onPress={() => {onSelect(location.name); closeLocation();}}>
             <View>
@@ -167,6 +249,7 @@ const EventLocation = props => {
             <UiInput 
               placeholder={"New Location"}
               fontSize={20}
+              initialValue={selectedLocation && selectedLocation.name}
               icon={'location'}
               onChangeText={searchPlaces}
             />
@@ -190,11 +273,12 @@ const EventLocation = props => {
           </View>
           :
             <View>
-              <UiInput placeholder={'Title'} initialValue={selectedLocation.name} fontSize={18} onChangeText={() => {}}/>
-              <UiInput placeholder={'Street'} initialValue={selectedLocation.formatted_address} fontSize={16} onChangeText={() => {}}/>
-              <UiInput placeholder={'City'} initialValue={selectedLocation.formatted_address} fontSize={16} onChangeText={() => {}}/>
-              <UiInput placeholder={'Province'} initialValue={selectedLocation.formatted_address} fontSize={16} onChangeText={() => {}}/>
-              <UiInput placeholder={'Postal Code'} initialValue={selectedLocation.formatted_address} fontSize={16} onChangeText={() => {}}/>
+              <UiInput placeholder={'Title'} initialValue={selectedLocation.name} fontSize={18} onChangeText={(value) => changeSelectedLocation('name', value)}/>
+              <UiInput placeholder={'Street'} initialValue={selectedLocation.street} fontSize={16} onChangeText={(value) => changeSelectedLocation('street', value)}/>
+              <UiInput placeholder={'City/Locality'} initialValue={selectedLocation.city} fontSize={16} onChangeText={(value) => changeSelectedLocation('city', value)}/>
+              <UiInput placeholder={'Province/Region'} initialValue={selectedLocation.province} fontSize={16} onChangeText={(value) => changeSelectedLocation('province', value)}/>
+              <UiInput placeholder={'Postal Code/Zip Code'} initialValue={selectedLocation.postalCode} fontSize={16} onChangeText={(value) => changeSelectedLocation('postalCode', value)}/>
+              <UiInput placeholder={'Country'} initialValue={selectedLocation.country} fontSize={16} onChangeText={(value) => changeSelectedLocation('country', value)}/>
             </View>
           )
         }

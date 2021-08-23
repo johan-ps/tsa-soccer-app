@@ -13,7 +13,7 @@ exports.getAllEvents = async (req, res, next) => {
 exports.getEventsByTeam = async (req, res, next) => {
   try {
     const {teamId} = req.body;
-    const [events, _] = await Event.findAllByTeam(teamId);
+    const [events, _] = await Event.findByTeam(teamId);
 
     res.status(200).json({ events });
   } catch (error) {
@@ -24,7 +24,7 @@ exports.getEventsByTeam = async (req, res, next) => {
 exports.getEventsOnDate = async (req, res, next) => {
   try {
     const {date} = req.body;
-    const [events, _] = await Event.findAllOnDate(date);
+    const [events, _] = await Event.findOnDate(date);
 
     res.status(200).json({ events });
   } catch (error) {
@@ -35,7 +35,9 @@ exports.getEventsOnDate = async (req, res, next) => {
 exports.getEventsFromDate = async (req, res, next) => {
   try {
     const {date} = req.body;
-    const [events, _] = await Event.findAllFromDate(date);
+    const [eventsOnDate, _] = await Event.findOnDate(date);
+    const [eventsAfterDate, _] = await Event.findFromDate(date);
+    const events = {today: eventsOnDate, upcoming: eventsAfterDate};
 
     res.status(200).json({ events });
   } catch (error) {

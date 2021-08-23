@@ -11,10 +11,12 @@ import ThemeReducer from './react_native/store/reducers/ThemeReducer';
 import AnnouncementReducer from './react_native/store/reducers/AnnouncementReducer';
 import UserReducer from './react_native/store/reducers/UserReducer';
 import * as userActions from './react_native/store/actions/UserActions';
+import EventReducer from './react_native/store/reducers/EventReducer';
 
 const rootReducer = combineReducers({
   theme: ThemeReducer,
   announcements: AnnouncementReducer,
+  events: EventReducer,
   userData: UserReducer,
 });
 

@@ -63,6 +63,7 @@ const UiDropdown = props => {
 
   const getDropdownXY = event => {
     const layout = event.nativeEvent.layout;
+    console.log("Joell layout", layout);
     setOffsetY(layout.height + layout.y + modalOffsetY);
     setOffsetX(layout.x + modalOffsetX);
     setWidth({ width: layout.width });

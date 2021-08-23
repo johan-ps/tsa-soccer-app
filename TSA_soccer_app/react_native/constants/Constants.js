@@ -10,6 +10,35 @@ const constants = {
     'There seems to be a problem with your Network Connection',
   NO_INTERNET_IMG: 'internet-slash.png',
   AUTH_TOKEN_KEY: 'tsaAuthToken',
+  REPEATS: [
+    {
+      label: 'Every Monday',
+      id: 0,
+    },
+    {
+      label: 'Every Tuesday',
+      id: 1,
+    },
+    {
+      label: 'Every Wednesday',
+      id: 2,
+    },
+    {
+      label: 'Every Thursday',
+      id: 3,
+    },
+    {
+      label: 'Every Friday',
+      id: 4,
+    },
+    {
+      label: 'Every Saturday',
+      id: 5,
+    },
+    {
+      label: 'Every Sunday',
+      id: 6,
+    }],
 };
 
 export default constants;
