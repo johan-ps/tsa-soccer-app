@@ -188,14 +188,14 @@ export default {
     calenderArrow: '#E41B23',
 
     // settings
-    actionBtnBg: '#C9C8C8',
+    actionBtnBg: '#D0D2DA',
     actionBtnText: '#231E20',
 
     // input
     cursor: '#E41B23',
-    inputBg: '#C9C8C8',
-    inputText: '#FFFFFF',
-    inputPlaceholder: '#EEF1F7',
+    inputBg: '#D0D2DA',
+    inputText: '#231E20',
+    inputPlaceholder: '#231E20',
 
     accent: '#FEAF35',
   },

@@ -22,7 +22,7 @@ import * as ThemeActions from '../store/actions/ThemeActions';
 import * as userActions from '../store/actions/UserActions';
 
 const MoreScreen = ({ navigation }) => {
-  const STYLES = ['default', 'light-content'];
+  const STYLES = ['light', 'light-content'];
 
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme.colors);
@@ -162,7 +162,7 @@ const MoreScreen = ({ navigation }) => {
   const toggleSwitch = () => {
     let newTheme;
     if (theme.name === 'dark') {
-      newTheme = 'default';
+      newTheme = 'light';
     } else {
       newTheme = 'dark';
     }
@@ -174,7 +174,7 @@ const MoreScreen = ({ navigation }) => {
     if (newTheme === 'dark') {
       setStatusBarStyle('light-content');
     } else {
-      setStatusBarStyle('default');
+      setStatusBarStyle('light');
     }
   };
 

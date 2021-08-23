@@ -275,11 +275,12 @@ const CreateAnnouncement = props => {
       transparent={true}
       statusBarTranslucent={true}
       animationType="slide">
-      <View style={[styles.modalContainer, { backgroundColor: 'black' }]}>
+      <View
+        style={[styles.modalContainer, { backgroundColor: theme.secondaryBg }]}>
         <View
           style={[
             styles.modalContentContainer,
-            { backgroundColor: theme.neutralDarkGrey },
+            { backgroundColor: theme.secondaryBg },
           ]}>
           <View style={styles.modalHeader}>
             <Text style={[styles.formHeading, { color: theme.secondaryText }]}>
@@ -313,7 +314,7 @@ const CreateAnnouncement = props => {
                   onPress={() => {
                     setImgPickerModalVisible(true);
                   }}
-                  darkBg={false}
+                  darkBg={theme.name === 'dark'}
                 />
                 {formState.inputValues.imageUrl ? (
                   <UiButton
@@ -325,7 +326,7 @@ const CreateAnnouncement = props => {
                     onPress={() => {
                       clearImage();
                     }}
-                    darkBg={false}
+                    darkBg={theme.name === 'dark'}
                   />
                 ) : null}
               </View>
@@ -348,7 +349,7 @@ const CreateAnnouncement = props => {
             primaryClr={theme.buttonTertiaryText}
             secondaryClr={theme.buttonTertiaryBg}
             onPress={props.onClose}
-            darkBg={true}
+            darkBg={theme.name === 'dark'}
           />
           <UiButton
             label="Create"
@@ -358,7 +359,7 @@ const CreateAnnouncement = props => {
             onPress={() => {
               createAnnouncementHandler();
             }}
-            darkBg={true}
+            darkBg={theme.name === 'dark'}
           />
         </View>
       </View>
@@ -371,6 +372,11 @@ const CreateAnnouncement = props => {
         primaryBtnHandler={cameraHandler}
         secondaryBtnHandler={imagePickerHandler}
         onCloseHandler={() => {
+          setImgPickerModalVisible(false);
+        }}
+        icon="aperture-outline"
+        closeable={true}
+        onClose={() => {
           setImgPickerModalVisible(false);
         }}
       />

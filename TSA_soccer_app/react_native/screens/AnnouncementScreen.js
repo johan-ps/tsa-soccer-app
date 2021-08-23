@@ -19,6 +19,7 @@ import {
   UiFilterModal,
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
+import UiBadge from '../components/UiComponents/UiBadge';
 
 const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();
@@ -31,6 +32,7 @@ const AnnouncementScreen = ({ navigation }) => {
   const announcements = useSelector(state => state.announcements);
   const userData = useSelector(state => state.userData);
   const dispatch = useDispatch();
+  const [showBadge, setShowBadge] = useState(false);
 
   const [createAnnouncement, setCreateAnnouncemnt] = useState(false);
 
@@ -82,6 +84,10 @@ const AnnouncementScreen = ({ navigation }) => {
     }
   };
 
+  const loadFailHandler = () => {
+    setShowBadge(true);
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.searchBg }]}>
       <StatusBar
@@ -109,6 +115,7 @@ const AnnouncementScreen = ({ navigation }) => {
             backgroundColor={theme.primaryBg}
             onScrollUp={onScrollUp}
             onScrollDown={onScrollDown}
+            loadFail={loadFailHandler}
             load={loadAnnouncements}>
             <View>
               {announcements.map(announcement => {
@@ -165,6 +172,15 @@ const AnnouncementScreen = ({ navigation }) => {
           }}
         />
       ) : null}
+      {showBadge && (
+        <UiBadge
+          msg="Failed to load announcements"
+          onHide={() => {
+            setShowBadge(false);
+          }}
+          time={1000}
+        />
+      )}
     </View>
   );
 };
