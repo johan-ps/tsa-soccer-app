@@ -3,14 +3,14 @@ const locationsController = require('../controllers/locations');
 const { isAuth } = require('../middleware/auth');
 const router = express.Router();
 
-router.get('/', eventsController.getAllLocations)
+router.get('/', locationsController.getAllLocations)
 
-router.get('/:id', eventsController.getLocationById)
+router.get('/:id', locationsController.getLocationById)
 
-router.get('/create', eventsController.createLocation)
+router.get('/create', locationsController.createLocation)
 
-router.put('/:id/update', isAuth, eventsController.updateById)
+router.put('/:id/update', isAuth, locationsController.updateById)
 
-router.delete('/:id/delete', isAuth, eventsController.deleteById)
+router.delete('/:id/delete', isAuth, locationsController.deleteById)
 
 module.exports = router;
