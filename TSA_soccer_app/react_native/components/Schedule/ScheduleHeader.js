@@ -37,6 +37,10 @@ const ScheduleHeader = props => {
   }, []);
 
   useEffect(() => {
+    setSelectedDate(value);
+  }, [props.value])
+
+  useEffect(() => {
     if (showDates) {
       let newDatesArray = [];
       let date = moment();
@@ -103,14 +107,15 @@ const ScheduleHeader = props => {
         style={styles.dateListContainer}>
         {selectedDate
           ? datesArray.map(date => {
+            console.log(selectedDate);
               return (
                 <View key={date.toString()} style={styles.dateContainer}>
                   <ScheduleHeaderItem
                     onPress={() => onSelectDate(date)}
                     date={date}
-                    current={selectedDate.isSame(date, 'day')}
+                    current={moment(selectedDate).isSame(date, 'day')}
                   />
-                  {selectedDate.isSame(date, 'day') ? (
+                  {moment(selectedDate).isSame(date, 'day') ? (
                     <View
                       style={[
                         styles.selected,

@@ -35,7 +35,7 @@ export const getEventsOnDate = date => {
   return async dispatch => {
     try {
       const response = await fetch(
-        `http://${environmentUrl}/api/events/startingFrom?date=${date}`,
+        `http://${environmentUrl}/api/events/date?date=${date}`,
         {
           method: 'GET',
         }
@@ -63,13 +63,14 @@ export const getEventsFromDate = date => {
   return async dispatch => {
     try {
       const response = await fetch(
-        `http://${environmentUrl}/api/events/date?date=${date}`,
+        `http://${environmentUrl}/api/events/startingFrom?date=${date}`,
         {
           method: 'GET'
         }
       );
 
       if (!response.ok) {
+        console.log(response);
         throw new Error('Something went wrong getEventsonDate!');
       }
 

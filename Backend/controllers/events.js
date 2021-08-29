@@ -59,6 +59,7 @@ exports.createEvent = async (req, res, next) => {
 exports.updateById = async (req, res, next) => {
   try {
     let { id, type, title, eventDate, timeTdb, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats } = req.body;
+    
     const event = Event.findById(id);
 
     event.update(type, title, eventDate, timeTdb, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats);
