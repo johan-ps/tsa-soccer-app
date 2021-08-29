@@ -14,7 +14,6 @@ CREATE TABLE heroku_255da0fd4009d26.users (
   firstName VARCHAR(20) NOT NULL,
   lastName VARCHAR(45),
   profileImg LONGTEXT,
-  teamId INT NOT NULL,
   email VARCHAR(100),
   phoneNum VARCHAR(11),
   role ENUM('coach', 'player') NOT NULL,
@@ -23,7 +22,7 @@ CREATE TABLE heroku_255da0fd4009d26.users (
   username VARCHAR(20) NOT NULL,
   password VARCHAR(20) NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (teamId) REFERENCES TEAMS(id),
+  UNIQUE KEY username_UNIQUE (username ASC)
   UNIQUE INDEX ID_UNIQUE (id ASC));
 
 CREATE TABLE heroku_255da0fd4009d26.teams (

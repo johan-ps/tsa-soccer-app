@@ -74,11 +74,10 @@ exports.addUser = async (req, res, next) => {
         firstName = null,
         lastName = null,
         profileImg = null,
-        teamId = null,
         email = null,
         role = null,
         position = null,
-        phoneNumber = null,
+        phoneNum = null,
         accessLevel = null
     } = req.body;
 
@@ -91,11 +90,10 @@ exports.addUser = async (req, res, next) => {
             firstName,
             lastName,
             profileImg,
-            teamId,
             email,
             role,
             position,
-            phoneNumber,
+            phoneNum,
             accessLevel
         );
         const [user, _] = await newUser.save();
@@ -109,7 +107,7 @@ exports.addUser = async (req, res, next) => {
 
 exports.updateById = async (req, res, next) => {
     try {
-        const { firstName, lastName, phoneNumber, email } = req.body;
+        const { firstName, lastName, phoneNum, email } = req.body;
         let profileImg = null
         
         let imageBuffer = req.file;
@@ -121,7 +119,7 @@ exports.updateById = async (req, res, next) => {
         }
         
         const [user, _] = await User.updateOneById(req.user.id, {
-            firstName, lastName, phoneNumber, email, profileImg,
+            firstName, lastName, phoneNum, email, profileImg,
         })
         res.status(200).json({ success: true })
     } catch (error) {

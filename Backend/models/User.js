@@ -1,17 +1,16 @@
 const db = require('../config/db');
 
 class User {
-    constructor(username, passowrd, firstName, lastName, profileImg, teamId, email, role, position, phoneNumber, accessLevel) {
+    constructor(username, password, firstName, lastName, profileImg, email, role, position, phoneNum, accessLevel) {
         this.username = username;
-        this.passowrd = passowrd;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.profileImg = profileImg;
-        this.teamId = teamId;
         this.email = email;
         this.role = role;
         this.position = position;
-        this.phoneNumber = phoneNumber;
+        this.phoneNum = phoneNum;
         this.accessLevel = accessLevel;
     }
 
@@ -23,24 +22,22 @@ class User {
                 firstName,
                 lastName,
                 profileImg,
-                teamId,
                 email,
                 role,
                 position,
-                phoneNumber,
+                phoneNum,
                 accessLevel
             )
             VALUES (
                 '${ this.username }',
-                '${ this.passowrd }',
+                '${ this.password }',
                 '${ this.firstName }',
                 '${ this.lastName }',
                 '${ this.profileImg }',
-                '${ this.teamId }',
                 '${ this.email }',
                 '${ this.role }',
                 '${ this.position }',
-                '${ this.phoneNumber }',
+                '${ this.phoneNum }',
                 '${ this.accessLevel }'
             );
         `;
@@ -67,13 +64,13 @@ class User {
     }
 
     static updateOneById(id, data) {
-        const { firstName, lastName, profileImg, phoneNumber, email } = data;
+        const { firstName, lastName, profileImg, phoneNum, email } = data;
         const sql = `
             UPDATE USERS
             SET firstName = '${firstName}',
                 lastName = '${lastName}',
                 profileImg = '${profileImg}',
-                phoneNumber = '${phoneNumber}',
+                phoneNum = '${phoneNum}',
                 email = '${email}'
             WHERE id = '${id}'
         `;
