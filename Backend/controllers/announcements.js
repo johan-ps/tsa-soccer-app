@@ -21,12 +21,12 @@ exports.addAnnouncement = async (req, res, next) => {
         
         let imageBuffer = req.file.buffer;
         const { width, height } = await sharp(imageBuffer).metadata();
-        imageBuffer = await sharp(imageBuffer).resize({ height: 300 }).toBuffer()
-        image = `data:${req.file.mimetype};base64,` + imageBuffer.toString('base64')
+        imageBuffer = await sharp(imageBuffer).resize({ height: 300 }).toBuffer();
+        image = `data:${req.file.mimetype};base64,` + imageBuffer.toString('base64');
         
         const newAnnouncement = new Announcement(title, description, authorId, teams, image);
-        
-        const [announcement, _] = await newAnnouncement.save()
+        const [announcement, _] = await newAnnouncement.save();
+        await newAnnouncement.saveTeams(announcement.insertId);
         res.status(200).json({ announcement: { ...newAnnouncement, id: announcement.insertId } })
     } catch (error) {
         next(error);
