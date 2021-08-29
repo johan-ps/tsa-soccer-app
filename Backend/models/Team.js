@@ -1,11 +1,9 @@
 const db = require('../config/db');
 
 class Team {
-    constructor(title, ageGroup, players, coaches) {
-        this.title = title; //string
+    constructor(name, ageGroup) {
+        this.name = name; //string
         this.ageGroup = ageGroup; //int
-        this.players = players; //array of user ids
-        this.coaches = coaches; //array of user ids
     }
 
     save() {
@@ -20,18 +18,12 @@ class Team {
 
         const sql = `
             INSERT INTO TEAMS (
-                title,
+                name,
                 ageGroup,
-                players,
-                coaches,
-                createdAt
             )
             VALUES (
-                '${ this.title }',
-                '${ this.ageGroup }',
-                '[${ this.players }]'
-                '[${ this.coaches }]'
-                '${ dateTimeStr }'
+                '${ this.name }',
+                '${ this.ageGroup }'
             );
         `;
         return db.execute(sql);

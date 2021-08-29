@@ -24,7 +24,7 @@ exports.getEventsByTeam = async (req, res, next) => {
 exports.getEventsOnDate = async (req, res, next) => {
   try {
     const {date} = req.body;
-    const [events, _] = await Event.findOnDate(date);
+    const [events, _] = await Event.findByDate(date);
 
     res.status(200).json({ events });
   } catch (error) {
@@ -34,8 +34,10 @@ exports.getEventsOnDate = async (req, res, next) => {
 
 exports.getEventsFromDate = async (req, res, next) => {
   try {
+    console.log("Joell req", req);
     const {date} = req.body;
-    const [eventsOnDate, _] = await Event.findOnDate(date);
+    console.log("Joell date", date);
+    const [eventsOnDate, _] = await Event.findByDate(date);
     const [eventsAfterDate, __] = await Event.findFromDate(date);
     const events = {today: eventsOnDate, upcoming: eventsAfterDate};
 
