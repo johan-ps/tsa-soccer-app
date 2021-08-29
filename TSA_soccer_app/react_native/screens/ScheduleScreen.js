@@ -7,8 +7,11 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
+  Modal,
+  ActionSheetIOS
 } from 'react-native';
 import { AddButton } from '../components/_components';
+import moment from 'moment';
 import ScheduleHeader from '../components/Schedule/ScheduleHeader';
 import ScheduleCardSmall from '../components/Schedule/ScheduleCardSmall';
 import { useSelector, useDispatch } from 'react-redux';
@@ -42,22 +45,53 @@ const ScheduleScreen = ({ navigation }) => {
 
   const loadEventsFromDate = useCallback(async date => {
     try {
-      // await dispatch(eventsActions.getEventsFromDate(date));
-      await dispatch(eventsActions.getEvents());
+      await dispatch(eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD')));
+      // await dispatch(eventsActions.getEvents());
     } catch (err) {
       console.log(err);
     }
   }, [dispatch]);
 
-
-  const onRegionChange = region => {
-    setRegion(region);
-  };
+ showAlertWithThreeOptions = (title,message,options,callback) => {
+    Alert.alert(title, message,  [
+      { text: options[0], onPress: () => {callback(0)}},
+      { text: options[1], onPress: () => {callback(1)}},
+      { text: options[2], onPress: () => {callback(2)}},
+    ], {
+      cancelable: false,
+    });
+  }
+  
+  /**
+   * This will open the action sheet for users with three options
+   */
+  openActionSheetwithOptions = (options, textColor, destructiveButtonIndex=3, callback) => {
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: options,
+          cancelButtonIndex: 0,
+          tintColor: textColor,
+          destructiveButtonIndex : destructiveButtonIndex
+        },
+        (buttonIndex) => {
+          callback(buttonIndex)
+        }
+      );
+    } else {
+      this.showAlertWithThreeOptions('', '', options, (choice)=>{callback(choice)})
+    }
+  }
 
   useEffect(() => {
     loadEventsFromDate(new Date());
   }, [dispatch, loadEventsFromDate]);
 
+  onAddClicked = () => {
+    let eventType = 1;
+    openActionSheetwithOptions(['Cancel', 'Game', 'Practice', 'Other'], 'red', 3, (index) => setEventType(index));
+    navigation.navigate('CreateEvent');
+  }
 
 
   return (
@@ -128,10 +162,9 @@ const ScheduleScreen = ({ navigation }) => {
           </View>
       </ScrollView>
       {/* {userData && userData.accessLevel > 0 && ( */}
+       
         <AddButton
-          onPress={() => {
-            navigation.navigate('CreateEvent');
-          }}
+          onPress={() => {}}
         />
       {/* )} */}
     </View>
