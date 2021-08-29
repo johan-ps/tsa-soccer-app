@@ -6,7 +6,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Platform
+  Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -15,7 +15,13 @@ import ScheduleHeaderItem from './ScheduleHeaderItem';
 import DropdownSwitch from './DropdownSwitch';
 
 const ScheduleHeader = props => {
-  const { onPress, showDates = true, value, onChange, loadEventsFromDate } = props;
+  const {
+    onPress,
+    showDates = true,
+    value,
+    onChange,
+    loadEventsFromDate,
+  } = props;
   const currentDate = moment();
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const endDate = moment().add(7, 'days');
@@ -40,7 +46,8 @@ const ScheduleHeader = props => {
       }
       setDatesArray(newDatesArray);
     }
-    if(value){
+    if (value) {
+      console.log(value)
       setSelectedDate(value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,7 +67,7 @@ const ScheduleHeader = props => {
   const onSelectDate = date => {
     onChange(date);
     loadEventsFromDate(date);
-  }
+  };
 
   useFocusEffect(() => {
     setMode(options[0]);

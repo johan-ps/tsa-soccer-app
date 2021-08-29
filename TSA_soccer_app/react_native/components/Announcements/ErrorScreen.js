@@ -35,8 +35,8 @@ const ErrorScreen = props => {
         {error === CONST.NO_RESULTS ? (
           <Image
             style={styles.image}
-            source={require('../../assets/img/magnifying-glass.png')}
-            resizeMode="cover"
+            source={require('../../assets/img/search-text.png')}
+            resizeMode="contain"
           />
         ) : (
           <Image

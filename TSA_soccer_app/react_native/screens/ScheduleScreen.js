@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
-import { AddButton } from '../components/_components';
+import { AddButton, UiImage } from '../components/_components';
 import ScheduleHeader from '../components/Schedule/ScheduleHeader';
 import ScheduleCardSmall from '../components/Schedule/ScheduleCardSmall';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,15 +17,15 @@ import CalendarCard from '../components/Schedule/CalendarCard';
 import AnimScrollView from '../components/AnimScrollView';
 const loadingLottieAnim = require('../assets/img/spinning-anim.json');
 
-import * as eventsActions from '../store/actions/EventActions'
+import * as eventsActions from '../store/actions/EventActions';
 
 const ScheduleScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const events = useSelector(state => state.events);
-  console.log("Joell events", events);
+  // console.log('Joell events', events);
   const dispatch = useDispatch();
-  const [selectedDate, setSelectedDate] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(null);
   const [refreshEnabled, setRefreshEnabled] = useState(true);
 
   const onScrollHandler = ({ nativeEvent }) => {
@@ -40,105 +40,169 @@ const ScheduleScreen = ({ navigation }) => {
     }
   };
 
-  const loadEventsFromDate = useCallback(async date => {
-    try {
-      // await dispatch(eventsActions.getEventsFromDate(date));
-      await dispatch(eventsActions.getEvents());
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
+  const loadEventsFromDate = useCallback(
+    async date => {
+      try {
+        // await dispatch(eventsActions.getEventsFromDate(date));
+        await dispatch(eventsActions.getEvents());
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [dispatch],
+  );
 
-
-  const onRegionChange = region => {
-    setRegion(region);
-  };
+  // const onRegionChange = region => {
+  //   setRegion(region);
+  // };
 
   useEffect(() => {
     loadEventsFromDate(new Date());
   }, [dispatch, loadEventsFromDate]);
 
-
-
   return (
     <View style={{ backgroundColor: theme.secondaryBg }}>
-      <StatusBar barStyle={'dark-content'}/>
-      <ScrollView onScroll={onScrollHandler} style={styles.container} bounces={false} alwaysBounceHorizontal={false} alwaysBounceVertical={false}>
-          <View
-            style={[
-              styles.container,
-              styles.tabBarOffset,
-              { backgroundColor: theme.secondaryBg },
-            ]}>
-            <ScheduleHeader
-              onPress={route => {
-                navigation.navigate(route);
-              }}
-              value={selectedDate}
-              onChange={(aDate) => setSelectedDate(aDate)}
-              loadEventsFromDate={loadEventsFromDate}
-            />
-            <View>
-              <AnimScrollView
-                scrollOffset={0}
-                loadingLottieAnim={loadingLottieAnim}
-                backgroundColor={theme.secondaryBg}
-                enabled={refreshEnabled}
-                load={() => loadEventsFromDate(new Date())}
-                onlyPullToRefresh={true}>
-                <View style={[styles.bodyContainer]}>
-                  {events.length > 0 ?
-                    events.map((event, i) => (
-                      <View key={i} style={styles.calendarCardContainer}>
-                        <CalendarCard item={event} key={i} />
-                      </View>
-                    ))
-                    :
-                    <View style={{justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 20}}>
-                      <Text style={{fontWeight: '200'}}>No events scheduled for the selected date</Text>
+      <StatusBar barStyle={'dark-content'} />
+      <ScrollView
+        onScroll={onScrollHandler}
+        style={styles.container}
+        bounces={false}
+        alwaysBounceHorizontal={false}
+        alwaysBounceVertical={false}>
+        <View
+          style={[
+            styles.container,
+            styles.tabBarOffset,
+            { backgroundColor: theme.secondaryBg },
+          ]}>
+          <ScheduleHeader
+            onPress={route => {
+              navigation.navigate(route);
+            }}
+            value={selectedDate}
+            onChange={aDate => setSelectedDate(aDate)}
+            loadEventsFromDate={loadEventsFromDate}
+          />
+          <View>
+            <AnimScrollView
+              scrollOffset={0}
+              loadingLottieAnim={loadingLottieAnim}
+              backgroundColor={theme.secondaryBg}
+              enabled={refreshEnabled}
+              load={() => loadEventsFromDate(new Date())}
+              onlyPullToRefresh={true}>
+              <View style={[styles.bodyContainer]}>
+                {events.length > 0 ? (
+                  events.map((event, i) => (
+                    <View key={i} style={styles.calendarCardContainer}>
+                      <CalendarCard item={event} key={i} />
                     </View>
-                  }
-                </View>
-                <Text
-                  style={[styles.subHeading, { color: theme.cardTextHeading }]}>
-                  Upcoming
-                </Text>
-                <ScrollView
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.cardListInnerContainer}>
-                  {events.map((event, i) => (
-                      <View key={i} style={{}}>
-                        <ScheduleCardSmall
-                          event={event}
-                          onPress={() => navigation.navigate('Event')}
-                        />
-                      </View>
-                  ))}
-                </ScrollView>
-                {events.length === 0 ?
-                  <View style={{justifyContent: 'center', alignItems: 'center', width: '100%'}}>
-                    <Text style={{fontWeight: '200'}}>No upcoming events scheduled</Text>
+                  ))
+                ) : (
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: '100%',
+                      marginTop: 20,
+                    }}>
+                    <UiImage
+                      cond={true}
+                      style={styles.emptyImg}
+                      source={require('../assets/img/no-events.png')}
+                      resizeMode="contain"
+                    />
+                    <View style={styles.textContainer}>
+                      <Text
+                        style={[
+                          styles.heading,
+                          {
+                            color: theme.secondaryText,
+                            fontFamily: theme.fontBold,
+                          },
+                        ]}>
+                        No Result Found
+                      </Text>
+                    </View>
                   </View>
-                  :
-                  null
-                }
-              </AnimScrollView>
-            </View>
+                )}
+              </View>
+              <View style={styles.upcomingEventsContainer}>
+                {events.length > 0 ? (
+                  <View>
+                    <Text
+                      style={[
+                        styles.subHeading,
+                        { color: theme.cardTextHeading },
+                      ]}>
+                      Upcoming
+                    </Text>
+                    <ScrollView
+                      horizontal={true}
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={styles.cardListInnerContainer}>
+                      {events.map((event, i) => (
+                        <View key={i} style={{}}>
+                          <ScheduleCardSmall
+                            event={event}
+                            onPress={() => navigation.navigate('Event')}
+                          />
+                        </View>
+                      ))}
+                    </ScrollView>
+                  </View>
+                ) : (
+                  <Text
+                    style={[
+                      styles.noDataSubHeading,
+                      {
+                        color: theme.primaryText,
+                        fontFamily: theme.fontRegular,
+                      },
+                    ]}>
+                    No upcoming events scheduled for the selected date
+                  </Text>
+                )}
+              </View>
+            </AnimScrollView>
           </View>
+        </View>
       </ScrollView>
-      {/* {userData && userData.accessLevel > 0 && ( */}
+      {userData && userData.accessLevel > 0 && (
         <AddButton
           onPress={() => {
             navigation.navigate('CreateEvent');
           }}
         />
-      {/* )} */}
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  upcomingEventsContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyImg: {
+    height: 200,
+    width: 200,
+    borderRadius: 20,
+  },
+  textContainer: {
+    width: '90%',
+  },
+  heading: {
+    fontSize: 24,
+    textAlign: 'center',
+    lineHeight: 40,
+  },
+  noDataSubHeading: {
+    fontSize: 18,
+    textAlign: 'center',
+    lineHeight: 30,
+    width: '75%',
+  },
   calendarCardContainer: {
     width: '100%',
     paddingHorizontal: 20,

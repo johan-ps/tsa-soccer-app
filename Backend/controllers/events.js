@@ -36,7 +36,7 @@ exports.getEventsFromDate = async (req, res, next) => {
   try {
     const {date} = req.body;
     const [eventsOnDate, _] = await Event.findOnDate(date);
-    const [eventsAfterDate, _] = await Event.findFromDate(date);
+    const [eventsAfterDate, __] = await Event.findFromDate(date);
     const events = {today: eventsOnDate, upcoming: eventsAfterDate};
 
     res.status(200).json({ events });
