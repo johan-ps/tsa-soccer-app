@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
+import moment from 'moment';
 import StatusIndicator from './StatusIndicator';
 
 const CalendarCard = props => {
@@ -46,7 +47,7 @@ const CalendarCard = props => {
               styles.heading,
               { fontFamily: theme.fontMedium, color: theme.primaryText },
             ]}>
-            Practice
+            {item.type}
           </Text>
           <StatusIndicator
             label={availability.label}
@@ -62,7 +63,7 @@ const CalendarCard = props => {
               styles.itemContent,
               { color: theme.secondaryText, fontFamily: theme.fontRegular },
             ]}>
-            10:45 - 11:30
+            {moment('May 15, 2021 ' + item.startTime).format('h:mm')} - {moment('May 15, 2021 ' + item.endTime).format('h:mm')}
           </Text>
         </View>
         <View style={styles.itemContainer}>
@@ -72,7 +73,7 @@ const CalendarCard = props => {
               styles.itemContent,
               { color: theme.secondaryText, fontFamily: theme.fontRegular },
             ]}>
-            Ramerville Park
+            {item.name}
           </Text>
         </View>
       </View>

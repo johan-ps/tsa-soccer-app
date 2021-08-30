@@ -1,29 +1,22 @@
 const db = require('../config/db');
 
 class Event {
-  constructor(type, title, eventDate, timeTbd, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats) {
+  constructor(type, date, timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId) {
     this.type = type; // enum: One of Game/Practice/Other
-    this.title = title; // string
-    this.eventDate = eventDate; // date
-    this.timeTbd = timeTbd; // boolean
+    this.date = date; // date
+    this.timeTBD = timeTBD; // boolean
     this.startTime = startTime; // time
     this.endTime = endTime; // time
     this.locationId = locationId; // id
     this.locationDetails = locationDetails; // string
     this.authorId = authorId; // id
-    this.teams = teams; // array of UserIds
-    this.going = going; // array of UserIds
-    this.maybe = maybe; // array of UserIds
-    this.unavailable = unavailable; // array of UserIds
-    this.noResponse = noResponse; // array of UserIds
-    this.extraNotes = extraNotes; // string
-    this.cancelled = cancelled; // boolean
+    this.notes = notes; // string
+    this.status = status; // boolean
     this.notifyTeam = notifyTeam; // boolean
     this.opponent = opponent; // string
     this.jersey = jersey; // (color) string?
-    this.homeOrAway = homeOrAway; // boolean
     this.arriveEarly = arriveEarly; // boolean
-    this.repeats = repeats; // enum (Mon, Tues, Wed, Thurs, Fri, Sat, Sun)
+    this.teamId = teamId; // boolean
 }
 
 save() {
@@ -39,44 +32,37 @@ save() {
   const sql = `
       INSERT INTO EVENTS (
         type, 
-        title, 
-        eventDate, 
-        timeTdb, 
+        date, 
+        timeTBD, 
         startTime, 
         endTime, 
         locationId, 
+        locationDetails, 
         authorId, 
-        teams, 
-        extraNotes, 
-        cancelled, 
+        notes, 
+        status, 
         notifyTeam, 
         opponent, 
-        locationDetails, 
         jersey, 
-        homeOrAway, 
         arriveEarly, 
-        repeats,
-        created_at
+        teamId
       )
       VALUES (
           '${ this.type }',
-          '${ this.title }',
-          '${ this.eventDate }',
-          '${ this.timeTbd }',
+          '${ this.date }',
+          '${ this.timeTBD }',
           '${ this.startTime }',
           '${ this.endTime }',
           '${ this.locationId }',
+          '${ this.locationDetails }',
           '${ this.authorId }',
-          '[${ this.teams }]',
-          '${ this.extraNotes }',
-          '${ this.cancelled }',
+          '${ this.notes }',
+          '${ this.status }',
           '${ this.notifyTeam }',
           '${ this.opponent }',
-          '${ this.locationDetails }',
           '${ this.jersey }',
-          '${ this.homeOrAway }',
           '${ this.arriveEarly }',
-          '${ this.repeats }'
+          '${ this.teamId }'
       );
   `;
   return db.execute(sql);
@@ -89,27 +75,27 @@ static findAll() {
 }
 
 static findById(id) {
-  const sql = `SELECT * FROM EVENTS WHERE ID = ${id}`;
-
+  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.jersey, e.status, e.opponent, e.notes, e.teamId, l.name, l.street, l.city, l.province, l.postalCode, l.latitude, l.longitude FROM EVENTS e, LOCATIONS l WHERE e.ID = ${id}`;
+  console.log("Joell id sql", sql);
   return db.execute(sql)
 }
 
 static findByTeam(teamId) {
 
   // TODO : make sure this is right
-  const sql = `SELECT e.event_id, type FROM TEAMS et INNER JOIN EVENTS e ON e.event_id = et.event_id WHERE et.team_id = ${teamId}`;
+  const sql = `SELECT e.event_id, type FROM TEAMS et INNER JOIN EVENTS e ON e.event_id = et.event_id WHERE et.team_id = '${teamId}'`;
 
   return db.execute(sql);
 }
 
 static findByDate(date) {
-  const sql = `SELECT type, title, eventDate, timeTbd, startTime, endTime, l.id, l.title, l.address, opponent FROM EVENTS WHERE EVENT_DATE = ${new Date(date)}`;
-
+  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, l.name, e.status, e.opponent, e.teamId FROM EVENTS e, LOCATIONS l WHERE date = '${date}' ORDER BY startTime ASC`;
+  
   return db.execute(sql);
 }
 
 static findFromDate(date){
-  const sql =  `SELECT type, title, eventDate, timeTbd, startTime, endTime, l.id, l.title, opponent FROM EVENTS WHERE EVENT_DATE > ${new Date(date)}`;
+  const sql =  `SELECT id, type, date, timeTBD, startTime, endTime, opponent, status FROM EVENTS WHERE date > '${date}' ORDER BY date ASC LIMIT 10`;
 
   return db.execute(sql);
 }

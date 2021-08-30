@@ -8,7 +8,7 @@ class Location {
         this.province = province; //string
         this.postalCode = postalCode; //sring
         this.country = country; //string
-        this.latitutde = latitude; //float
+        this.latitude = latitude; //float
         this.longitude = longitude; //flaot
 
         // TODO: Find location required params
@@ -25,7 +25,7 @@ class Location {
         const dateTimeStr = `${ year }-${ month }-${ day } ${ hours }:${ min }:${ sec }`;
 
         const sql = `
-            INSERT INTO TEAMS (
+            INSERT INTO LOCATIONS (
                 name,
                 street,
                 city,
@@ -38,25 +38,26 @@ class Location {
             VALUES (
                 '${ this.name }',
                 '${ this.street }',
-                '${ this.city }'
+                '${ this.city }',
                 '${ this.province }',
                 '${ this.postalCode }',
+                '${ this.country }',
                 '${ this.latitude }',
-                '${ this.longitude }',
-                '${ dateTimeStr }'
+                '${ this.longitude }'
             );
         `;
+        console.log("Joell sql", sql)
         return db.execute(sql);
     }
 
     static findAll() {
-        const sql = 'SELECT * FROM TEAM';
+        const sql = 'SELECT * FROM LOCATIONS';
 
         return db.execute(sql);
     }
 
     static findById(id) {
-        const sql = `SELECT * FROM TEAM WHERE id = ${id}`;
+        const sql = `SELECT * FROM LOCATIONS WHERE id = ${id}`;
 
         return db.execute(sql);
     }

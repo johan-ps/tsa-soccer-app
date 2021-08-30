@@ -5,7 +5,7 @@ exports.isAuth = async (req, res, next) => {
     console.log('here>>>>>>>>>>>>>>>>', req.body)
     if (req.headers && req.headers['x-auth-token'] && req.headers['x-auth-token'].split(' ')[1]) {
         const token = req.headers['x-auth-token'].split(' ')[1];
-
+        
         try {
             const decode = jwt.verify(token, process.env.JWT_SECRET);
             const [user, _] = await User.findOneById(decode.id);

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
+import moment from 'moment';
 import { useSelector } from 'react-redux';
 import StatusIndicator from './StatusIndicator';
 import TeamListPreview from './TeamListPreview';
@@ -38,7 +39,7 @@ const playersList = [
 ];
 
 const ScheduleCardSmall = props => {
-  const { onPress, event, cancelled } = props;
+  const { onPress, event } = props;
   const theme = useSelector(state => state.theme.colors);
   const defaultOption = {
     label: 'Set Availability',
@@ -81,14 +82,14 @@ const ScheduleCardSmall = props => {
                 styles.monday,
                 { color: theme.schCardText, fontFamily: theme.fontRegular },
               ]}>
-              May
+              {moment(event.date).format('MMM')}
             </Text>
             <Text
               style={[
                 styles.date,
                 { color: theme.schCardText, fontFamily: theme.fontMedium },
               ]}>
-              24
+              {moment.utc(event.date).format('DD')}
             </Text>
           </View>
           <StatusIndicator
@@ -104,7 +105,7 @@ const ScheduleCardSmall = props => {
               styles.type,
               { color: theme.schCardText, fontFamily: theme.fontRegular },
             ]}>
-            Practice
+            {event.type}
           </Text>
         </View>
         <View style={styles.infoHeaderContainer}>
@@ -113,7 +114,7 @@ const ScheduleCardSmall = props => {
               styles.time,
               { color: theme.schCardText, fontFamily: theme.fontLight },
             ]}>
-            5:30 - 6:30 pm
+             {moment('May 15, 2021 ' + event.startTime).format('h:mm')} - {moment('May 15, 2021 ' + event.endTime).format('h:mm')} pm
           </Text>
         </View>
         <TeamListPreview players={playersList} size={35} max={3} />

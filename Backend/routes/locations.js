@@ -7,7 +7,7 @@ router.get('/', locationsController.getAllLocations)
 
 router.get('/:id', locationsController.getLocationById)
 
-router.get('/create', locationsController.createLocation)
+router.post('/create', locationsController.createLocation)
 
 router.put('/:id/update', isAuth, locationsController.updateById)
 

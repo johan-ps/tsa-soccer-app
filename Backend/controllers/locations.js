@@ -23,12 +23,13 @@ exports.getLocationById = async (req, res, next) => {
 
 exports.createLocation = async (req, res, next) => {
     try {
+        console.log("Joell body", req.body);
         let { name, street, city, province, postalCode, country, latitude, longitude } = req.body;
-        
+        console.log("Joell latitude", latitude);
         const newLocation = new Location(name, street, city, province, postalCode, country, latitude, longitude);
         
-        const [location, _] = await newLocation.save()
-        res.status(200).json({ announcement: { ...newLocation, id: location.insertId } })
+        const [location, _] = await newLocation.save();
+        res.status(200).json({ location: { ...newLocation, id: location.insertId } })
     } catch (error) {
         next(error);
     }

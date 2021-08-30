@@ -37,7 +37,7 @@ const ScheduleHeader = props => {
   }, []);
 
   useEffect(() => {
-    setSelectedDate(value);
+    setSelectedDate(props.value);
   }, [props.value])
 
   useEffect(() => {
@@ -77,6 +77,7 @@ const ScheduleHeader = props => {
     setMode(options[0]);
   });
 
+
   return (
     <View style={[styles.container, { backgroundColor: theme.schBg }]}>
       <Text
@@ -107,7 +108,6 @@ const ScheduleHeader = props => {
         style={styles.dateListContainer}>
         {selectedDate
           ? datesArray.map(date => {
-            console.log(selectedDate);
               return (
                 <View key={date.toString()} style={styles.dateContainer}>
                   <ScheduleHeaderItem

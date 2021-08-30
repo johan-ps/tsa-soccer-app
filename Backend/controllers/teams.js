@@ -12,7 +12,7 @@ exports.getAllTeams = async (req, res, next) => {
 
 exports.getTeamById = async (req, res, next) => {
   try {
-    let { id } = req.body;
+    let { id } = req.params;
     const [team, _] = await Team.findById(id);
 
     res.status(200).json({ team });
@@ -23,9 +23,10 @@ exports.getTeamById = async (req, res, next) => {
 
 exports.createTeam = async (req, res, next) => {
     try {
-        let {title, ageGroup, players, coaches} = req.body;
+        console.log("Joell req.body", req.body);
+        let {name, ageGroup} = req.body;
         
-        const newTeam = new Team(title, ageGroup, players, coaches);
+        const newTeam = new Team(name, ageGroup);
         
         const [team, _] = await newTeam.save()
         res.status(200).json({ team: { ...newTeam, id: team.insertId } })
