@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.get('/', eventsController.getAllEvents)
 
+router.get('/:id/details', eventsController.getEventById)
+
 router.get('/teams', eventsController.getEventsByTeam)
 
 router.get('/startingFrom', eventsController.getEventsFromDate)

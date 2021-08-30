@@ -26,9 +26,10 @@ const ScheduleScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const events = useSelector(state => state.events);
-  console.log('Joell events', events);
+  const eventsToday = events.today;
+  const eventsUpcoming = events.upcoming;
   const dispatch = useDispatch();
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);
 
   const onScrollHandler = ({ nativeEvent }) => {
@@ -46,7 +47,6 @@ const ScheduleScreen = ({ navigation }) => {
   const loadEventsFromDate = useCallback(async date => {
     try {
       await dispatch(eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD')));
-      // await dispatch(eventsActions.getEvents());
     } catch (err) {
       console.log(err);
     }
@@ -87,10 +87,17 @@ const ScheduleScreen = ({ navigation }) => {
     loadEventsFromDate(new Date());
   }, [dispatch, loadEventsFromDate]);
 
-  onAddClicked = () => {
+  const onAddClicked = () => {
     let eventType = 1;
     openActionSheetwithOptions(['Cancel', 'Game', 'Practice', 'Other'], 'red', 3, (index) => setEventType(index));
     navigation.navigate('CreateEvent');
+  }
+
+  const onClickEvent = (eventId) => {
+    console.log("joell e", eventId)
+    navigation.navigate('Event', {
+      eventId: eventId
+    });
   }
 
 
@@ -126,8 +133,8 @@ const ScheduleScreen = ({ navigation }) => {
               load={() => loadEventsFromDate(new Date())}
               onlyPullToRefresh={true}>
               <View style={[styles.bodyContainer]}>
-                {events.length > 0 ? (
-                  events.map((event, i) => (
+                {eventsToday && eventsToday.length > 0 ? (
+                  eventsToday.map((event, i) => (
                     <View key={i} style={styles.calendarCardContainer}>
                       <CalendarCard item={event} key={i} />
                     </View>
@@ -155,14 +162,14 @@ const ScheduleScreen = ({ navigation }) => {
                             fontFamily: theme.fontBold,
                           },
                         ]}>
-                        No Result Found
+                        No Events Today
                       </Text>
                     </View>
                   </View>
                 )}
               </View>
-              <View style={styles.upcomingEventsContainer}>
-                {events.length > 0 ? (
+              <View style={eventsUpcoming && eventsUpcoming.length > 0 ? null : styles.upcomingEventsContainer}>
+                {eventsUpcoming && eventsUpcoming.length > 0 ? (
                   <View>
                     <Text
                       style={[
@@ -175,11 +182,11 @@ const ScheduleScreen = ({ navigation }) => {
                       horizontal={true}
                       showsHorizontalScrollIndicator={false}
                       contentContainerStyle={styles.cardListInnerContainer}>
-                      {events.map((event, i) => (
+                      {eventsUpcoming.map((event, i) => (
                         <View key={i} style={{}}>
                           <ScheduleCardSmall
                             event={event}
-                            onPress={() => navigation.navigate('Event')}
+                            onPress={() => onClickEvent(event.id)}
                           />
                         </View>
                       ))}

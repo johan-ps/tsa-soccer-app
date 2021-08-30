@@ -1,14 +1,27 @@
 const Event = require("../models/Event");
+const dateFormat = require('../utils/dateFormat');
 
 exports.getAllEvents = async (req, res, next) => {
     try {
         const [events, _] = await Event.findAll();
-
+        
         res.status(200).json({ events });
     } catch (error) {
         next(error);
     }
 };
+
+exports.getEventById = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const [event, _] = await Event.findById(id);
+    console.log("Joell event", event);
+    res.status(200).json({ event });
+  } catch (error) {
+      next(error);
+  }
+}
+
 
 exports.getEventsByTeam = async (req, res, next) => {
   try {
@@ -34,11 +47,13 @@ exports.getEventsOnDate = async (req, res, next) => {
 
 exports.getEventsFromDate = async (req, res, next) => {
   try {
-    console.log("Joell req", req);
-    const {date} = req.body;
-    console.log("Joell date", date);
-    const [eventsOnDate, _] = await Event.findByDate(date);
-    const [eventsAfterDate, __] = await Event.findFromDate(date);
+    console.log("Joell req", req.query);
+    const {date} = req.query;
+    let eventDate = new Date(date);
+    eventDate = dateFormat.dateTime(eventDate);
+    console.log("Joell date", eventDate);
+    const [eventsOnDate, _] = await Event.findByDate(eventDate);
+    const [eventsAfterDate, __] = await Event.findFromDate(eventDate);
     const events = {today: eventsOnDate, upcoming: eventsAfterDate};
 
     res.status(200).json({ events });
@@ -49,9 +64,12 @@ exports.getEventsFromDate = async (req, res, next) => {
 
 exports.createEvent = async (req, res, next) => {
     try {
-      let { type, title = null, eventDate, timeTdb, startTime = null, endTime = null, locationId, authorId, teams, extraNotes = null, cancelled = null, notifyTeam, opponent = null, locationDetails = null, jersey = null, homeOrAway = null, arriveEarly, repeats = null } = req.body;
-      const newEvent = new Event(type, title, eventDate, timeTdb, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats);
-      res.status(200).json({ event: newEvent, id: newEvent.insertId})
+      let { type, date, timeTBD, startTime, endTime, locationId, locationDetails = null, authorId, notes, status, notifyTeam, opponent = null, jersey, arriveEarly = null, teamId } = req.body;
+
+      const newEvent = new Event(type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
+      const [event, _] = await newEvent.save();
+      
+      res.status(200).json({event: {...newEvent, id: event.insertId} })
     }
     catch(error){
       next(error);

@@ -3,6 +3,7 @@ import { environmentUrl } from '../../constants/Environment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CONST from '../../constants/Constants';
 
+export const GET_EVENT = 'GET_EVENT';
 export const GET_EVENTS = 'GET_EVENTS';
 export const ADD_EVENT = 'ADD_EVENT';
 export const DELETE_EVENT = 'DELETE_EVENT';
@@ -30,6 +31,35 @@ export const getEvents = () => {
     }
   };
 };
+
+export const getEventById = id => {
+  return async dispatch => {
+    try {
+      const response = await fetch(
+        `http://${environmentUrl}/api/events/${id}/details`,
+        {
+          method: 'GET',
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Something went wrong getEventsonDate!');
+      }
+
+      const resData = await response.json();
+      const event = resData.event;
+      console.log("joell event", event);
+
+      dispatch({
+        type: GET_EVENT,
+        event
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
 
 export const getEventsOnDate = date => {
   return async dispatch => {
@@ -62,8 +92,9 @@ export const getEventsOnDate = date => {
 export const getEventsFromDate = date => {
   return async dispatch => {
     try {
+      console.log("Joell date", date);
       const response = await fetch(
-        `http://${environmentUrl}/api/events/startingFrom?date=${date}`,
+        `http://${environmentUrl}/api/events/startingFrom/?date=${date}`,
         {
           method: 'GET'
         }
@@ -80,35 +111,6 @@ export const getEventsFromDate = date => {
       dispatch({
         type: GET_EVENTS,
         events,
-      });
-
-    } catch (err) {
-      console.log(err);
-    }
-  }
-}
-
-export const getEventById = id => {
-  return async dispatch => {
-    try {
-      const response = await fetch(
-        `http://${environmentUrl}/api/events/date`,
-        {
-          method: 'GET',
-          body: {id: id}
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Something went wrong getEventById!');
-      }
-
-      const resData = await response.json();
-      const event = resData.event;
-
-      dispatch({
-        type: GET_EVENT,
-        event,
       });
 
     } catch (err) {

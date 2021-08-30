@@ -19,25 +19,26 @@ class Team {
         const sql = `
             INSERT INTO TEAMS (
                 name,
-                ageGroup,
+                ageGroup
             )
             VALUES (
                 '${ this.name }',
                 '${ this.ageGroup }'
             );
         `;
+        console.log('Joell sql', sql)
         return db.execute(sql);
     }
 
     static findAll() {
-        const sql = 'SELECT * FROM TEAM';
+        const sql = 'SELECT * FROM TEAMS';
 
         return db.execute(sql);
     }
 
     static findById(id){
-        const sql = `SELECT * FROM TEAM WHERE id = ${id}`;
-
+        const sql = `SELECT * FROM TEAMS WHERE id = ${id}`;
+        console.log(sql);
         return db.execute(sql);
     }
 
