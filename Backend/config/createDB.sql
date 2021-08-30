@@ -66,9 +66,11 @@ CREATE TABLE heroku_255da0fd4009d26.events (
   opponent VARCHAR(45),
   jersey ENUM('home', 'away'),
   arriveEarly BOOLEAN NOT NULL,
+  teamId INT NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (authorId) REFERENCES USERS(id),
   FOREIGN KEY (locationId) REFERENCES LOCATIONS(id),
+  FOREIGN KEY (teamId) REFERENCES TEAMS(id),
   UNIQUE INDEX ID_UNIQUE (id ASC));
 
 CREATE TABLE heroku_255da0fd4009d26.locations (

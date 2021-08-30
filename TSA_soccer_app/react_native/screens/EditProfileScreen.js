@@ -18,6 +18,7 @@ import {
 } from '../components/_components';
 import * as Progress from 'react-native-progress';
 import ImagePicker from 'react-native-image-crop-picker';
+import * as userActions from '../store/actions/UserActions';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -57,14 +58,14 @@ const EditProfileScreen = ({ navigation }) => {
       firstName: userData.firstName,
       lastName: userData.lastName,
       email: userData.email,
-      phoneNumber: userData.phoneNumber,
+      phoneNum: userData.phoneNum,
       profileImg: userData.profileImg,
     },
     inputValidities: {
       firstName: true,
       lastName: true,
       email: true,
-      phoneNumber: true,
+      phoneNum: true,
       profileImg: true,
     },
     formIsValid: true,
@@ -106,6 +107,9 @@ const EditProfileScreen = ({ navigation }) => {
                 uri: `data:${img.mime};base64,` + img.data,
                 width: img.width,
                 height: img.height,
+                type: img.mime,
+                name: img.filename,
+                reqUri: img.data,
               },
               isValid: true,
               input: 'profileImg',
@@ -131,6 +135,9 @@ const EditProfileScreen = ({ navigation }) => {
               uri: `data:${img.mime};base64,` + img.data,
               width: img.width,
               height: img.height,
+              type: img.mime,
+              name: `profileImg.${img.mime.split('/')[1]}`,
+              reqUri: img.data,
             },
             isValid: true,
             input: 'profileImg',
@@ -160,7 +167,9 @@ const EditProfileScreen = ({ navigation }) => {
                 uri: img.path,
                 width: img.width,
                 height: img.height,
-                mime: img.mime,
+                type: img.mime,
+                name: img.filename,
+                reqUri: img.data,
               },
               isValid: true,
               input: 'profileImg',
@@ -186,7 +195,9 @@ const EditProfileScreen = ({ navigation }) => {
               uri: img.path,
               width: img.width,
               height: img.height,
-              mime: img.mime,
+              type: img.mime,
+              name: `profileImg.${img.mime.split('/')[1]}`,
+              reqUri: img.data,
             },
             isValid: true,
             input: 'profileImg',
@@ -207,6 +218,20 @@ const EditProfileScreen = ({ navigation }) => {
     });
   };
 
+  const onUpdateUserHandler = async () => {
+    await dispatch(
+      userActions.updateUser({
+        firstName: formState.inputValues.firstName,
+        lastName: formState.inputValues.lastName,
+        email: formState.inputValues.email,
+        phoneNum: formState.inputValues.phoneNum,
+        // profileImg: formState.inputValues.profileImg,
+        id: userData.id,
+      }),
+    );
+    navigation.goBack();
+  };
+
   return (
     <ScreenBoilerplate
       headingClr={theme.primaryText}
@@ -216,6 +241,7 @@ const EditProfileScreen = ({ navigation }) => {
       navRightText={theme.actionBtnText}
       style={{ backgroundColor: theme.secondaryBg }}
       tabBarVisible={false}
+      navActionRight={onUpdateUserHandler}
       navActionLeft={() => {
         navigation.goBack();
       }}>
@@ -310,9 +336,9 @@ const EditProfileScreen = ({ navigation }) => {
               cursor={theme.cursor}
             />
             <UiInput
-              id="phoneNumber"
-              initialValue={formState.inputValues.phoneNumber}
-              inputValidities={formState.inputValidities.phoneNumber}
+              id="phoneNum"
+              initialValue={formState.inputValues.phoneNum}
+              inputValidities={formState.inputValidities.phoneNum}
               placeholder="Phone Number"
               style={styles.marginBottom}
               onInputChange={onChangeText}
@@ -344,6 +370,11 @@ const EditProfileScreen = ({ navigation }) => {
         content={'How would you like to upload your image?'}
         primaryBtnHandler={cameraHandler}
         secondaryBtnHandler={imagePickerHandler}
+        closeable={true}
+        onClose={() => {
+          setImgPickerModalVisible(false);
+        }}
+        icon="aperture-outline"
         onCloseHandler={() => {
           setImgPickerModalVisible(false);
         }}

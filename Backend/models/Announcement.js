@@ -26,18 +26,18 @@ class Announcement {
                 date,
                 title,
                 description,
-                authorId,
+                authorId
                 ${ imageInsert }
             )
             VALUES (
                 '${ dateTimeStr }',
                 '${ this.title }',
                 '${ this.description }',
-                '${ this.authorId }',
+                '${ this.authorId }'
                 ${ imageData }
             );
         `;
-
+        
         return db.execute(sql);
     }
 
@@ -48,7 +48,7 @@ class Announcement {
             this.teams.forEach((team, i) => {
                 teamsInsert += `('${ id }', '${ team }')`;
 
-                if (i < this.teams.length) {
+                if (i < this.teams.length - 1) {
                     teamsInsert += ', '
                 }
             });
@@ -61,20 +61,50 @@ class Announcement {
             )
             VALUES ${ teamsInsert };
         `;
-        console.log(sql)
         
         return db.execute(sql);
     }
 
     static findAll() {
         const sql = `
-            SELECT a.title, a.description, a.authorId,
-                u.profileImg, a.date,
-                u.firstName, u.lastName, a.image, a.id
-            FROM ANNOUNCEMENTS as a, USERS as u
-            WHERE a.authorId = u.id
+            SELECT
+                firstName, lastName, profileImg,
+                title, description, image, date, a.id, authorId
+            FROM ANNOUNCEMENTS as a 
+            INNER JOIN USERS as u
+                ON authorId = u.id
         `;
 
+        return db.execute(sql);
+    }
+
+    static findAllByTeams(teams) {
+
+        let teamsSql = '(';
+        teams.forEach((team, i) => {
+            teamsSql += `'${team}'`
+
+            if (i < teams.length - 1) {
+                teamsSql += ', '
+            }
+        });
+        if (teams.length === 0) {
+            teamsSql += `''`
+        }
+        teamsSql += ')'
+
+        const sql = `
+            SELECT
+                firstName, lastName, profileImg,
+                title, description, date, a.id, authorId
+            FROM ANNOUNCEMENTS as a 
+            INNER JOIN USERS as u
+                ON authorId = u.id
+            INNER JOIN ANNOUNCEMENTS_TEAMS as at
+                ON at.announcementId = a.id
+            WHERE at.teamId in ${ teamsSql }
+        `;
+        
         return db.execute(sql);
     }
 

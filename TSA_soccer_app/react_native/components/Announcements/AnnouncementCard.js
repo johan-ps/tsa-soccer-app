@@ -60,12 +60,11 @@ const AnnouncementCard = props => {
                 style={styles.headerImg}
                 source={profileImg}
                 resizeMode="cover"
-                cond={profileImg}
+                cond={!!profileImg && profileImg !== 'null'}
                 alt={
                   <UiIcon
                     icon="person"
                     color="#aaa6c3"
-                    backgroundColor={theme.cardTextHeading}
                     size={20}
                     darkBg={theme.name === 'dark'}
                   />
@@ -153,11 +152,11 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 15,
-    elevation: 20,
-    shadowRadius: 2,
-    shadowColor: '#000000',
-    shadowOpacity: 0.3,
-    shadowOffset: { height: 20 },
+    // elevation: 20,
+    // shadowRadius: 2,
+    // shadowColor: '#000000',
+    // shadowOpacity: 0.3,
+    // shadowOffset: { height: 20 },
   },
   headerImg: {
     height: '100%',

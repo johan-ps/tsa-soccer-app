@@ -21,7 +21,7 @@ const uploads = multer({
 
 router.get('/', announcementsController.getAllAnnouncements)
 
-router.get('/teams', announcementsController.getAnnouncementsByTeam)
+router.post('/', announcementsController.getAllAnnouncementsByTeams)
 
 router.post('/add', isAuth, uploads.single('image'), announcementsController.addAnnouncement)
 

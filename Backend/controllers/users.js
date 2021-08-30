@@ -108,6 +108,7 @@ exports.addUser = async (req, res, next) => {
 exports.updateById = async (req, res, next) => {
     try {
         const { firstName, lastName, phoneNum, email } = req.body;
+        console.log('file:', req.file)
         let profileImg = null
         
         let imageBuffer = req.file;
@@ -121,7 +122,7 @@ exports.updateById = async (req, res, next) => {
         const [user, _] = await User.updateOneById(req.user.id, {
             firstName, lastName, phoneNum, email, profileImg,
         })
-        res.status(200).json({ success: true })
+        res.status(200).json({ id: req.user.id, firstName, lastName, phoneNum, email, profileImg });
     } catch (error) {
         next(error);
     }
