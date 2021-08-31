@@ -89,7 +89,7 @@ static findByTeam(teamId) {
 }
 
 static findByDate(date) {
-  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, l.name, e.status, e.opponent, e.teamId FROM EVENTS e, LOCATIONS l WHERE date = '${date}' ORDER BY startTime ASC`;
+  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name FROM EVENTS e, LOCATIONS l WHERE e.date = '${date}' AND l.id = e.locationId ORDER BY startTime ASC`;
   
   return db.execute(sql);
 }

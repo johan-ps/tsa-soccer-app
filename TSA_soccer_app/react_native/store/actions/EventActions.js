@@ -128,20 +128,11 @@ export const createEvent = eventData => {
         throw new Error('No token set');
       }
 
-      const formData = new FormData();
-      for (const key in eventData) {
-        formData.append(key, eventData[key]);
-      }
-
       const response = await fetch(
         `http://${environmentUrl}/api/events/create`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'x-auth-token': `Bearer ${authToken}`,
-          },
-          body: formData,
+          body: eventData,
         },
       );
 
@@ -150,10 +141,11 @@ export const createEvent = eventData => {
       }
 
       const resData = await response.json();
+      const event = resData.event;
 
       dispatch({
         type: ADD_EVENT,
-        events: resData.events,
+        event: event,
       });
     } catch (err) {
       console.log(err);

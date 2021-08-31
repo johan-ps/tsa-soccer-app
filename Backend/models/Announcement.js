@@ -72,7 +72,7 @@ class Announcement {
                 u.profileImg, a.date,
                 u.firstName, u.lastName, a.image, a.id
             FROM ANNOUNCEMENTS as a, USERS as u
-            WHERE a.authorId = u.id
+            WHERE a.authorId = u.id ORDER BY date DESC
         `;
 
         return db.execute(sql);

@@ -28,6 +28,7 @@ const ScheduleScreen = ({ navigation }) => {
   const events = useSelector(state => state.events);
   const eventsToday = events.today;
   const eventsUpcoming = events.upcoming;
+  console.log("Joell eventsToday", eventsToday);
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);
@@ -51,37 +52,6 @@ const ScheduleScreen = ({ navigation }) => {
       console.log(err);
     }
   }, [dispatch]);
-
- showAlertWithThreeOptions = (title,message,options,callback) => {
-    Alert.alert(title, message,  [
-      { text: options[0], onPress: () => {callback(0)}},
-      { text: options[1], onPress: () => {callback(1)}},
-      { text: options[2], onPress: () => {callback(2)}},
-    ], {
-      cancelable: false,
-    });
-  }
-  
-  /**
-   * This will open the action sheet for users with three options
-   */
-  openActionSheetwithOptions = (options, textColor, destructiveButtonIndex=3, callback) => {
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: options,
-          cancelButtonIndex: 0,
-          tintColor: textColor,
-          destructiveButtonIndex : destructiveButtonIndex
-        },
-        (buttonIndex) => {
-          callback(buttonIndex)
-        }
-      );
-    } else {
-      this.showAlertWithThreeOptions('', '', options, (choice)=>{callback(choice)})
-    }
-  }
 
   useEffect(() => {
     loadEventsFromDate(new Date());
@@ -211,7 +181,7 @@ const ScheduleScreen = ({ navigation }) => {
       </ScrollView>
       {userData && userData.accessLevel > 0 && (
         <AddButton
-          onPress={() => {}}
+          onPress={() => navigation.navigate('CreateEvent')}
         />
       )}
     </View>
