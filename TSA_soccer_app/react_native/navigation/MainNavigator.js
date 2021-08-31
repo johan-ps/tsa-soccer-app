@@ -21,6 +21,7 @@ const MainNavigator = () => {
   const dispatch = useDispatch(); // use to dispatch an action
   const scheme = useColorScheme(); // get phone's native theme style
   const theme = useSelector(state => state.theme.colors);
+  const tabBarVisible = useSelector(state => state.tabbar.visible);
 
   // run function whenever dispatch or scheme changes
   useEffect(() => {
@@ -28,24 +29,6 @@ const MainNavigator = () => {
       dispatch(ThemeActions.updateTheme(scheme));
     }
   }, [dispatch, scheme]);
-
-  const getTabBarVisible = route => {
-    if (!route) {
-      return true;
-    }
-    const routeName = getFocusedRouteNameFromRoute(route) || route.name;
-
-    if (
-      routeName === 'Event' ||
-      routeName === 'CreateEvent' ||
-      routeName === 'Login' ||
-      routeName === 'Notifications' ||
-      routeName === 'Account'
-    ) {
-      return false;
-    }
-    return true;
-  };
 
   return (
     <MainNav.Navigator
@@ -77,13 +60,14 @@ const MainNavigator = () => {
             </View>
           );
         },
-        tabBarVisible: getTabBarVisible(route),
+        tabBarVisible: tabBarVisible,
       })}
       tabBarOptions={{
         showLabel: false,
         style: {
           ...styles.tabBar,
           backgroundColor: theme.bottomNavBg,
+          bottom: tabBarVisible && Platform.OS === 'android' ? 5 : 0,
         },
         keyboardHidesTabBar: true,
       }}>

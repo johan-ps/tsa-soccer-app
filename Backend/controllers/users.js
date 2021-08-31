@@ -108,7 +108,7 @@ exports.addUser = async (req, res, next) => {
 exports.updateById = async (req, res, next) => {
     try {
         const { firstName, lastName, phoneNum, email } = req.body;
-        console.log('file:', req.file)
+        console.log('file:', req.body)
         let profileImg = null
         
         let imageBuffer = req.file;

@@ -15,6 +15,7 @@ import { Events } from '../data/events';
 import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DropdownSwitch from '../components/Schedule/DropdownSwitch';
+import * as tabbarActions from '../store/actions/TabbarActions';
 
 const CalendarScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
@@ -33,14 +34,13 @@ const CalendarScreen = ({ navigation }) => {
   const [mode, setMode] = useState(options[0]);
   const dispatch = useDispatch();
 
-
   const loadEventsOnDate = useCallback(async date => {
     try {
-      await dispatch(announcementActions.getEventsOnDate(date));
+      // await dispatch(announcementActions.getEventsOnDate(date));
     } catch (err) {
       console.log(err);
     }
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     getSelectedDayEvents(moment().format('YYYY-MM-DD'));
@@ -49,7 +49,7 @@ const CalendarScreen = ({ navigation }) => {
 
   useEffect(() => {
     loadEventsOnDate();
-  }, [dispatch, loadEventsOnDate])
+  }, [dispatch, loadEventsOnDate]);
 
   const getSelectedDayEvents = date => {
     let newMarkedDates = { ...markedDates };

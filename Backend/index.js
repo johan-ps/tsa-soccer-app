@@ -3,13 +3,16 @@ require("dotenv").config()
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const upload = multer();
 
 const app = express();
 const port = process.env.PORT || 3000
 
 // Middleware
 app.use(express.json()); // parse json bodies in the request object
-// app.use(express.urlencoded({ extended: true }))
+// app.use(express.urlencoded({ extended: true })) // parsing application x-www-form-url-encoded
+// app.use(upload.array()); // parsing multipart/formdata
 
 // Redirect requests to endpoint starting with /api to index.js
 const api = require('./routes/index');

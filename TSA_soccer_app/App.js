@@ -12,6 +12,9 @@ import AnnouncementReducer from './react_native/store/reducers/AnnouncementReduc
 import UserReducer from './react_native/store/reducers/UserReducer';
 import * as userActions from './react_native/store/actions/UserActions';
 import LocationReducer from './react_native/store/reducers/LocationReducer';
+import SetLoader from './react_native/components/SetLoader';
+import LoaderReducer from './react_native/store/reducers/LoaderReducer';
+import TabbarReducer from './react_native/store/reducers/TabbarReducer';
 
 const rootReducer = combineReducers({
   theme: ThemeReducer,
@@ -19,6 +22,8 @@ const rootReducer = combineReducers({
   events: EventsReducer,
   locations: LocationReducer,
   userData: UserReducer,
+  loading: LoaderReducer,
+  tabbar: TabbarReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
@@ -36,6 +41,7 @@ const App = () => {
 
   return (
     <Provider store={store}>
+      <SetLoader />
       <NavigationContainer>
         <MainNavigator />
       </NavigationContainer>

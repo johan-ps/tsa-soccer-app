@@ -8,7 +8,9 @@ import {
   TouchableOpacity,
   StatusBar,
   Modal,
-  ActionSheetIOS
+  ActionSheetIOS,
+  Alert,
+  Platform,
 } from 'react-native';
 import { AddButton, UiImage } from '../components/_components';
 import moment from 'moment';
@@ -19,8 +21,9 @@ import { Events } from '../data/events';
 import CalendarCard from '../components/Schedule/CalendarCard';
 import AnimScrollView from '../components/AnimScrollView';
 const loadingLottieAnim = require('../assets/img/spinning-anim.json');
-
 import * as eventsActions from '../store/actions/EventActions';
+import { useFocusEffect } from '@react-navigation/native';
+import * as tabbarActions from '../store/actions/TabbarActions';
 
 const ScheduleScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
@@ -28,10 +31,15 @@ const ScheduleScreen = ({ navigation }) => {
   const events = useSelector(state => state.events);
   const eventsToday = events.today;
   const eventsUpcoming = events.upcoming;
-  console.log("Joell eventsToday", eventsToday);
+  console.log('Joell eventsToday', eventsToday);
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);
+  const [eventType, setEventType] = useState(null);
+
+  useFocusEffect(() => {
+    dispatch(tabbarActions.updateVisibility(true));
+  });
 
   const onScrollHandler = ({ nativeEvent }) => {
     if (nativeEvent.contentOffset.y <= 0) {
@@ -45,31 +53,70 @@ const ScheduleScreen = ({ navigation }) => {
     }
   };
 
-  const loadEventsFromDate = useCallback(async date => {
-    try {
-      await dispatch(eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD')));
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
+  const loadEventsFromDate = useCallback(
+    async date => {
+      try {
+        await dispatch(
+          eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD')),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [dispatch],
+  );
+
+  const showAlertWithThreeOptions = (title, message, options, callback) => {
+    Alert.alert(
+      title,
+      message,
+      [
+        {
+          text: options[0],
+          onPress: () => {
+            callback(0);
+          },
+        },
+        {
+          text: options[1],
+          onPress: () => {
+            callback(1);
+          },
+        },
+        {
+          text: options[2],
+          onPress: () => {
+            callback(2);
+          },
+        },
+      ],
+      {
+        cancelable: false,
+      },
+    );
+  };
 
   useEffect(() => {
     loadEventsFromDate(new Date());
   }, [dispatch, loadEventsFromDate]);
 
-  const onAddClicked = () => {
-    let eventType = 1;
-    openActionSheetwithOptions(['Cancel', 'Game', 'Practice', 'Other'], 'red', 3, (index) => setEventType(index));
-    navigation.navigate('CreateEvent');
-  }
+  // const onAddClicked = () => {
+  //   let eventType = 1;
+  //   openActionSheetwithOptions(
+  //     ['Cancel', 'Game', 'Practice', 'Other'],
+  //     'red',
+  //     3,
+  //     index => setEventType(index),
+  //   );
+  //   navigation.navigate('CreateEvent');
+  // };
 
-  const onClickEvent = (eventId) => {
-    console.log("joell e", eventId)
+  const onClickEvent = eventId => {
+    console.log('joell e', eventId);
     navigation.navigate('Event', {
-      eventId: eventId
+      eventId: eventId,
     });
-  }
-
+  };
 
   return (
     <View style={{ backgroundColor: theme.secondaryBg }}>
@@ -138,7 +185,12 @@ const ScheduleScreen = ({ navigation }) => {
                   </View>
                 )}
               </View>
-              <View style={eventsUpcoming && eventsUpcoming.length > 0 ? null : styles.upcomingEventsContainer}>
+              <View
+                style={
+                  eventsUpcoming && eventsUpcoming.length > 0
+                    ? null
+                    : styles.upcomingEventsContainer
+                }>
                 {eventsUpcoming && eventsUpcoming.length > 0 ? (
                   <View>
                     <Text
