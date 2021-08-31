@@ -8,7 +8,9 @@ import {
   TouchableOpacity,
   StatusBar,
   Modal,
-  ActionSheetIOS
+  ActionSheetIOS,
+  Alert,
+  Platform,
 } from 'react-native';
 import { AddButton, UiImage } from '../components/_components';
 import moment from 'moment';
@@ -19,8 +21,9 @@ import { Events } from '../data/events';
 import CalendarCard from '../components/Schedule/CalendarCard';
 import AnimScrollView from '../components/AnimScrollView';
 const loadingLottieAnim = require('../assets/img/spinning-anim.json');
-
 import * as eventsActions from '../store/actions/EventActions';
+import { useFocusEffect } from '@react-navigation/native';
+import * as tabbarActions from '../store/actions/TabbarActions';
 
 const ScheduleScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
@@ -31,6 +34,11 @@ const ScheduleScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);
+  const [eventType, setEventType] = useState(null);
+
+  useFocusEffect(() => {
+    dispatch(tabbarActions.updateVisibility(true));
+  });
 
   const onScrollHandler = ({ nativeEvent }) => {
     if (nativeEvent.contentOffset.y <= 0) {
@@ -44,44 +52,76 @@ const ScheduleScreen = ({ navigation }) => {
     }
   };
 
-  const loadEventsFromDate = useCallback(async date => {
-    try {
-      await dispatch(eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD')));
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
+  const loadEventsFromDate = useCallback(
+    async date => {
+      try {
+        await dispatch(
+          eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD')),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [dispatch],
+  );
 
- showAlertWithThreeOptions = (title,message,options,callback) => {
-    Alert.alert(title, message,  [
-      { text: options[0], onPress: () => {callback(0)}},
-      { text: options[1], onPress: () => {callback(1)}},
-      { text: options[2], onPress: () => {callback(2)}},
-    ], {
-      cancelable: false,
-    });
-  }
-  
+  const showAlertWithThreeOptions = (title, message, options, callback) => {
+    Alert.alert(
+      title,
+      message,
+      [
+        {
+          text: options[0],
+          onPress: () => {
+            callback(0);
+          },
+        },
+        {
+          text: options[1],
+          onPress: () => {
+            callback(1);
+          },
+        },
+        {
+          text: options[2],
+          onPress: () => {
+            callback(2);
+          },
+        },
+      ],
+      {
+        cancelable: false,
+      },
+    );
+  };
+
   /**
    * This will open the action sheet for users with three options
    */
-  openActionSheetwithOptions = (options, textColor, destructiveButtonIndex=3, callback) => {
+  const openActionSheetwithOptions = (
+    options,
+    textColor,
+    destructiveButtonIndex = 3,
+    callback,
+  ) => {
     if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
         {
           options: options,
           cancelButtonIndex: 0,
           tintColor: textColor,
-          destructiveButtonIndex : destructiveButtonIndex
+          destructiveButtonIndex: destructiveButtonIndex,
         },
-        (buttonIndex) => {
-          callback(buttonIndex)
-        }
+        buttonIndex => {
+          callback(buttonIndex);
+        },
       );
     } else {
-      this.showAlertWithThreeOptions('', '', options, (choice)=>{callback(choice)})
+      this.showAlertWithThreeOptions('', '', options, choice => {
+        callback(choice);
+      });
     }
-  }
+  };
 
   useEffect(() => {
     loadEventsFromDate(new Date());
@@ -89,17 +129,21 @@ const ScheduleScreen = ({ navigation }) => {
 
   const onAddClicked = () => {
     let eventType = 1;
-    openActionSheetwithOptions(['Cancel', 'Game', 'Practice', 'Other'], 'red', 3, (index) => setEventType(index));
+    openActionSheetwithOptions(
+      ['Cancel', 'Game', 'Practice', 'Other'],
+      'red',
+      3,
+      index => setEventType(index),
+    );
     navigation.navigate('CreateEvent');
-  }
+  };
 
-  const onClickEvent = (eventId) => {
-    console.log("joell e", eventId)
+  const onClickEvent = eventId => {
+    console.log('joell e', eventId);
     navigation.navigate('Event', {
-      eventId: eventId
+      eventId: eventId,
     });
-  }
-
+  };
 
   return (
     <View style={{ backgroundColor: theme.secondaryBg }}>
@@ -168,7 +212,12 @@ const ScheduleScreen = ({ navigation }) => {
                   </View>
                 )}
               </View>
-              <View style={eventsUpcoming && eventsUpcoming.length > 0 ? null : styles.upcomingEventsContainer}>
+              <View
+                style={
+                  eventsUpcoming && eventsUpcoming.length > 0
+                    ? null
+                    : styles.upcomingEventsContainer
+                }>
                 {eventsUpcoming && eventsUpcoming.length > 0 ? (
                   <View>
                     <Text
@@ -209,11 +258,7 @@ const ScheduleScreen = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-      {userData && userData.accessLevel > 0 && (
-        <AddButton
-          onPress={() => {}}
-        />
-      )}
+      {userData && userData.accessLevel > 0 && <AddButton onPress={() => {}} />}
     </View>
   );
 };

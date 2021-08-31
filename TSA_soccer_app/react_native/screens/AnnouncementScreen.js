@@ -20,6 +20,8 @@ import {
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
 import UiBadge from '../components/UiComponents/UiBadge';
+import { useFocusEffect } from '@react-navigation/native';
+import * as tabbarActions from '../store/actions/TabbarActions';
 
 const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();

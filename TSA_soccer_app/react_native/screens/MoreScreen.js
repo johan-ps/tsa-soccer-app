@@ -20,6 +20,8 @@ import {
 } from '../components/_components';
 import * as ThemeActions from '../store/actions/ThemeActions';
 import * as userActions from '../store/actions/UserActions';
+import { useFocusEffect } from '@react-navigation/native';
+import * as tabbarActions from '../store/actions/TabbarActions';
 
 const MoreScreen = ({ navigation }) => {
   const STYLES = ['light', 'light-content'];
@@ -28,6 +30,11 @@ const MoreScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const [statusBarStyle, setStatusBarStyle] = useState(STYLES[1]);
+
+  useFocusEffect(() => {
+    dispatch(tabbarActions.updateVisibility(true));
+  });
+
   const settingsOptions = [
     {
       id: 0,

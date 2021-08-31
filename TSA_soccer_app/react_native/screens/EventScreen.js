@@ -18,7 +18,8 @@ import AvailabilityMenu from '../components/Schedule/AvailabilityMenu';
 import LottieView from 'lottie-react-native';
 import { getEventById } from '../store/actions/EventActions';
 import moment from 'moment';
-
+import { useFocusEffect } from '@react-navigation/native';
+import * as tabbarActions from '../store/actions/TabbarActions';
 
 const EventScreen = ({ navigation, route }) => {
   const loadingLottieAnim = require('../assets/img/soccer-empty-state.json');
@@ -57,24 +58,30 @@ const EventScreen = ({ navigation, route }) => {
 
   const { eventId } = route.params;
   const event = useSelector(state => state.event);
-  console.log("Joell event", event);
+  console.log('Joell event', event);
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme.colors);
   const [openAvailability, setOpenAvailability] = useState(false);
 
-  const loadEventById = useCallback(async id => {
-    try {
-      await dispatch(getEventById(id));
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
+  const loadEventById = useCallback(
+    async id => {
+      try {
+        await dispatch(getEventById(id));
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [dispatch],
+  );
 
+  useFocusEffect(() => {
+    dispatch(tabbarActions.updateVisibility(false));
+  });
 
   useEffect(() => {
     loadEventById(eventId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, loadEventById]);
-
 
   const [region, setRegion] = useState({
     latitude: 43.64360582926461,
@@ -89,156 +96,190 @@ const EventScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={{ backgroundColor: '#1E2630'}}>
-      {event ?
-      <View style={styles.container}>
-        <View>
-          <ImageBackground
-            style={styles.profilePicture}
-            source={{
-              uri: 'https://weaselsfc.com/wp-content/uploads/2020/03/light-sport-night-sunlight-soccer-darkness-934558-pxhere.com_-e1583360836579.jpg',
-            }}>
-            <View>
-              <LinearGradient
-                colors={['rgba(41, 41, 41, 0.8)', 'transparent']}
-                style={styles.contentContainer}>
-                <View style={styles.iconContainer}>
-                  <Icon
-                    name="chevron-back-outline"
-                    size={35}
-                    onPress={() => navigation.goBack()}
-                    color="white"
-                  />
-                  <AvailabilityMenu />
+    <View style={{ backgroundColor: '#1E2630' }}>
+      {event ? (
+        <View style={styles.container}>
+          <View>
+            <ImageBackground
+              style={styles.profilePicture}
+              source={{
+                uri: 'https://weaselsfc.com/wp-content/uploads/2020/03/light-sport-night-sunlight-soccer-darkness-934558-pxhere.com_-e1583360836579.jpg',
+              }}>
+              <View>
+                <LinearGradient
+                  colors={['rgba(41, 41, 41, 0.8)', 'transparent']}
+                  style={styles.contentContainer}>
+                  <View style={styles.iconContainer}>
+                    <Icon
+                      name="chevron-back-outline"
+                      size={35}
+                      onPress={() => navigation.goBack()}
+                      color="white"
+                    />
+                    <AvailabilityMenu />
+                  </View>
+                </LinearGradient>
+                <View style={styles.headerContainer}>
+                  <Text style={styles.text}>
+                    {event && event.type}{' '}
+                    {event && event.type === 'Game'
+                      ? `vs. ${event.opponent}`
+                      : null}
+                  </Text>
                 </View>
-              </LinearGradient>
-              <View style={styles.headerContainer}>
-                <Text style={styles.text}>{event && event.type} {event && event.type === 'Game' ? `vs. ${event.opponent}` : null}</Text>
-              </View>
-              <LinearGradient
-                colors={['transparent', 'rgba(41, 41, 41, 0.3)']}
-                style={styles.contentContainer}>
-                <View style={{ flexDirection: 'row', paddingLeft: 40 }}>
-                  <View style={styles.infoHeaderContainer}>
-                    <View style={{ paddingRight: 10 }}>
-                      <Icon name="calendar-sharp" size={20} color="white" />
+                <LinearGradient
+                  colors={['transparent', 'rgba(41, 41, 41, 0.3)']}
+                  style={styles.contentContainer}>
+                  <View style={{ flexDirection: 'row', paddingLeft: 40 }}>
+                    <View style={styles.infoHeaderContainer}>
+                      <View style={{ paddingRight: 10 }}>
+                        <Icon name="calendar-sharp" size={20} color="white" />
+                      </View>
+                      <View>
+                        <Text style={styles.infoTextTop}>
+                          {moment
+                            .utc(event && event.date)
+                            .format('DD MMMM, YYY')}
+                          15 May, 2021
+                        </Text>
+                        <Text style={styles.infoTextBottom}>
+                          {moment.utc(event && event.date).format('dddd')}
+                        </Text>
+                      </View>
                     </View>
-                    <View>
-                      <Text style={styles.infoTextTop}>{moment.utc(event && event.date).format('DD MMMM, YYY')}15 May, 2021</Text>
-                      <Text style={styles.infoTextBottom}>{moment.utc(event && event.date).format('dddd')}</Text>
+                    <View
+                      style={[styles.infoHeaderContainer, { paddingLeft: 25 }]}>
+                      <View style={{ paddingRight: 10 }}>
+                        <Icon name="time-outline" size={20} color="white" />
+                      </View>
+                      <View style={{ flexDirection: 'column' }}>
+                        <Text style={styles.infoTextTop}>
+                          {event && event.startTime} pm
+                        </Text>
+                        <Text style={styles.infoTextBottom}>
+                          - {event && event.endTime} pm
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                  <View style={[styles.infoHeaderContainer, { paddingLeft: 25 }]}>
-                    <View style={{ paddingRight: 10 }}>
-                      <Icon name="time-outline" size={20} color="white" />
-                    </View>
-                    <View style={{ flexDirection: 'column' }}>
-                      <Text style={styles.infoTextTop}>{event && event.startTime} pm</Text>
-                      <Text style={styles.infoTextBottom}>- {event && event.endTime} pm</Text>
-                    </View>
-                  </View>
+                </LinearGradient>
+              </View>
+            </ImageBackground>
+          </View>
+          <ScrollView>
+            <View style={styles.descriptionTextContainer}>
+              <Text style={[styles.infoTextTop, { paddingBottom: 10 }]}>
+                Notes
+              </Text>
+              <Text style={styles.infoTextBottom}>{event && event.notes}</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingLeft: 40,
+                paddingRight: 40,
+              }}>
+              <View style={styles.infoContainer}>
+                <View style={{ paddingRight: 10 }}>
+                  <Icon name="shirt-outline" size={20} color="white" />
                 </View>
-              </LinearGradient>
-            </View>
-          </ImageBackground>
-        </View>
-        <ScrollView>
-          <View style={styles.descriptionTextContainer}>
-            <Text style={[styles.infoTextTop, { paddingBottom: 10 }]}>
-              Notes
-            </Text>
-            <Text style={styles.infoTextBottom}>
-              {event && event.notes}
-            </Text>
-          </View>
-          <View
-            style={{ flexDirection: 'row', paddingLeft: 40, paddingRight: 40 }}>
-            <View style={styles.infoContainer}>
-              <View style={{ paddingRight: 10 }}>
-                <Icon name="shirt-outline" size={20} color="white" />
+                <View>
+                  <Text style={styles.infoTextTop}>
+                    {event && event.jersey}
+                  </Text>
+                </View>
               </View>
-              <View>
-                <Text style={styles.infoTextTop}>{event && event.jersey}</Text>
+              <View style={styles.infoContainer}>
+                <View style={{ paddingRight: 10 }}>
+                  <Icon name="football-outline" size={20} color="white" />
+                </View>
+                <View>
+                  <Text style={styles.infoTextTop}>
+                    {event && event.opponent}
+                  </Text>
+                </View>
               </View>
             </View>
-            <View style={styles.infoContainer}>
-              <View style={{ paddingRight: 10 }}>
-                <Icon name="football-outline" size={20} color="white" />
-              </View>
-              <View>
-                <Text style={styles.infoTextTop}>{event && event.opponent}</Text>
-              </View>
-            </View>
-          </View>
 
-          <View
-            style={[
-              styles.infoContainer,
-              { width: '100%', paddingLeft: 40, paddingRight: 40 },
-            ]}>
-            <View style={{ paddingRight: 10 }}>
-              <Icon name="location-outline" size={20} color="white" />
-            </View>
-            <View style={{ flexDirection: 'column' }}>
-              <View style={{ paddingRight: 10, paddingBottom: 5 }}>
-                <Text style={styles.infoTextTop}>{event && event.name}</Text>
+            <View
+              style={[
+                styles.infoContainer,
+                { width: '100%', paddingLeft: 40, paddingRight: 40 },
+              ]}>
+              <View style={{ paddingRight: 10 }}>
+                <Icon name="location-outline" size={20} color="white" />
               </View>
-              <View>
-                <Text style={styles.infoTextBottom}>{event && event.street}</Text>
-                <Text style={styles.infoTextBottom}>{event && event.city}, {event && event.province}</Text>
-                <Text style={styles.infoTextBottom}>{event && event.postalCode}</Text>
+              <View style={{ flexDirection: 'column' }}>
+                <View style={{ paddingRight: 10, paddingBottom: 5 }}>
+                  <Text style={styles.infoTextTop}>{event && event.name}</Text>
+                </View>
+                <View>
+                  <Text style={styles.infoTextBottom}>
+                    {event && event.street}
+                  </Text>
+                  <Text style={styles.infoTextBottom}>
+                    {event && event.city}, {event && event.province}
+                  </Text>
+                  <Text style={styles.infoTextBottom}>
+                    {event && event.postalCode}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-          <View style={styles.mapContainer}>
-            <MapView
-              style={styles.map}
-              region={region}
-              loadingEnabled={true}
-              loadingBackgroundColor="black"
-              userInterfaceStyle="dark"
-              mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
-              <Marker
-                key={1}
-                coordinate={{
-                  latitude: event && event.latitude,
-                  longitude: event && event.longitude
-                }}
-                title={event && vent.name}
-                >
-                <Image
-                  source={{
-                    uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+            <View style={styles.mapContainer}>
+              <MapView
+                style={styles.map}
+                region={region}
+                loadingEnabled={true}
+                loadingBackgroundColor="black"
+                userInterfaceStyle="dark"
+                mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
+                <Marker
+                  key={1}
+                  coordinate={{
+                    latitude: event && event.latitude,
+                    longitude: event && event.longitude,
                   }}
-                  style={{ height: 35, width: 35 }}
-                />
-              </Marker>
-            </MapView>
-          </View>
-          <View style={{ paddingLeft: 40, paddingRight: 40 }}>
-            <TeamListPreview
+                  title={event && event.name}>
+                  <Image
+                    source={{
+                      uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+                    }}
+                    style={{ height: 35, width: 35 }}
+                  />
+                </Marker>
+              </MapView>
+            </View>
+            <View style={{ paddingLeft: 40, paddingRight: 40 }}>
+              <TeamListPreview
+                players={playersList}
+                onPlusPress={() => setOpenAvailability(true)}
+              />
+            </View>
+            <TeamAvailabilityPopup
               players={playersList}
-              onPlusPress={() => setOpenAvailability(true)}
+              visible={openAvailability}
+              onClose={() => {
+                setOpenAvailability(false);
+              }}
             />
-          </View>
-          <TeamAvailabilityPopup
-            players={playersList}
-            visible={openAvailability}
-            onClose={() => {
-              setOpenAvailability(false);
-            }}
+          </ScrollView>
+        </View>
+      ) : (
+        <View
+          style={{
+            height: '100%',
+            transform: [{ rotate: '10deg' }],
+            justifyContent: 'center',
+            alignContent: 'center',
+          }}>
+          <LottieView
+            style={styles.lottieView}
+            autoPlay={true}
+            source={loadingLottieAnim}
           />
-        </ScrollView>
-      </View>
-      :
-      <View style={{height: '100%', transform: [{rotate: '10deg'}], justifyContent: 'center', alignContent: 'center'}}>
-        <LottieView
-          style={styles.lottieView}
-          autoPlay={true}
-          source={loadingLottieAnim}
-        />
-      </View>
-      }
+        </View>
+      )}
     </View>
   );
 };

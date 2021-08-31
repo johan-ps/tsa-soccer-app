@@ -6,9 +6,12 @@ import {
   SettingsActionBtn,
   ScreenBoilerplate,
 } from '../components/_components';
+import { useFocusEffect } from '@react-navigation/native';
+import * as tabbarActions from '../store/actions/TabbarActions';
 
 const NotificationScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
+  const dispatch = useDispatch();
   const [shlToggle, setShlToggle] = useState(false);
   const [mhlToggle, setMhlToggle] = useState(false);
   const [ctToggle, setCtToggle] = useState(false);
@@ -71,6 +74,10 @@ const NotificationScreen = ({ navigation }) => {
       },
     },
   ];
+
+  useFocusEffect(() => {
+    dispatch(tabbarActions.updateVisibility(true));
+  });
 
   return (
     <ScreenBoilerplate

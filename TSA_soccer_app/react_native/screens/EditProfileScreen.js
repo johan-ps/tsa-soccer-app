@@ -19,6 +19,9 @@ import {
 import * as Progress from 'react-native-progress';
 import ImagePicker from 'react-native-image-crop-picker';
 import * as userActions from '../store/actions/UserActions';
+import * as loaderActions from '../store/actions/LoaderActions';
+import { useFocusEffect } from '@react-navigation/native';
+import * as tabbarActions from '../store/actions/TabbarActions';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -52,6 +55,10 @@ const EditProfileScreen = ({ navigation }) => {
   const userData = useSelector(state => state.userData);
   const [border, setBorder] = useState(0);
   const [imgPickerModalVisible, setImgPickerModalVisible] = useState(false);
+
+  useFocusEffect(() => {
+    dispatch(tabbarActions.updateVisibility(false));
+  });
 
   const formInit = {
     inputValues: {
@@ -219,6 +226,7 @@ const EditProfileScreen = ({ navigation }) => {
   };
 
   const onUpdateUserHandler = async () => {
+    dispatch(loaderActions.updateLoader(true));
     await dispatch(
       userActions.updateUser({
         firstName: formState.inputValues.firstName,
@@ -229,6 +237,7 @@ const EditProfileScreen = ({ navigation }) => {
         id: userData.id,
       }),
     );
+    dispatch(loaderActions.updateLoader(false));
     navigation.goBack();
   };
 

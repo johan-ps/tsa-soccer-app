@@ -11,6 +11,8 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { UiInput, UiButton, UiIconButton } from '../components/_components';
 import * as userActions from '../store/actions/UserActions';
+import { useFocusEffect } from '@react-navigation/native';
+import * as tabbarActions from '../store/actions/TabbarActions';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -67,6 +69,10 @@ const LoginScreen = ({ navigation }) => {
     },
     [dispatchFormState],
   );
+
+  useFocusEffect(() => {
+    dispatch(tabbarActions.updateVisibility(false));
+  });
 
   const loginHandler = async () => {
     Keyboard.dismiss();
