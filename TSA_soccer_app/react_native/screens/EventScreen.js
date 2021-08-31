@@ -57,7 +57,17 @@ const EventScreen = ({ navigation, route }) => {
   ];
 
   const { eventId } = route.params;
-  const event = useSelector(state => state.event);
+  const events = useSelector(state => state.events);
+  console.log('Joell events', events);
+  let event = events.today.filter(event => {
+    return event.id === eventId;
+  });
+  if (event === null) {
+    event = events.upcoming.filter(event => {
+      return event.id === eventId;
+    });
+  }
+  event = event[0];
   console.log('Joell event', event);
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme.colors);

@@ -72,7 +72,8 @@ class Announcement {
                 title, description, image, date, a.id, authorId
             FROM ANNOUNCEMENTS as a 
             INNER JOIN USERS as u
-                ON authorId = u.id
+                ON authorId = u.id 
+                ORDER BY date DESC
         `;
 
         return db.execute(sql);

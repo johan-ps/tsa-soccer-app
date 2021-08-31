@@ -31,6 +31,7 @@ const ScheduleScreen = ({ navigation }) => {
   const events = useSelector(state => state.events);
   const eventsToday = events.today;
   const eventsUpcoming = events.upcoming;
+  console.log('Joell eventsToday', eventsToday);
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);
@@ -95,48 +96,20 @@ const ScheduleScreen = ({ navigation }) => {
     );
   };
 
-  /**
-   * This will open the action sheet for users with three options
-   */
-  const openActionSheetwithOptions = (
-    options,
-    textColor,
-    destructiveButtonIndex = 3,
-    callback,
-  ) => {
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: options,
-          cancelButtonIndex: 0,
-          tintColor: textColor,
-          destructiveButtonIndex: destructiveButtonIndex,
-        },
-        buttonIndex => {
-          callback(buttonIndex);
-        },
-      );
-    } else {
-      this.showAlertWithThreeOptions('', '', options, choice => {
-        callback(choice);
-      });
-    }
-  };
-
   useEffect(() => {
     loadEventsFromDate(new Date());
   }, [dispatch, loadEventsFromDate]);
 
-  const onAddClicked = () => {
-    let eventType = 1;
-    openActionSheetwithOptions(
-      ['Cancel', 'Game', 'Practice', 'Other'],
-      'red',
-      3,
-      index => setEventType(index),
-    );
-    navigation.navigate('CreateEvent');
-  };
+  // const onAddClicked = () => {
+  //   let eventType = 1;
+  //   openActionSheetwithOptions(
+  //     ['Cancel', 'Game', 'Practice', 'Other'],
+  //     'red',
+  //     3,
+  //     index => setEventType(index),
+  //   );
+  //   navigation.navigate('CreateEvent');
+  // };
 
   const onClickEvent = eventId => {
     console.log('joell e', eventId);
@@ -258,7 +231,9 @@ const ScheduleScreen = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-      {userData && userData.accessLevel > 0 && <AddButton onPress={() => {}} />}
+      {userData && userData.accessLevel > 0 && (
+        <AddButton onPress={() => navigation.navigate('CreateEvent')} />
+      )}
     </View>
   );
 };

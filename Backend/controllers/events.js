@@ -47,13 +47,13 @@ exports.getEventsOnDate = async (req, res, next) => {
 
 exports.getEventsFromDate = async (req, res, next) => {
   try {
-    console.log("Joell req", req.query);
     const {date} = req.query;
     let eventDate = new Date(date);
     eventDate = dateFormat.dateTime(eventDate);
-    console.log("Joell date", eventDate);
     const [eventsOnDate, _] = await Event.findByDate(eventDate);
+    console.log("Joell eventsOnDate", eventsOnDate);
     const [eventsAfterDate, __] = await Event.findFromDate(eventDate);
+    console.log("Joell eventsAfterDate", eventsAfterDate);
     const events = {today: eventsOnDate, upcoming: eventsAfterDate};
 
     res.status(200).json({ events });
