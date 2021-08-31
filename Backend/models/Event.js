@@ -100,6 +100,12 @@ static findFromDate(date){
   return db.execute(sql);
 }
 
+static deleteById(id){
+  const sql = `DELETE FROM EVENTS WHERE id = '${id}'`;
+
+  return db.execute(sql);
+}
+
 
 }
 

@@ -1,19 +1,16 @@
 import {
   GET_LOCATIONS,
-} from '../actions/EventActions';
+  CREATE_LOCATION
+} from '../actions/LocationActions';
 
 const INITIAL_STATE = [];
 
 const eventReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case GET_EVENTS:
-      return action.events;
-    case ADD_EVENT:
-      return [action.event, ...state];
-    case DELETE_EVENT:
-      return state.filter(item => item.id !== action.eventId);
-    case EDIT_EVENT:
-      return [action.event, ...state];
+    case GET_LOCATIONS:
+      return action.locations;
+    case CREATE_LOCATION:
+      return [action.location, ...state]
     default:
       return state;
   }

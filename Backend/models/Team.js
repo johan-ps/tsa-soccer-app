@@ -42,6 +42,24 @@ class Team {
         return db.execute(sql);
     }
 
+    static findAllCoaches(id) {
+        const sql = `SELECT u.firstName, u.lastName FROM USERS u, TEAMS_USERS tu WHERE u.id = tu.userId AND tu.teamId = ${id} AND u.role = 'coach'`;
+
+        return db.execute(sql);
+    }
+
+    static findAllPlayers(id) {
+        const sql = `SELECT u.firstName, u.lastName FROM USERS u, TEAMS_USERS tu WHERE u.id = tu.userId AND tu.teamId = ${id} AND u.role = 'player'`;
+
+        return db.execute(sql);
+    }
+
+    static deleteById(id){
+        const sql = `DELETE FROM TEAMS WHERE id = '${id}'`;
+
+        return db.execute(sql);
+    }
+
 }
 
 module.exports = Team;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useReducer, useCallback } from 'react';
+import React, { useState, useRef, useReducer, useCallback, useEffect } from 'react';
 import { Text, View, StyleSheet, Modal, ScrollView,Button, SafeAreaView, TouchableHighlight, Pressable, Animated, Easing, TouchableOpacity, Switch } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import DatePicker from 'react-native-date-picker'
@@ -6,6 +6,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/Ionicons'
 import moment from "moment";
 import REPEATS from '../../constants/Constants'
+import {updateVisibility} from '../../store/actions/TabbarActions'
+import { useFocusEffect } from '@react-navigation/native';
 
 import {
   UiButton,
@@ -132,6 +134,10 @@ const CreateEvent = props => {
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
 
+  useFocusEffect(() => {
+    dispatch(updateVisibility(false));
+  })
+
   const onChange = useCallback(
     (inputId, inputValue, inputValidity) => {
       console.log("Joell input:", inputId, inputValue, inputValidity);
@@ -204,6 +210,7 @@ const CreateEvent = props => {
   }
 
   const onReturnLocation = location => {
+    console.log("Joell location", location);
     setLocationValue(location.name);
     onChange('locationId', location.id, true);
   }

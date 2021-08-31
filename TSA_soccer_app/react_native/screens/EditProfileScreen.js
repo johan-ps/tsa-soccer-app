@@ -233,7 +233,7 @@ const EditProfileScreen = ({ navigation }) => {
         lastName: formState.inputValues.lastName,
         email: formState.inputValues.email,
         phoneNum: formState.inputValues.phoneNum,
-        // profileImg: formState.inputValues.profileImg,
+        profileImg: formState.inputValues.profileImg,
         id: userData.id,
       }),
     );

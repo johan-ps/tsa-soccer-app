@@ -7,6 +7,8 @@ router.get('/', teamsController.getAllTeams)
 
 router.get('/:id', teamsController.getTeamById)
 
+router.get('/:id/users', teamsController.getAllUsersFromTeam)
+
 router.post('/create', teamsController.createTeam)
 
 router.put('/:id/update', isAuth, teamsController.updateById)

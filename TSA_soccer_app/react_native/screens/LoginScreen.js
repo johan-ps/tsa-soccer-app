@@ -88,7 +88,8 @@ const LoginScreen = ({ navigation }) => {
   return (
     <KeyboardAvoidingView
       behavior="position"
-      style={{ backgroundColor: theme.secondaryBg }}>
+      keyboardVerticalOffset={-250}
+      style={{ backgroundColor: theme.secondaryBg, flex: 1 }}>
       <Pressable
         onPress={() => {
           Keyboard.dismiss();

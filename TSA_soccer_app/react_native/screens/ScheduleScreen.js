@@ -31,7 +31,6 @@ const ScheduleScreen = ({ navigation }) => {
   const events = useSelector(state => state.events);
   const eventsToday = events.today;
   const eventsUpcoming = events.upcoming;
-  console.log('Joell eventsToday', eventsToday);
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);

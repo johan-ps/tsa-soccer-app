@@ -67,7 +67,9 @@ class Location {
     }
 
     static deleteById(id){
+        const sql = `DELETE FROM LOCATIONS WHERE id = '${id}'`;
 
+        return db.execute(sql);
     }
 
 }

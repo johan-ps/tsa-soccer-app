@@ -1,4 +1,3 @@
-import Announcement from '../../models/announcement';
 import { environmentUrl } from '../../constants/Environment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CONST from '../../constants/Constants';
@@ -103,7 +102,6 @@ export const getEventsFromDate = date => {
 
       const resData = await response.json();
       const events = resData.events;
-
       dispatch({
         type: GET_EVENTS,
         events,
