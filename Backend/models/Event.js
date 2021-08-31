@@ -75,7 +75,7 @@ static findAll() {
 }
 
 static findById(id) {
-  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.jersey, e.status, e.opponent, e.notes, e.teamId, l.name, l.street, l.city, l.province, l.postalCode, l.latitude, l.longitude FROM EVENTS e, LOCATIONS l WHERE e.ID = ${id}`;
+  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.jersey, e.status, e.opponent, e.notes, e.teamId, l.name, l.street, l.city, l.province, l.postalCode, l.latitude, l.longitude FROM EVENTS e, LOCATIONS l WHERE e.ID = ${id} AND l.id = e.locationId`;
   console.log("Joell id sql", sql);
   return db.execute(sql)
 }

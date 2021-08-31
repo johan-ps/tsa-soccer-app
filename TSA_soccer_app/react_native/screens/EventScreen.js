@@ -56,13 +56,7 @@ const EventScreen = ({ navigation, route }) => {
   ];
 
   const { eventId } = route.params;
-  const events = useSelector(state => state.events);
-  console.log("Joell events", events);
-  let event = events.today.filter(event => {return event.id === eventId});
-  if(event === null){
-    event = events.upcoming.filter(event => {return event.id === eventId});
-  }
-  event = event[0];
+  const [event, setEvent] = useState(null);
   console.log("Joell event", event);
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme.colors);
@@ -70,7 +64,8 @@ const EventScreen = ({ navigation, route }) => {
 
   const loadEventById = useCallback(async id => {
     try {
-      await dispatch(getEventById(id));
+      const event = await dispatch(getEventById(id));
+      setEvent(event[0]);
     } catch (err) {
       console.log(err);
     }
@@ -82,12 +77,7 @@ const EventScreen = ({ navigation, route }) => {
   }, [dispatch, loadEventById]);
 
 
-  const [region, setRegion] = useState({
-    latitude: 43.64360582926461,
-    longitude: -79.3791203596054,
-    latitudeDelta: 0.005,
-    longitudeDelta: 0.005,
-  });
+  const [region, setRegion] = useState();
   const [marker, setMarker] = useState();
 
   const onRegionChange = region => {
@@ -130,7 +120,7 @@ const EventScreen = ({ navigation, route }) => {
                       <Icon name="calendar-sharp" size={20} color="white" />
                     </View>
                     <View>
-                      <Text style={styles.infoTextTop}>{moment.utc(event && event.date).format('DD MMMM, YYY')}15 May, 2021</Text>
+                      <Text style={styles.infoTextTop}>{moment.utc(event && event.date).format('DD MMMM, YYYY')}</Text>
                       <Text style={styles.infoTextBottom}>{moment.utc(event && event.date).format('dddd')}</Text>
                     </View>
                   </View>
@@ -139,8 +129,8 @@ const EventScreen = ({ navigation, route }) => {
                       <Icon name="time-outline" size={20} color="white" />
                     </View>
                     <View style={{ flexDirection: 'column' }}>
-                      <Text style={styles.infoTextTop}>{event && event.startTime} pm</Text>
-                      <Text style={styles.infoTextBottom}>- {event && event.endTime} pm</Text>
+                      <Text style={styles.infoTextTop}>{event && moment('May 15, 2021 ' + event.startTime).format('h:mm')} pm</Text>
+                      <Text style={styles.infoTextBottom}>- {event && moment('May 15, 2021 ' + event.endTime).format('h:mm')} pm</Text>
                     </View>
                   </View>
                 </View>
@@ -164,7 +154,7 @@ const EventScreen = ({ navigation, route }) => {
                 <Icon name="shirt-outline" size={20} color="white" />
               </View>
               <View>
-                <Text style={styles.infoTextTop}>{event && event.jersey}</Text>
+                <Text style={styles.infoTextTop}>{event && event.jersey.charAt(0).toUpperCase() + event.jersey.slice(1)}</Text>
               </View>
             </View>
             <View style={styles.infoContainer}>
@@ -199,7 +189,12 @@ const EventScreen = ({ navigation, route }) => {
           <View style={styles.mapContainer}>
             <MapView
               style={styles.map}
-              region={region}
+              region={{
+                latitude: parseInt(event.latitude),
+                longitude: parseInt(event.longitude),
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+              }}
               loadingEnabled={true}
               loadingBackgroundColor="black"
               userInterfaceStyle="dark"
@@ -207,8 +202,8 @@ const EventScreen = ({ navigation, route }) => {
               <Marker
                 key={1}
                 coordinate={{
-                  latitude: event && event.latitude,
-                  longitude: event && event.longitude
+                  latitude: parseInt(event.latitude),
+                  longitude: parseInt(event.longitude)
                 }}
                 title={event && event.name}
                 >
