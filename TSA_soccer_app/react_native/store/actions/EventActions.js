@@ -117,16 +117,21 @@ export const createEvent = eventData => {
   return async dispatch => {
     try {
       let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
+      console.log()
 
       if (!authToken) {
         throw new Error('No token set');
       }
-
+      console.log("Joell eventData", eventData);
       const response = await fetch(
         `http://${environmentUrl}/api/events/create`,
         {
           method: 'POST',
-          body: eventData,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(eventData),
         },
       );
 

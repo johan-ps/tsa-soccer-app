@@ -1,9 +1,10 @@
 const db = require('../config/db');
 
 class Team {
-    constructor(name, ageGroup) {
+    constructor(name, ageGroup, type) {
         this.name = name; //string
         this.ageGroup = ageGroup; //int
+        this.type = type; //int
     }
 
     save() {
@@ -19,11 +20,13 @@ class Team {
         const sql = `
             INSERT INTO TEAMS (
                 name,
-                ageGroup
+                ageGroup,
+                type
             )
             VALUES (
                 '${ this.name }',
-                '${ this.ageGroup }'
+                '${ this.ageGroup }',
+                '${ this.type }'
             );
         `;
         console.log('Joell sql', sql)
