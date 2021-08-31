@@ -10,8 +10,6 @@ const INITIAL_STATE = [];
 
 const eventReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case GET_EVENT:
-      return [action.event, ...state];
     case GET_EVENTS:
       return action.events;
     case ADD_EVENT:
