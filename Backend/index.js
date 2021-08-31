@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000
 
 // Middleware
 app.use(express.json()); // parse json bodies in the request object
+// app.use(express.urlencoded({ extended: true }))
 
 // Redirect requests to endpoint starting with /api to index.js
 const api = require('./routes/index');

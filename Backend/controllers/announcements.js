@@ -11,9 +11,16 @@ exports.getAllAnnouncements = async (req, res, next) => {
     }
 };
 
-exports.getAnnouncementsByTeam = async (req, res, next) => {
-    return null
-}
+exports.getAllAnnouncementsByTeams = async (req, res, next) => {
+    try {
+        const { teams = null } = req.body;
+        const [announcements, _] = await Announcement.findAllByTeams(teams || []);
+        
+        res.status(200).json({ announcements });
+    } catch (error) {
+        next(error);
+    }
+};
 
 exports.addAnnouncement = async (req, res, next) => {
     try {

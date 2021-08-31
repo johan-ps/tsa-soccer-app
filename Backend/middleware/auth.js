@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 
 exports.isAuth = async (req, res, next) => {
+    console.log('here>>>>>>>>>>>>>>>>', req.body)
     if (req.headers && req.headers['x-auth-token'] && req.headers['x-auth-token'].split(' ')[1]) {
         const token = req.headers['x-auth-token'].split(' ')[1];
         

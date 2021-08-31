@@ -10,11 +10,15 @@ const userReducer = (state = INITIAL_STATE, action) => {
     case LOGIN_USER:
       return {
         ...action.userData.user,
-        authenticated: action.userData.success,
-        token: action.userData.token,
+        authenticated: state.authenticated || action.userData.success,
+        token: state.token || action.userData.token,
       };
     case UPDATE_USER:
-      return state;
+      return {
+        ...action.userData,
+        authenticated: state.authenticated,
+        token: state.token,
+      };
     case LOGOUT_USER:
       return INITIAL_STATE;
     default:
