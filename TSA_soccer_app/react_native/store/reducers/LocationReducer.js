@@ -1,8 +1,5 @@
 import {
-  GET_EVENTS,
-  ADD_EVENT,
-  DELETE_EVENT,
-  EDIT_EVENT
+  GET_LOCATIONS,
 } from '../actions/EventActions';
 
 const INITIAL_STATE = [];

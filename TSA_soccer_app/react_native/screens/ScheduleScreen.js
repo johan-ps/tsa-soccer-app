@@ -179,11 +179,11 @@ const ScheduleScreen = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-      {userData && userData.accessLevel > 0 && (
+      {/* {userData && userData.accessLevel > 0 && ( */}
         <AddButton
           onPress={() => navigation.navigate('CreateEvent')}
         />
-      )}
+      {/* )} */}
     </View>
   );
 };
