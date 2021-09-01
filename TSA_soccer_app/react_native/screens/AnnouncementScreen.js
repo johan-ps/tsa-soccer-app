@@ -51,7 +51,7 @@ const AnnouncementScreen = ({ navigation }) => {
       }
       setLoaded(true);
     } catch (err) {
-      console.log(err);
+      console.log('error<1>', err);
     }
   }, [dispatch, loaded]);
 

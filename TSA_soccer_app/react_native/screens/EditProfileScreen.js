@@ -106,7 +106,6 @@ const EditProfileScreen = ({ navigation }) => {
           includeExif: true,
         })
           .then(img => {
-            console.log('received base64 img');
             dispatchFormState({
               type: FORM_INPUT_UPDATE,
               value: {
@@ -133,7 +132,6 @@ const EditProfileScreen = ({ navigation }) => {
         includeExif: true,
       })
         .then(img => {
-          console.log('received base64 img');
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
@@ -164,7 +162,6 @@ const EditProfileScreen = ({ navigation }) => {
           mediaType: 'photo',
         })
           .then(img => {
-            console.log('received image', img);
             dispatchFormState({
               type: FORM_INPUT_UPDATE,
               value: {
@@ -191,7 +188,6 @@ const EditProfileScreen = ({ navigation }) => {
         mediaType: 'photo',
       })
         .then(img => {
-          console.log('received image', img);
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {

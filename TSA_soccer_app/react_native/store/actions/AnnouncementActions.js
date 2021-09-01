@@ -43,7 +43,6 @@ export const addAnnouncement = announcementData => {
 
       const formData = new FormData();
       for (const key in announcementData) {
-        console.log(announcementData[key]);
         if (
           announcementData[key] !== undefined &&
           announcementData[key] !== null
@@ -73,11 +72,11 @@ export const addAnnouncement = announcementData => {
       const resData = await response.json();
 
       dispatch({
-        type: GET_ANNOUNCEMENTS,
-        announcements: resData.announcements,
+        type: ADD_ANNOUNCEMENT,
+        announcement: resData.announcement,
       });
     } catch (err) {
-      console.log(err);
+      console.log('err<>', err);
 
       if (err && err.errors && err.errors.length > 0) {
         throw err.errors;
