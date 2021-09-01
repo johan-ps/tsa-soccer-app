@@ -80,12 +80,11 @@ const ScheduleScreen = ({ navigation, events }) => {
   }, [dispatch, loadEventsFromDate]);
 
   const onAddClicked = () => {
-    if(Platform.os === 'ios'){
+    if(Platform.OS === 'ios'){
       ActionSheetIOS.showActionSheetWithOptions(
         {
           options: ["Cancel", "Add Game", "Add Practice", "Add Other"],
           tintColor: 'red',
-          destructiveButtonIndex: 3,
           cancelButtonIndex: 0,
           userInterfaceStyle: 'dark'
         },
