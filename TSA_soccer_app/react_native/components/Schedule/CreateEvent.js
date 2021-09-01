@@ -25,7 +25,7 @@ import DatePicker from 'react-native-date-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
-import REPEATS from '../../constants/Constants';
+import constants from '../../constants/Constants';
 import { updateVisibility } from '../../store/actions/TabbarActions';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -101,6 +101,7 @@ const formReducer = (state, action) => {
 };
 
 const CreateEvent = props => {
+  const { REPEATS } = constants;
   const { visible, route } = props;
   const { type } = route.params;
   const theme = useSelector(state => state.theme.colors);
@@ -409,13 +410,13 @@ const CreateEvent = props => {
               <TouchableOpacity
                 onPress={onSelectLocation}
                 style={{ marginBottom: 10 }}>
-                <View style={[styles.dateContainer]}>
+                <View style={[styles.dateContainer, {backgroundColor: theme.inputBg}]}>
                   <Text
                     style={[
                       styles.date,
                       {
                         color:
-                          locationValue === 'Please Select' ? 'grey' : 'black',
+                          locationValue === 'Please Select' ? 'grey' : theme.inputText,
                         shadowOpacity: 0,
                         fontSize: 16,
                       },
@@ -439,9 +440,9 @@ const CreateEvent = props => {
                 placeholder="Location Details (Ex: Field #11)"
                 multiline={true}
                 onInputChange={onChange}
-                bg={'#EAEAEA'}
-                color={'black'}
-                placeholderClr={'grey'}
+                bg={theme.inputBg}
+                color={theme.inputText}
+                placeholderClr={theme.inputPlaceholder}
                 cursor={theme.cursor}
               />
               {/* <UiTextArea placeholder={'Location Details (Ex: Field #11 or Park in Lot #2)'} style={[ifCircle, {padding: 0}]} id="locationDetails" onInputChange={onChange}/> */}
@@ -525,7 +526,9 @@ const CreateEvent = props => {
                   <UiInput
                     id="opponent"
                     placeholder={'Opponent'}
-                    style={{ height: 55 }}
+                    bg={theme.inputBg}
+                    color={theme.inputText}
+                    placeholderClr={theme.inputPlaceholder}
                     onInputChange={onChange}
                   />
                 </View>
@@ -535,7 +538,9 @@ const CreateEvent = props => {
                   <UiInput
                     id="jersey"
                     placeholder={'Jersey'}
-                    style={{ height: 55 }}
+                    bg={theme.inputBg}
+                    color={theme.inputText}
+                    placeholderClr={theme.inputPlaceholder}
                     onInputChange={onChange}
                   />
                 </View>

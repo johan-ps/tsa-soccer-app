@@ -240,16 +240,16 @@ const EventLocation = props => {
     transparent={true}
     statusBarTranslucent={true}
     animationType="slide">
-      <View style={styles.modalContainer}>
+      <View style={[styles.modalContainer, { backgroundColor: theme.secondaryBg }]}>
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity onPress={() => closeLocation()} style={{alignItems: 'flex-start', width: '25%', padding: 12}}>
-          <Text style={styles.headingText}>Cancel</Text>
+          <Text style={[styles.headingText, {color: theme.cardTextSubHeading}]}>Cancel</Text>
           </TouchableOpacity>
           <View style={{alignItems: 'center', width: '50%', padding: 10}}>
-          <Text style={[styles.headingText, {fontSize: 20}]} numberOfLines={1}>{!newLocation ? 'Select Location' : 'New Location'}</Text>
+          <Text style={[styles.headingText, {fontSize: 20,  color: theme.cardTextSubHeading}]} numberOfLines={1}>{!newLocation ? 'Select Location' : 'New Location'}</Text>
           </View>
           <TouchableOpacity onPress={() => {!newLocation ? setEdit(!edit) : !selectedLocation ? setNewLocation(false) : saveLocation()}} style={{alignItems: 'flex-end', width: '25%', padding: 12}}>
-          <Text style={styles.headingText}>{!newLocation ? edit ? 'Done' : 'Edit' : !selectedLocation ? 'Back' : 'Save'}</Text>
+          <Text style={[styles.headingText,  {color: theme.cardTextSubHeading}]}>{!newLocation ? edit ? 'Done' : 'Edit' : !selectedLocation ? 'Back' : 'Save'}</Text>
           </TouchableOpacity>
         </View>
         {!newLocation ?
@@ -266,10 +266,10 @@ const EventLocation = props => {
             return (
           <TouchableOpacity style={styles.locationContainer} onPress={() => {onSelect(location); closeLocation();}}>
             <View>
-              <Text style={{color: 'black', fontSize: 18, fontWeight: '500'}}>{location.name}</Text>
-              <Text>{location.street}</Text>
-              <Text>{location.city}</Text>
-              <Text>{location.postalCode}</Text>
+              <Text style={{color: theme.cardTextSubHeading, fontSize: 18, fontWeight: '500'}}>{location.name}</Text>
+              <Text style={{color: theme.cardTextSubHeading}}>{location.street}</Text>
+              <Text style={{color: theme.cardTextSubHeading}}>{location.city}</Text>
+              <Text style={{color: theme.cardTextSubHeading}}>{location.postalCode}</Text>
             </View>
             <View style={{position: 'absolute', right: 0}}>
               <View style={styles.mapContainer}>
