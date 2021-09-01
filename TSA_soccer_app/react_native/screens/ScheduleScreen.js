@@ -16,7 +16,7 @@ import { AddButton, UiImage } from '../components/_components';
 import moment from 'moment';
 import ScheduleHeader from '../components/Schedule/ScheduleHeader';
 import ScheduleCardSmall from '../components/Schedule/ScheduleCardSmall';
-import { useSelector, useDispatch } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import { Events } from '../data/events';
 import CalendarCard from '../components/Schedule/CalendarCard';
 import AnimScrollView from '../components/AnimScrollView';
@@ -26,11 +26,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
 import * as loaderActions from '../store/actions/LoaderActions';
 
-const ScheduleScreen = ({ navigation }) => {
+const ScheduleScreen = ({ navigation, events }) => {
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const userId = userData && userData.id;
-  const events = useSelector(state => state.events);
   const eventsToday = events.today;
   const eventsUpcoming = events.upcoming;
   const dispatch = useDispatch();
@@ -267,6 +266,12 @@ const ScheduleScreen = ({ navigation }) => {
   );
 };
 
+function mapStateToProps(state, ownProps) {
+  return {
+      events: state.events
+  };
+}
+
 const styles = StyleSheet.create({
   upcomingEventsContainer: {
     justifyContent: 'center',
@@ -325,4 +330,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScheduleScreen;
+export default connect(mapStateToProps)(ScheduleScreen);

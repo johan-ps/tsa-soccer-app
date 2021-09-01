@@ -139,6 +139,10 @@ const CreateEvent = props => {
 
   useEffect(() => {
     onChange('authorId', userId, true);
+    setStartTime(new Date());
+    onChange('startTime', moment().format('h:m'), true);
+    setEndTime(new Date(moment().add(2, 'hours')));
+    onChange('endTime', moment().add(2, 'hours').format('h:m'), true);
     if(type === 'Game'){
       onChange('type', 'Game', true);
     }
@@ -167,7 +171,6 @@ const CreateEvent = props => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [shadow, setShadow] = useState(null)
   const dateAnimation = useRef(new Animated.Value(0)).current;
-  const startTimeAnimation = useRef(new Animated.Value(0)).current;
 
   const onPressInDate = () => {
     if(formState.inputValues.date === null){
@@ -194,28 +197,6 @@ const CreateEvent = props => {
     }).start();
   };
 
-  // const onPressInStartTime = () => {
-  //   setShowStartTimePicker(true);
-  //   Animated.spring(startTimeAnimation, {
-  //     friction: 100,
-  //     toValue: 100,
-  //     duration: 100,
-  //     easing: Easing.out(Easing.ease),
-  //     useNativeDriver: false
-  //   })
-  // }
-
-  // const onPressOutStartTime = () => {
-  //   setShowStartTimePicker(false);
-  //   Animated.spring(startTimeAnimation, {
-  //     friction: 100,
-  //     toValue: 0,
-  //     duration: 100,
-  //     easing: Easing.out(Easing.ease),
-  //     useNativeDriver: false,
-  //   }).start();
-  // };
-
   const onSelectLocation = () => {
     setLocation(true);
   }
@@ -225,16 +206,6 @@ const CreateEvent = props => {
     onChange('locationId', location.id, true);
   }
 
-  const dateAnimStyle = {
-    transform: [
-      {
-        scaleY: dateAnimation.interpolate({
-          inputRange: [0, 1],
-          outputRange: [1, 0.98],
-        }),
-      },
-    ],
-  };
 
   const ifCircle = {
     borderRadius: 10,
@@ -275,11 +246,17 @@ const CreateEvent = props => {
   // TODO: Add edit and delete functionality
 
   return (
-    <SafeAreaView style={{ backgroundColor: 'white'}}>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContentContainer}>
+    <SafeAreaView style={{ backgroundColor: theme.secondaryBg }}>
+      <View style={[styles.modalContainer, { backgroundColor: theme.secondaryBg }]}>
+        <View style={[styles.modalContentContainer, { backgroundColor: theme.secondaryBg }]}>
           <View style={styles.modalHeader}>
-            <Text style={styles.formHeading}>Create a{type === 'Other' ? `n ${type}` : ` ${type}`} Event</Text>
+            <Text
+              style={[
+                styles.formHeading,
+                { color: theme.primaryText, fontFamily: theme.fontRegular },
+              ]}>
+              Create a{type === 'Other' ? `n ${type}` : ` ${type}`} Event
+            </Text>
           </View>
           <ScrollView
             style={styles.scrollviewContainer}
@@ -298,17 +275,6 @@ const CreateEvent = props => {
                 null
               }
               <Text style={styles.formLabels}>Date</Text>
-              {/* <DateTimePicker 
-                      value={date || new Date()}
-                      onChange={(event, selectedDate)  => {
-                        const currentDate = selectedDate || date;
-                        setDate(currentDate);
-                      }}
-                      mode={'date'}
-                      style={{color: 'red'}}
-                      display={'default'}
-                      textColor={'red'}
-                    /> */}
               <Pressable 
                 onPress={() => {
                   if(!shadow){ onPressInDate(); setShadow(shadowStyle);} else{ onPressOutDate(); setShadow(null); }
@@ -408,16 +374,6 @@ const CreateEvent = props => {
                 placeholder="Choose Teams"
                 size="large"
               />
-              {type === 'Game' ?
-                <View style={{marginTop: 20}}>
-                  <UiInput id="opponent" placeholder={'Opponent'} style={{height: 55}} onInputChange={onChange}/>
-                </View>
-                :
-                null
-              }
-              <View style={{marginTop: 20, marginBottom: 10}}>
-                <UiInput id="jersey" placeholder={'Jersey'} style={{height: 55}} onInputChange={onChange}/>
-              </View>
               <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50, marginTop: 10}}>
                 <Text style={styles.optionLabels}>Notify Team(s)</Text>
                 <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
@@ -436,6 +392,20 @@ const CreateEvent = props => {
                   <Switch value={formState.inputValues.cancelled} onValueChange={(value) => onChange('status', value ? 'approved' : 'cancelled', true)}/>
                 </View>
               </View>
+              {type === 'Game' ?
+                <View style={{marginTop: 20}}>
+                  <UiInput id="opponent" placeholder={'Opponent'} style={{height: 55}} onInputChange={onChange}/>
+                </View>
+                :
+                null
+              }
+              {type === 'Game' || type === 'Practice' ?
+                <View style={{marginTop: 20, marginBottom: 10}}>
+                <UiInput id="jersey" placeholder={'Jersey'} style={{height: 55}} onInputChange={onChange}/>
+                </View>
+                :
+                null
+              }
               <Text style={styles.formLabels}>Repeat</Text>
               <UiDropdown
                 options={REPEATS}
@@ -489,6 +459,10 @@ const styles = StyleSheet.create({
   },
   modalHeader: {
     padding: 30,
+    marginTop: 20,
+    borderBottomColor: '#414141',
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
   },
   modalBody: {
     padding: 20,
@@ -504,12 +478,7 @@ const styles = StyleSheet.create({
     // marginBottom: 56,
   },
   formHeading: {
-    color: '#1E1E1E',
-    fontSize: 24,
-    fontWeight: '600',
-    // textShadowOffset: {width: 2, height: 2},
-    // textShadowRadius: 10,
-    // textShadowColor: '#dadada',
+    fontSize: 20,
   },
   formLabels: {
     color: '#A19EAE',
@@ -531,7 +500,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     position: 'relative',
-    minHeight: 68,
+    minHeight: 58,
     borderRadius: 8,
     backgroundColor: '#EAEAEA'
   },
@@ -544,7 +513,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 30,
     paddingVertical: 10,
-    paddingTop: 30,
+    paddingTop: 20,
   }
 });
 

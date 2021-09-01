@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import StatusIndicator from './StatusIndicator';
@@ -9,7 +9,6 @@ const CalendarCard = props => {
   const { onPress, item } = props;
   const calanderCard = useRef();
   const theme = useSelector(state => state.theme.colors);
-  const dispatch = useDispatch();
   const defaultOption = {
     label: 'Set Availability',
     color: theme.schCardAccent,
@@ -22,7 +21,7 @@ const CalendarCard = props => {
   const [availability, setAvailability] = useState(defaultOption);
 
   useEffect(() => {
-    if(item.status){
+    if(item.status != null){
       for(let option of options){
         if(option.label.toLowerCase() === item.status){
           setAvailability(option);
