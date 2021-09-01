@@ -68,7 +68,7 @@ exports.createEvent = async (req, res, next) => {
 
       const newEvent = new Event(type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
       const [event, _] = await newEvent.save();
-      
+      console.log("Joell newEvent", newEvent)
       res.status(200).json({event: {...newEvent, id: event.insertId} })
     }
     catch(error){

@@ -1,4 +1,3 @@
-import Announcement from '../../models/announcement';
 import { environmentUrl } from '../../constants/Environment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CONST from '../../constants/Constants';
@@ -103,7 +102,6 @@ export const getEventsFromDate = date => {
 
       const resData = await response.json();
       const events = resData.events;
-
       dispatch({
         type: GET_EVENTS,
         events,
@@ -119,16 +117,21 @@ export const createEvent = eventData => {
   return async dispatch => {
     try {
       let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
+      console.log()
 
       if (!authToken) {
         throw new Error('No token set');
       }
-
+      console.log("Joell eventData", eventData);
       const response = await fetch(
         `http://${environmentUrl}/api/events/create`,
         {
           method: 'POST',
-          body: eventData,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(eventData),
         },
       );
 

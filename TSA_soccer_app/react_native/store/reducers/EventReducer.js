@@ -1,5 +1,4 @@
 import {
-  GET_EVENT,
   GET_EVENTS,
   ADD_EVENT,
   DELETE_EVENT,

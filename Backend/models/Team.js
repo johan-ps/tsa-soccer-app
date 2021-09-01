@@ -1,9 +1,10 @@
 const db = require('../config/db');
 
 class Team {
-    constructor(name, ageGroup) {
+    constructor(name, ageGroup, type) {
         this.name = name; //string
         this.ageGroup = ageGroup; //int
+        this.type = type; //int
     }
 
     save() {
@@ -19,11 +20,13 @@ class Team {
         const sql = `
             INSERT INTO TEAMS (
                 name,
-                ageGroup
+                ageGroup,
+                type
             )
             VALUES (
                 '${ this.name }',
-                '${ this.ageGroup }'
+                '${ this.ageGroup }',
+                '${ this.type }'
             );
         `;
         console.log('Joell sql', sql)
@@ -39,6 +42,24 @@ class Team {
     static findById(id){
         const sql = `SELECT * FROM TEAMS WHERE id = ${id}`;
         console.log(sql);
+        return db.execute(sql);
+    }
+
+    static findAllCoaches(id) {
+        const sql = `SELECT u.firstName, u.lastName FROM USERS u, TEAMS_USERS tu WHERE u.id = tu.userId AND tu.teamId = ${id} AND u.role = 'coach'`;
+
+        return db.execute(sql);
+    }
+
+    static findAllPlayers(id) {
+        const sql = `SELECT u.firstName, u.lastName FROM USERS u, TEAMS_USERS tu WHERE u.id = tu.userId AND tu.teamId = ${id} AND u.role = 'player'`;
+
+        return db.execute(sql);
+    }
+
+    static deleteById(id){
+        const sql = `DELETE FROM TEAMS WHERE id = '${id}'`;
+
         return db.execute(sql);
     }
 

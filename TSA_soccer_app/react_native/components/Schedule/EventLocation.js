@@ -8,6 +8,57 @@ import UiInput from '../UiComponents/UiInput';
 import { Easing } from 'react-native-reanimated';
 import * as locationActions from '../../store/actions/LocationActions'
 
+const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+
+const formInit = {
+  inputValues: {
+    name: '',
+    street: '',
+    city: '',
+    province: '',
+    country: '',
+    postalCode: '',
+    latitude: '',
+    longitude: ''
+  },
+  inputValidities: {
+    name: true,
+    street: true,
+    city: true,
+    province: true,
+    country: true,
+    postalCode: true,
+    latitude: true,
+    longitude: true
+  },
+  formIsValid: true,
+};
+
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = {
+      ...state.inputValues,
+      [action.input]: action.value,
+    };
+    const updatedValidities = {
+      ...state.inputValidities,
+      [action.input]: action.isValid,
+    };
+    let updatedFormIsValid = true;
+    for (let key in updatedValidities) {
+      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+    }
+    return {
+      formIsValid: updatedFormIsValid,
+      inputValues: updatedValues,
+      inputValidities: updatedValidities,
+    };
+  } else {
+    return formInit;
+  }
+};
+
+
 const EventLocation = props => {
   const { showLocation, closeLocation, onSelect } = props;
   const GOOGLE_PLACES_API_BASE_URL = 'https://maps.googleapis.com/maps/api/place';
@@ -16,11 +67,24 @@ const EventLocation = props => {
   const [search, setSearch] = useState('')
   const [newLocation, setNewLocation] = useState(false);
   const preExistingLocations = useSelector(state => state.locations);
-  // const [preExistingLocations, setPreExistingLocations] = useState([{name: 'Scotiabank Arena', street: '40 Bay St.', city: 'Toronto, ON', postalCode: 'L6E 1P6'}])
+  console.log("Joell preExistionLocations", preExistingLocations);
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const dispatch = useDispatch();
-  // const [formState, dispatchFormState] = useReducer(formReducer, formInit);
+  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
+
+  const onChange = useCallback(
+    (inputId, inputValue, inputValidity) => {
+      console.log("Joell location input:", inputId, inputValue, inputValidity);
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputId,
+      });
+    },
+    [dispatchFormState],
+  );
 
 
   const [region, setRegion] = useState({
@@ -74,11 +138,14 @@ const EventLocation = props => {
   const onSelectLocation = (placeId) => {
     if (placeId.trim() === '') return
     const apiUrl = `${GOOGLE_PLACES_API_BASE_URL}/details/json?key=AIzaSyB-HOOioh0lR-hXaggyEzYXVFKdylnbpFk&libraries=places&place_id=${encodeURIComponent(placeId)}`;
-    fetch(apiUrl).then((response) => response.json())
+    fetch(apiUrl)
+    .then((response) => response.json())
     .then((data) => {
-        console.log("Joell data", data.result.address_components);
-      let number = data.result.address_components.[data.result.address_components.findIndex(component => {
-        console.log(component);
+        console.log("Joell data", data.result);
+      onChange('name', data.result.name, true);
+      onChange('latitude', data.result.geometry.location.lat, true);
+      onChange('longitude', data.result.geometry.location.lng, true);
+      let number = data.result.address_components[data.result.address_components.findIndex(component => {
         if(component.types.includes('street_number')){
           return true;
         }
@@ -92,6 +159,10 @@ const EventLocation = props => {
         return false;
       })];
       street = street && street.long_name;
+      if(number){
+        street = number + ' ' + street;
+      }
+      onChange('street', street, true);
       let city = data.result.address_components[data.result.address_components.findIndex(component => {
         if(component.types.includes('locality')){
           return true;
@@ -99,6 +170,7 @@ const EventLocation = props => {
         return false;
       })];
       city = city && city.long_name;
+      onChange('city', city, true);
       let province = data.result.address_components[data.result.address_components.findIndex(component => {
         if(component.types.includes('administrative_area_level_1')){
           return true;
@@ -106,6 +178,7 @@ const EventLocation = props => {
         return false;
       })];
       province = province && province.long_name;
+      onChange('province', province, true);
       let postalCode = data.result.address_components[data.result.address_components.findIndex(component => {
         if(component.types.includes('postal_code')){
           return true;
@@ -113,6 +186,7 @@ const EventLocation = props => {
         return false;
       })]
       postalCode = postalCode && postalCode.long_name;
+      onChange('postalCode', postalCode, true);
       let country = data.result.address_components[data.result.address_components.findIndex(component => {
         if(component.types.includes('country')){
           return true;
@@ -120,6 +194,7 @@ const EventLocation = props => {
         return false;
       })];
       country = country && country.long_name;
+      onChange('country', country, true);
       setSelectedLocation({name: data.result.name, street: number + ' ' + street, city, province, postalCode, country})
     })
     .catch((error) => {
@@ -128,24 +203,23 @@ const EventLocation = props => {
   }
 
   const changeSelectedLocation = (key, value) => {
-    let location = {...selectedLocation};
-    location[key] = value;
-    setSelectedLocation(location);
+    onChange(key, value, true);
   }
 
   const saveLocation = () => {
-    createLocationHandler(selectedLocation);
-    setNewLocation(false);
-    setSelectedLocation(null);
-    onSelect('locationName', selectedLocation.name, true)
+    createLocationHandler(formState.inputValues);
   }
 
-  const createLocationHandler = async () => {
+  const createLocationHandler = async (selectedLocation) => {
     try {
-      await dispatch(
+      console.log("Joell selectedLocation", selectedLocation);
+      const location = await dispatch(
         locationActions.createLocation(selectedLocation)
       );
+      onSelect(location);
       closeLocation();
+      setNewLocation(false);
+      setSelectedLocation(null);
       dispatchFormState({ type: 'reset' });
     } catch (err) {
       console.log("error", err);
@@ -190,7 +264,7 @@ const EventLocation = props => {
           </TouchableOpacity>
           {preExistingLocations && preExistingLocations.map(location => {
             return (
-          <TouchableOpacity style={styles.locationContainer} onPress={() => {onSelect(location.name); closeLocation();}}>
+          <TouchableOpacity style={styles.locationContainer} onPress={() => {onSelect(location); closeLocation();}}>
             <View>
               <Text style={{color: 'black', fontSize: 18, fontWeight: '500'}}>{location.name}</Text>
               <Text>{location.street}</Text>
@@ -273,12 +347,12 @@ const EventLocation = props => {
           </View>
           :
             <View>
-              <UiInput placeholder={'Title'} initialValue={selectedLocation.name} fontSize={18} onChangeText={(value) => changeSelectedLocation('name', value)}/>
-              <UiInput placeholder={'Street'} initialValue={selectedLocation.street} fontSize={16} onChangeText={(value) => changeSelectedLocation('street', value)}/>
-              <UiInput placeholder={'City/Locality'} initialValue={selectedLocation.city} fontSize={16} onChangeText={(value) => changeSelectedLocation('city', value)}/>
-              <UiInput placeholder={'Province/Region'} initialValue={selectedLocation.province} fontSize={16} onChangeText={(value) => changeSelectedLocation('province', value)}/>
-              <UiInput placeholder={'Postal Code/Zip Code'} initialValue={selectedLocation.postalCode} fontSize={16} onChangeText={(value) => changeSelectedLocation('postalCode', value)}/>
-              <UiInput placeholder={'Country'} initialValue={selectedLocation.country} fontSize={16} onChangeText={(value) => changeSelectedLocation('country', value)}/>
+              <UiInput placeholder={'Name'} initialValue={formState.inputValues.name} fontSize={18} onChangeText={(value) => changeSelectedLocation('name', value)}/>
+              <UiInput placeholder={'Street'} initialValue={formState.inputValues.street} fontSize={16} onChangeText={(value) => changeSelectedLocation('street', value)}/>
+              <UiInput placeholder={'City/Locality'} initialValue={formState.inputValues.city} fontSize={16} onChangeText={(value) => changeSelectedLocation('city', value)}/>
+              <UiInput placeholder={'Province/Region'} initialValue={formState.inputValues.province} fontSize={16} onChangeText={(value) => changeSelectedLocation('province', value)}/>
+              <UiInput placeholder={'Postal Code/Zip Code'} initialValue={formState.inputValues.postalCode} fontSize={16} onChangeText={(value) => changeSelectedLocation('postalCode', value)}/>
+              <UiInput placeholder={'Country'} initialValue={formState.inputValues.country} fontSize={16} onChangeText={(value) => changeSelectedLocation('country', value)}/>
             </View>
           )
         }

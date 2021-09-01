@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CONST from '../../constants/Constants';
 
 export const GET_LOCATIONS = 'GET_LOCATIONS';
+export const CREATE_LOCATION = 'CREATE_LOCATION';
 
 export const getLocations = () => {
   return async dispatch => {
@@ -32,16 +33,17 @@ export const createLocation = locationData => {
   return async dispatch => {
     try {
       let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
+      console.log("Joell locationData", locationData);
 
       const response = await fetch(
         `http://${environmentUrl}/api/locations/create`,
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
             'x-auth-token': `Bearer ${authToken}`,
           },
-          body: locationData
+          body: JSON.stringify(locationData)
         }
       );
 
@@ -55,6 +57,7 @@ export const createLocation = locationData => {
         type: CREATE_LOCATION,
         location,
       });
+      return location;
     } catch (err) {
       console.log(err);
     }

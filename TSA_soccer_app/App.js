@@ -12,14 +12,18 @@ import AnnouncementReducer from './react_native/store/reducers/AnnouncementReduc
 import UserReducer from './react_native/store/reducers/UserReducer';
 import * as userActions from './react_native/store/actions/UserActions';
 import EventReducer from './react_native/store/reducers/EventReducer';
+import LocationReducer from './react_native/store/reducers/LocationReducer';
 import SetLoader from './react_native/components/SetLoader';
 import LoaderReducer from './react_native/store/reducers/LoaderReducer';
+import TeamReducer from './react_native/store/reducers/TeamReducer';
 import TabbarReducer from './react_native/store/reducers/TabbarReducer';
 
 const rootReducer = combineReducers({
   theme: ThemeReducer,
   announcements: AnnouncementReducer,
   events: EventReducer,
+  locations: LocationReducer,
+  teams: TeamReducer,
   userData: UserReducer,
   loading: LoaderReducer,
   tabbar: TabbarReducer,

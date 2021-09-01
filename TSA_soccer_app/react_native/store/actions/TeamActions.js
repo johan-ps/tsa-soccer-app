@@ -1,25 +1,27 @@
 import { environmentUrl } from '../../constants/Environment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CONST from '../../constants/Constants';
+import { DELETE_EVENT } from './EventActions';
 
-export const GET_TEAM = 'GET-TEAM'
+export const GET_TEAMS = 'GET_TEAMS';
+export const ADD_TEAM = 'ADD_TEAM';
+export const DELETE_TEAM = 'DELETE_TEAM';
 
 export const getTeams = () => {
   return async dispatch => {
     try {
-      const response = await fetch(
-        `http://${environmentUrl}/api/teams`,
-      );
+      const response = await fetch(`http://${environmentUrl}/api/teams`);
 
       if (!response.ok) {
         throw new Error('Something went wrong get announcements!');
       }
 
       const resData = await response.json();
-      const announcements = resData.teams;
+      const teams = resData.teams;
+      console.log(teams);
       dispatch({
         type: GET_TEAMS,
-        announcements,
+        teams,
       });
     } catch (err) {
       console.log(err);
@@ -62,7 +64,7 @@ export const addTeam = teamData => {
 
 export const deleteAnnouncement = id => {
   return {
-    type: DELETE_ANNOUNCEMENT,
+    type: DELETE_TEAM,
     announcementId: id,
   };
 };

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useReducer, useCallback } from 'react';
+import React, { useState, useRef, useReducer, useCallback, useEffect } from 'react';
 import { Text, View, StyleSheet, Modal, ScrollView,Button, SafeAreaView, TouchableHighlight, Pressable, Animated, Easing, TouchableOpacity, Switch } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import DatePicker from 'react-native-date-picker'
@@ -6,6 +6,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/Ionicons'
 import moment from "moment";
 import REPEATS from '../../constants/Constants'
+import {updateVisibility} from '../../store/actions/TabbarActions'
+import { useFocusEffect } from '@react-navigation/native';
 
 import {
   UiButton,
@@ -24,41 +26,37 @@ const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const formInit = {
   inputValues: {
     type: '',
-    title: '',
     date: null,
-    timeTbd: false,
+    timeTBD: false,
     startTime: null,
     endTime: null,
     locationId: null,
     locationDetails: '',
-    teamIds: [],
+    authorId: null,
+    notes: '',
+    status: 'approved',
+    notifyTeam: true,
     opponent: '',
     jersey: '',
-    homeOrAway: null,
-    notifyTeam: true,
     arriveEarly: false,
-    cancelled: false,
-    repeats: [],
-    extraNotes: ''
+    teamId: 5, //TODO: change to null
   },
   inputValidities: {
     type: true,
-    title: true,
     date: true,
-    timeTbd: true,
+    timeTBD: true,
     startTime: true,
     endTime: true,
     locationId: true,
     locationDetails: true,
-    teamIds: true,
+    authorId: true,
+    notes: true,
+    status: true,
+    notifyTeam: true,
     opponent: true,
     jersey: true,
-    homeOrAway: true,
-    notifyTeam: true,
     arriveEarly: true,
-    cancelled: true,
-    repeats: true,
-    extraNotes: true
+    teamId: true,
   },
   formIsValid: true,
 };
@@ -91,6 +89,8 @@ const formReducer = (state, action) => {
 const CreateEvent = props => {
   const { visible } = props;
   const theme = useSelector(state => state.theme.colors);
+  const userData = useSelector(state => state.userData);
+  const userId = userData && userData.id;
   const teams = [
     {
       label: 'House League',
@@ -132,6 +132,14 @@ const CreateEvent = props => {
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
 
+  useFocusEffect(() => {
+    dispatch(updateVisibility(false));
+  })
+
+  useEffect(() => {
+    onChange('authorId', userId, true);
+  }, []);
+
   const onChange = useCallback(
     (inputId, inputValue, inputValidity) => {
       console.log("Joell input:", inputId, inputValue, inputValidity);
@@ -145,7 +153,6 @@ const CreateEvent = props => {
     [dispatchFormState],
   );
 
-
   const [location, setLocation] = useState(false);
   const [locationValue, setLocationValue] = useState('Please Select');
   const [startTime, setStartTime] = useState(new Date());
@@ -156,6 +163,9 @@ const CreateEvent = props => {
   const startTimeAnimation = useRef(new Animated.Value(0)).current;
 
   const onPressInDate = () => {
+    if(formState.inputValues.date === null){
+      onChange('date', new Date(), true);
+    }
     setShowDatePicker(true);
     Animated.spring(dateAnimation, {
       friction: 100,
@@ -204,6 +214,7 @@ const CreateEvent = props => {
   }
 
   const onReturnLocation = location => {
+    console.log("Joell location", location);
     setLocationValue(location.name);
     onChange('locationId', location.id, true);
   }
@@ -238,32 +249,8 @@ const CreateEvent = props => {
   }
 
   const createEventHandler = async () => {
-    const {type, title, eventDate, timeTbd, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats} = formState.inputValues;
     await dispatch(
-      eventActions.createEvent({
-        type: type,
-        title: title,
-        eventDate: eventDate, 
-        timeTbd: timeTbd,
-        startTime: startTime,
-        endTime: endTime, 
-        locationId: locationId,
-        locationDetails: locationDetails, 
-        authorId: authorId,
-        teams: teams,
-        going: going, 
-        maybe: maybe, 
-        unavailable: unavailable,
-        noResponse: noResponse,
-        extraNotes: extraNotes,
-        cancelled: cancelled,
-        notifyTeam: notifyTeam,
-        opponent: opponent,
-        jersey: jersey,
-        homeOrAway: homeOrAway,
-        arriveEarly: arriveEarly,
-        repeats: repeats
-      }),
+      eventActions.createEvent({...formState.inputValues, date: moment(formState.inputValues.date).format('YYYY-MM-DD')}),
     );
     props.navigation.goBack();
     dispatchFormState({ type: 'reset' });
@@ -430,7 +417,7 @@ const CreateEvent = props => {
               <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
                 <Text style={styles.optionLabels}>Cancelled</Text>
                 <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
-                  <Switch value={formState.inputValues.cancelled} onValueChange={(value) => onChange('cancelled', value, true)}/>
+                  <Switch value={formState.inputValues.cancelled} onValueChange={(value) => onChange('status', value ? 'approved' : 'cancelled', true)}/>
                 </View>
               </View>
               <Text style={styles.formLabels}>Repeat</Text>

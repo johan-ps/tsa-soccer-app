@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
-
 import {
   UiButton,
   UiDropdown,
@@ -21,6 +20,7 @@ import {
 import ImageUpload from './ImageUpload';
 import * as announcementActions from '../../store/actions/AnnouncementActions';
 import * as loaderActions from '../../store/actions/LoaderActions';
+import * as teamActions from '../../store/actions/TeamActions';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -82,44 +82,45 @@ const formReducer = (state, action) => {
 const CreateAnnouncement = props => {
   const { visible } = props;
   const theme = useSelector(state => state.theme.colors);
-  const teams = [
-    {
-      label: 'House League',
-      id: 0,
-      children: [
-        {
-          label: 'Markham House League',
-          id: 10,
-        },
-        {
-          label: 'Scarborough House League',
-          id: 17,
-        },
-      ],
-    },
-    {
-      label: 'Rep',
-      id: 1,
-      children: [
-        {
-          label: 'U14',
-          id: 13,
-        },
-        {
-          label: 'U11',
-          id: 14,
-        },
-        {
-          label: 'U10',
-          id: 15,
-        },
-        {
-          label: 'U9',
-          id: 16,
-        },
-      ],
-    },
-  ];
+  const teams = useSelector(state => state.teams);
+  // const teams = [
+  //   {
+  //     label: 'House League',
+  //     id: 0,
+  //     children: [
+  //       {
+  //         label: 'Markham House League',
+  //         id: 10,
+  //       },
+  //       {
+  //         label: 'Scarborough House League',
+  //         id: 17,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     label: 'Rep',
+  //     id: 1,
+  //     children: [
+  //       {
+  //         label: 'U14',
+  //         id: 13,
+  //       },
+  //       {
+  //         label: 'U11',
+  //         id: 14,
+  //       },
+  //       {
+  //         label: 'U10',
+  //         id: 15,
+  //       },
+  //       {
+  //         label: 'U9',
+  //         id: 16,
+  //       },
+  //     ],
+  //   },
+  // ];
   const dispatch = useDispatch();
   const userData = useSelector(state => state.userData);
 
@@ -240,6 +241,18 @@ const CreateAnnouncement = props => {
       input: 'imageUrl',
     });
   };
+
+  const loadTeams = useCallback(async () => {
+    try {
+      await dispatch(teamActions.getTeams());
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    loadTeams();
+  }, [dispatch, loadTeams]);
 
   const createAnnouncementHandler = async () => {
     dispatch(loaderActions.updateLoader(true));
