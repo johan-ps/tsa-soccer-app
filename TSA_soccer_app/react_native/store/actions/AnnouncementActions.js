@@ -32,6 +32,39 @@ export const getAnnouncements = () => {
   };
 };
 
+export const getFilteredAnnouncements = teams => {
+  return async dispatch => {
+    try {
+      const response = await fetch(
+        `http://${environmentUrl}/api/announcements`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ teams }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Something went wrong get announcements!');
+      }
+
+      const resData = await response.json();
+      const announcements = resData.announcements.sort((a, b) =>
+        a.date < b.date ? 1 : a.date > b.date ? -1 : 0,
+      ); // TODO: Sorting should be done in backend
+      dispatch({
+        type: GET_ANNOUNCEMENTS,
+        announcements,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+};
+
 export const addAnnouncement = announcementData => {
   return async dispatch => {
     try {

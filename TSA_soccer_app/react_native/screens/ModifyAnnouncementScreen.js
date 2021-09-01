@@ -1,19 +1,10 @@
 import React, { useState, useReducer, useCallback, useEffect } from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Modal,
-  ScrollView,
-  Image,
-  Platform,
-} from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 import {
   UiButton,
   UiDropdown,
-  UiTextArea,
   UiModal,
   UiInput,
 } from '../components/_components';
@@ -228,22 +219,12 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
   const modifyAnnouncementScreenHandler = async () => {
     dispatch(loaderActions.updateLoader(true));
     try {
-      const teamsParams = [];
-      if (formState.inputValues.teams) {
-        for (const groupId in formState.inputValues.teams) {
-          for (const teamId in formState.inputValues.teams[groupId].children) {
-            if (formState.inputValues.teams[groupId].children[teamId]) {
-              teamsParams.push(teamId);
-            }
-          }
-        }
-      }
       await dispatch(
         announcementActions.addAnnouncement({
           title: '',
           description: formState.inputValues.description,
           image: formState.inputValues.imageUrl,
-          teams: JSON.stringify(teamsParams),
+          teams: JSON.stringify(formState.inputValues.teams),
           authorId: userData.id,
         }),
       );
@@ -284,14 +265,14 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
         let selectedTeams = [];
 
         for (let group in inputValue) {
-          for (let teamId in group) {
+          for (let teamId in inputValue[group].children) {
             selectedTeams.push(teamId);
           }
         }
 
         dispatchFormState({
           type: FORM_INPUT_UPDATE,
-          value: inputValue,
+          value: selectedTeams,
           input: 'teams',
           isValid: true,
         });

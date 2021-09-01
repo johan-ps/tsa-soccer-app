@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, Modal, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import Animated, {
@@ -9,7 +9,7 @@ import Animated, {
   interpolate,
   runOnJS,
 } from 'react-native-reanimated';
-
+import { formatTeams } from '../../Util/utilities';
 import { UiButton, UiDropdown } from '../_components';
 
 const UiFilterModal = props => {
@@ -17,6 +17,7 @@ const UiFilterModal = props => {
   const [showModal, setShowModal] = useState(visible);
   const theme = useSelector(state => state.theme.colors);
   const modalAnimation = useSharedValue(0);
+  const [selectedTeams, setSelectedTeams] = useState(null);
 
   const toggleModal = () => {
     if (visible) {
@@ -58,7 +59,7 @@ const UiFilterModal = props => {
 
   const primaryBtnHandler = () => {
     if (props.primaryBtnHandler) {
-      props.primaryBtnHandler();
+      props.primaryBtnHandler(selectedTeams);
     }
     if (props.onCloseHandler) {
       props.onCloseHandler();
@@ -74,44 +75,21 @@ const UiFilterModal = props => {
     }
   };
 
-  const teams = [
-    {
-      label: 'House League',
-      id: 0,
-      children: [
-        {
-          label: 'Markham House League',
-          id: 10,
-        },
-        {
-          label: 'Scarborough House League',
-          id: 17,
-        },
-      ],
-    },
-    {
-      label: 'Rep',
-      id: 1,
-      children: [
-        {
-          label: 'U14',
-          id: 13,
-        },
-        {
-          label: 'U11',
-          id: 14,
-        },
-        {
-          label: 'U10',
-          id: 15,
-        },
-        {
-          label: 'U9',
-          id: 16,
-        },
-      ],
-    },
-  ];
+  const teams = useSelector(state => formatTeams(state.teams));
+
+  const onSelectHandler = useCallback(inputValue => {
+    if (inputValue) {
+      let selectedTeamsArr = [];
+
+      for (let group in inputValue) {
+        for (let teamId in inputValue[group].children) {
+          selectedTeamsArr.push(teamId);
+        }
+      }
+
+      setSelectedTeams(selectedTeamsArr);
+    }
+  }, []);
 
   return (
     <Modal transparent={true} visible={showModal}>
@@ -132,14 +110,13 @@ const UiFilterModal = props => {
             </Text>
             <View>
               <UiDropdown
-                modalOffsetY={220}
-                modalOffsetX={42}
                 options={teams}
                 multiselect={true}
                 group={true}
                 placeholder="Choose teams"
                 size="large"
                 optionSize="large"
+                onSelect={onSelectHandler}
               />
             </View>
           </View>

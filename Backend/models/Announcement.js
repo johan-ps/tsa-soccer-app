@@ -97,7 +97,7 @@ class Announcement {
         const sql = `
             SELECT
                 firstName, lastName, profileImg,
-                title, description, date, a.id, authorId
+                title, description, image, date, a.id, authorId
             FROM ANNOUNCEMENTS as a 
             INNER JOIN USERS as u
                 ON authorId = u.id
