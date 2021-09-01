@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useCallback } from 'react';
+import React, { useState, useReducer, useCallback, useEffect } from 'react';
 import {
   Text,
   View,
@@ -11,8 +11,16 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 
-import { UiButton, UiDropdown, UiTextArea, UiModal } from '../_components';
+import {
+  UiButton,
+  UiDropdown,
+  UiTextArea,
+  UiModal,
+  UiInput,
+} from '../_components';
+import ImageUpload from './ImageUpload';
 import * as announcementActions from '../../store/actions/AnnouncementActions';
+import * as loaderActions from '../../store/actions/LoaderActions';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -29,27 +37,42 @@ const formInit = {
     description: true,
     teams: true,
   },
+  errors: {
+    title: null,
+    imageUrl: null,
+    description: null,
+    teams: null,
+  },
   formIsValid: true,
 };
 
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = {
-      ...state.inputValues,
-      [action.input]: action.value,
-    };
-    const updatedValidities = {
-      ...state.inputValidities,
-      [action.input]: action.isValid,
-    };
+    const updatedValues = { ...state.inputValues };
+    if (action.value !== undefined) {
+      updatedValues[action.input] = action.value;
+    }
+
+    const updatedValidities = { ...state.inputValidities };
+    if (action.isValid !== undefined) {
+      updatedValidities[action.input] = action.isValid;
+    }
+
+    const updatedErrors = { ...state.errors };
+    if (action.error !== undefined) {
+      updatedErrors[action.input] = action.error;
+    }
+
     let updatedFormIsValid = true;
     for (let key in updatedValidities) {
       updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
     }
+
     return {
       formIsValid: updatedFormIsValid,
       inputValues: updatedValues,
       inputValidities: updatedValidities,
+      errors: updatedErrors,
     };
   } else {
     return formInit;
@@ -98,6 +121,7 @@ const CreateAnnouncement = props => {
     },
   ];
   const dispatch = useDispatch();
+  const userData = useSelector(state => state.userData);
 
   const [imgPickerModalVisible, setImgPickerModalVisible] = useState(false);
 
@@ -122,7 +146,6 @@ const CreateAnnouncement = props => {
                 width: img.width,
                 height: img.height,
               },
-              isValid: true,
               input: 'imageUrl',
             });
           })
@@ -143,11 +166,10 @@ const CreateAnnouncement = props => {
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
-              uri: `data:${img.mime};base64,` + img.data,
+              uri: `file://${img.path}`,
               width: img.width,
               height: img.height,
             },
-            isValid: true,
             input: 'imageUrl',
           });
         })
@@ -177,7 +199,6 @@ const CreateAnnouncement = props => {
                 height: img.height,
                 mime: img.mime,
               },
-              isValid: true,
               input: 'imageUrl',
             });
           })
@@ -198,12 +219,11 @@ const CreateAnnouncement = props => {
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
-              uri: img.path,
+              uri: `file://${img.path}`,
               width: img.width,
               height: img.height,
               mime: img.mime,
             },
-            isValid: true,
             input: 'imageUrl',
           });
         })
@@ -217,31 +237,57 @@ const CreateAnnouncement = props => {
     dispatchFormState({
       type: FORM_INPUT_UPDATE,
       value: null,
-      isValid: true,
       input: 'imageUrl',
     });
   };
 
   const createAnnouncementHandler = async () => {
-    await dispatch(
-      announcementActions.addAnnouncement({
-        title: '',
-        description: formState.inputValues.description,
-        image: formState.inputValues.imageUrl,
-        teams: formState.inputValues.teams,
-      }),
-    );
-    props.onClose();
-    dispatchFormState({ type: 'reset' });
+    dispatch(loaderActions.updateLoader(true));
+    try {
+      const teams = [];
+      if (formState.inputValues.teams) {
+        for (const groupId in formState.inputValues.teams) {
+          for (const teamId in formState.inputValues.teams[groupId].children) {
+            if (formState.inputValues.teams[groupId].children[teamId]) {
+              teams.push(teamId);
+            }
+          }
+        }
+      }
+      await dispatch(
+        announcementActions.addAnnouncement({
+          title: '',
+          description: formState.inputValues.description,
+          image: formState.inputValues.imageUrl,
+          teams: JSON.stringify(teams),
+          authorId: userData.id,
+        }),
+      );
+      props.onClose();
+      dispatchFormState({ type: 'reset' });
+    } catch (error) {
+      if (error) {
+        error.forEach(err => {
+          dispatchFormState({
+            type: FORM_INPUT_UPDATE,
+            isValid: false,
+            error: err.errCode,
+            input: err.field,
+          });
+        });
+      }
+    } finally {
+      dispatch(loaderActions.updateLoader(false));
+    }
   };
 
   const onChangeText = useCallback(
-    (inputId, inputValue, inputValidity) => {
+    (inputId, inputValue) => {
       dispatchFormState({
         type: FORM_INPUT_UPDATE,
         value: inputValue,
-        isValid: inputValidity,
         input: inputId,
+        isValid: true,
       });
     },
     [dispatchFormState],
@@ -261,13 +307,20 @@ const CreateAnnouncement = props => {
         dispatchFormState({
           type: FORM_INPUT_UPDATE,
           value: inputValue,
-          isValid: true,
           input: 'teams',
+          isValid: true,
         });
       }
     },
     [dispatchFormState],
   );
+
+  const onCloseHandler = () => {
+    dispatchFormState({ type: 'reset' });
+    if (props.onClose) {
+      props.onClose();
+    }
+  };
 
   return (
     <Modal
@@ -283,19 +336,36 @@ const CreateAnnouncement = props => {
             { backgroundColor: theme.secondaryBg },
           ]}>
           <View style={styles.modalHeader}>
-            <Text style={[styles.formHeading, { color: theme.secondaryText }]}>
-              Create an Announcement
+            <Text
+              style={[
+                styles.formHeading,
+                { color: theme.primaryText, fontFamily: theme.fontRegular },
+              ]}>
+              Create Announcement
             </Text>
           </View>
           <ScrollView
             style={styles.scrollviewContainer}
             decelerationRate="fast">
             <View style={styles.modalBody}>
-              <UiTextArea id="description" onInputChange={onChangeText} />
+              <UiInput
+                id="description"
+                initialValue={formState.inputValues.description}
+                isValid={formState.inputValidities.description}
+                errCode={formState.errors.description}
+                placeholder="Description"
+                multiline={true}
+                onInputChange={onChangeText}
+                bg={theme.inputBg}
+                color={theme.inputText}
+                placeholderClr={theme.inputPlaceholder}
+                cursor={theme.cursor}
+              />
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown
+                id="teams"
                 onSelect={onSelectHandler}
-                modalOffsetY={80}
+                modalOffsetY={110}
                 modalOffsetX={0}
                 options={teams}
                 multiselect={true}
@@ -303,6 +373,15 @@ const CreateAnnouncement = props => {
                 placeholder="Choose teams"
                 size="large"
                 optionSize="large"
+                isValid={formState.inputValidities.teams}
+                errCode={formState.errors.teams}
+              />
+              <Text style={styles.formLabels}>Upload Image</Text>
+              <ImageUpload
+                imgUrl={formState.inputValues.imageUrl}
+                onPress={() => {
+                  setImgPickerModalVisible(true);
+                }}
               />
               <View style={styles.uploadBtnContainer}>
                 <UiButton
@@ -314,31 +393,22 @@ const CreateAnnouncement = props => {
                   onPress={() => {
                     setImgPickerModalVisible(true);
                   }}
-                  darkBg={theme.name === 'dark'}
+                  darkBg={false}
                 />
                 {formState.inputValues.imageUrl ? (
                   <UiButton
                     icon="close"
-                    label="Delete Image"
+                    // label="Delete Image"
                     type="primary"
                     primaryClr={theme.buttonSecondaryBg}
                     secondaryClr={theme.buttonSecondaryText}
                     onPress={() => {
                       clearImage();
                     }}
-                    darkBg={theme.name === 'dark'}
+                    darkBg={false}
                   />
                 ) : null}
               </View>
-              {formState.inputValues.imageUrl ? (
-                <View style={styles.imagePreviewContainer}>
-                  <Image
-                    style={styles.imagePreview}
-                    source={formState.inputValues.imageUrl}
-                    resizeMode="cover"
-                  />
-                </View>
-              ) : null}
             </View>
           </ScrollView>
         </View>
@@ -348,7 +418,7 @@ const CreateAnnouncement = props => {
             type="tertiary"
             primaryClr={theme.buttonTertiaryText}
             secondaryClr={theme.buttonTertiaryBg}
-            onPress={props.onClose}
+            onPress={onCloseHandler}
             darkBg={theme.name === 'dark'}
           />
           <UiButton
@@ -385,6 +455,9 @@ const CreateAnnouncement = props => {
 };
 
 const styles = StyleSheet.create({
+  scrollviewContainer: {
+    paddingTop: 30,
+  },
   uploadBtnContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -404,6 +477,9 @@ const styles = StyleSheet.create({
   modalHeader: {
     padding: 30,
     marginTop: 20,
+    borderBottomColor: '#414141',
+    borderBottomWidth: 1,
+    borderStyle: 'solid',
   },
   modalBody: {
     padding: 30,
@@ -419,29 +495,13 @@ const styles = StyleSheet.create({
     // marginBottom: 56,
   },
   formHeading: {
-    color: '#1E1E1E',
     fontSize: 20,
-    fontFamily: 'Roboto-Regular',
   },
   formLabels: {
     color: '#A19EAE',
     fontSize: 14,
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  imagePreviewContainer: {
-    width: '100%',
-    height: 300,
-    borderWidth: 2,
-    borderStyle: 'solid',
-    borderColor: 'white',
-    borderRadius: 20,
-    overflow: 'hidden',
     marginTop: 30,
-  },
-  imagePreview: {
-    width: '100%',
-    height: 300,
+    marginBottom: 10,
   },
 });
 

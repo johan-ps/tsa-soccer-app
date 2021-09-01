@@ -1,6 +1,7 @@
 export default {
   dark: {
     name: 'dark',
+    error: '#E41B23',
 
     // font
     fontRegular: 'Roboto-Regular',
@@ -75,12 +76,12 @@ export default {
     button4Txt: '#F8F9FA',
 
     // dropdown
-    ddBgClr: '#4D4B52',
-    ddBorderClr: '#e51b23',
+    ddBgClr: '#414141',
+    ddBorderClr: '#C9C8C8',
     ddOptSClr: '#2c2c2c',
     ddOptTxtClr: '#f2f3f2',
     ddOptSTxtClr: '#D9DADB',
-    ddSClr: '#F9F9F9',
+    ddSClr: '#C9C8C8',
     ddSelectLabelBg: '#8A8A8A',
     ddSelectLabelText: '#f2f3f2',
 
@@ -101,6 +102,7 @@ export default {
   },
   light: {
     name: 'light',
+    error: '#E41B23',
 
     // font
     fontRegular: 'Roboto-Regular',

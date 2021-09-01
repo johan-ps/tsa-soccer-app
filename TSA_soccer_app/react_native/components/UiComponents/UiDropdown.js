@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Pressable,
   Modal,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import Animated, {
@@ -17,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import ErrorMessage from './ErrorMessage';
 
 const UiDropdown = props => {
   const {
@@ -31,6 +33,8 @@ const UiDropdown = props => {
     defaultValue,
     optionSize = 'small',
     onSelect,
+    isValid = true,
+    errCode,
   } = props;
   const [selectedId, setSelectedId] = useState(defaultValue || -1);
   const [selectedLabel, setSelectedLabel] = useState(placeholder);
@@ -40,9 +44,12 @@ const UiDropdown = props => {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [width, setWidth] = useState({ width: 170 });
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
   const dropdownAnimation = useSharedValue(0);
   const focusAnimation = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
+  const ddBtn = useRef();
 
   const onFocusIn = () => {
     focusAnimation.value = withTiming(1, { duration: 40 });
@@ -50,8 +57,8 @@ const UiDropdown = props => {
 
   const onFocusOut = () => {
     focusAnimation.value = withTiming(0, { duration: 40 }, () => {
-      runOnJS(setShowOptions)(true);
-      dropdownAnimation.value = withTiming(1, { duration: 225 });
+      // runOnJS(setShowOptions)(true);
+      // dropdownAnimation.value = withTiming(1, { duration: 225 });
     });
   };
 
@@ -63,10 +70,20 @@ const UiDropdown = props => {
 
   const getDropdownXY = event => {
     const layout = event.nativeEvent.layout;
-    console.log("Joell layout", layout);
     setOffsetY(layout.height + layout.y + modalOffsetY);
     setOffsetX(layout.x + modalOffsetX);
     setWidth({ width: layout.width });
+  };
+
+  const onOpenHandler = () => {
+    ddBtn.current.measure((fx, fy, width, height, px, py) => {
+      setOffsetX(windowWidth - px - width);
+      setOffsetY(py + 20);
+    });
+    setShowOptions(true);
+    setTimeout(() => {
+      dropdownAnimation.value = withTiming(1, { duration: 225 });
+    }, 50);
   };
 
   const widthStyle = () => {
@@ -177,7 +194,7 @@ const UiDropdown = props => {
             <Animated.View
               style={[
                 styles.optionsContainer,
-                width,
+                { width: '85%' },
                 { backgroundColor: theme.ddBgClr },
                 positionStyle,
                 optionsAnimStyles,
@@ -289,60 +306,70 @@ const UiDropdown = props => {
   };
 
   return (
-    <Animated.View
-      style={[
-        styles.dropdownContainer,
-        widthStyle(),
-        { backgroundColor: theme.ddBgClr },
-        showOptions ? buttonBorder : {},
-        scale,
-        props.style,
-      ]}
-      onLayout={getDropdownXY}>
-      <Ripple
-        onPressIn={onFocusIn}
-        onPressOut={onFocusOut}
-        style={[styles.dropdownBtn]}>
-        {selectedLabels.length === 0 && (
-          <Text style={{ color: theme.ddSClr }}>{selectedLabel}</Text>
-        )}
-        <View horizontal={true} style={styles.selectLabelsContainer}>
-          {selectedLabels.map(label => (
-            <View
-              style={[
-                styles.selectLabels,
-                { backgroundColor: theme.ddSelectLabelBg },
-              ]}>
-              <Text
-                numberOfLines={1}
-                style={{
-                  fontFamily: theme.fontRegular,
-                  color: theme.ddSelectLabelText,
-                }}>
-                {label}
-              </Text>
-            </View>
-          ))}
-        </View>
-        <Animated.View
-          style={[
-            styles.iconContainer,
-            { backgroundColor: theme.ddBgClr },
-            iconAnimStyles,
-          ]}>
-          <Icon
-            name="chevron-down-outline"
-            color={showOptions ? theme.ddBorderClr : theme.ddSClr}
-            size={24}
-          />
-        </Animated.View>
-      </Ripple>
-      {renderOptions()}
-    </Animated.View>
+    <View style={styles.errorContainer}>
+      <Animated.View
+        style={[
+          styles.dropdownContainer,
+          widthStyle(),
+          { backgroundColor: theme.ddBgClr },
+          showOptions ? buttonBorder : {},
+          scale,
+          props.style,
+        ]}
+        ref={ddBtn}
+        onLayout={() => {}}>
+        <Ripple
+          onPressIn={onFocusIn}
+          onPress={onOpenHandler}
+          onPressOut={onFocusOut}
+          style={[styles.dropdownBtn]}>
+          {selectedLabels.length === 0 && (
+            <Text style={{ color: isValid ? theme.ddSClr : theme.error }}>
+              {selectedLabel}
+            </Text>
+          )}
+          <View horizontal={true} style={styles.selectLabelsContainer}>
+            {selectedLabels.map(label => (
+              <View
+                style={[
+                  styles.selectLabels,
+                  { backgroundColor: theme.ddSelectLabelBg },
+                ]}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    fontFamily: theme.fontRegular,
+                    color: theme.ddSelectLabelText,
+                  }}>
+                  {label}
+                </Text>
+              </View>
+            ))}
+          </View>
+          <Animated.View
+            style={[
+              styles.iconContainer,
+              { backgroundColor: theme.ddBgClr },
+              iconAnimStyles,
+            ]}>
+            <Icon
+              name="chevron-down-outline"
+              color={showOptions ? theme.ddBorderClr : theme.ddSClr}
+              size={24}
+            />
+          </Animated.View>
+        </Ripple>
+        {renderOptions()}
+      </Animated.View>
+      <ErrorMessage isValid={isValid} errCode={errCode} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  errorContainer: {
+    position: 'relative',
+  },
   maxHeight: {
     maxHeight: 320,
   },
@@ -377,13 +404,12 @@ const styles = StyleSheet.create({
   },
   dropdownBtn: {
     borderRadius: 10,
-    height: 50,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 30,
+    paddingVertical: 20,
   },
   selectedText: {
     color: '#A29FAF',

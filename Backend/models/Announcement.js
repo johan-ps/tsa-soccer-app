@@ -6,7 +6,7 @@ class Announcement {
         this.title = title;
         this.description = description;
         this.authorId = authorId;
-        this.teams = JSON.parse(teams);
+        this.teams = teams;
         this.image = image;
     }
 

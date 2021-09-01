@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   TouchableOpacity,
   Platform,
 } from 'react-native';
@@ -139,7 +138,7 @@ const EditProfileScreen = ({ navigation }) => {
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
-              uri: `data:${img.mime};base64,` + img.data,
+              uri: `file://${img.path}`,
               width: img.width,
               height: img.height,
               type: img.mime,
@@ -199,7 +198,7 @@ const EditProfileScreen = ({ navigation }) => {
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
-              uri: img.path,
+              uri: `file://${img.path}`,
               width: img.width,
               height: img.height,
               type: img.mime,
@@ -216,15 +215,6 @@ const EditProfileScreen = ({ navigation }) => {
     }
   };
 
-  const clearImage = () => {
-    dispatchFormState({
-      type: FORM_INPUT_UPDATE,
-      value: null,
-      isValid: true,
-      input: 'profileImg',
-    });
-  };
-
   const onUpdateUserHandler = async () => {
     dispatch(loaderActions.updateLoader(true));
     await dispatch(
@@ -233,7 +223,7 @@ const EditProfileScreen = ({ navigation }) => {
         lastName: formState.inputValues.lastName,
         email: formState.inputValues.email,
         phoneNum: formState.inputValues.phoneNum,
-        // profileImg: formState.inputValues.profileImg,
+        profileImg: formState.inputValues.profileImg,
         id: userData.id,
       }),
     );
@@ -264,7 +254,7 @@ const EditProfileScreen = ({ navigation }) => {
               animated={true}
               thickness={3}
               color={theme.accent}
-              style={{ position: 'absolute' }}
+              style={styles.positionAbs}
             />
             <UiImage
               style={styles.profilePicture}
@@ -393,6 +383,9 @@ const EditProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  positionAbs: {
+    position: 'absolute',
+  },
   container: {
     width: '100%',
     height: '100%',

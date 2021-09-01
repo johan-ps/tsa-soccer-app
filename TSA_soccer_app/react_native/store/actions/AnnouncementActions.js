@@ -51,15 +51,17 @@ export const addAnnouncement = announcementData => {
         {
           method: 'POST',
           headers: {
+            Accept: 'application/json',
             'Content-Type': 'multipart/form-data',
             'x-auth-token': `Bearer ${authToken}`,
           },
-          body: new FormData(),
+          body: formData,
         },
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong add announcement!');
+        const error = await response.json();
+        throw error;
       }
 
       const resData = await response.json();
@@ -70,6 +72,10 @@ export const addAnnouncement = announcementData => {
       });
     } catch (err) {
       console.log(err);
+
+      if (err && err.errors && err.errors.length > 0) {
+        throw err.errors;
+      }
     }
   };
 };

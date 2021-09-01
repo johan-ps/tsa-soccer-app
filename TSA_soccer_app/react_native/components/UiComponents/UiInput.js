@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Pressable,
   TouchableOpacity,
+  Text,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
@@ -20,6 +21,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { debounce } from 'lodash';
+import ErrorMessage from './ErrorMessage';
 
 const INPUT_CHANGE = 'INPUT_CHANGE';
 
@@ -29,7 +31,6 @@ const inputReducer = (state, action) => {
       return {
         ...state,
         value: action.value,
-        isValid: action.isValid
       };
     default:
       return state;
@@ -51,13 +52,14 @@ const UiInput = props => {
     color = '#000000',
     placeholderClr = '#C0C0CA',
     cursor = theme.cursor,
+    multiline = false,
+    errCode,
+    isValid = true,
   } = props;
   const translateAnim = useSharedValue(0);
   const scaleAnim = useSharedValue(0);
   const [inputState, dispatch] = useReducer(inputReducer, {
     value: props.initialValue ? props.initialValue : '',
-    isValid: props.initiallyValid,
-    touched: false,
   });
   const inputRef = useRef();
   const [showInput, setShowInput] = useState(false);
@@ -72,14 +74,14 @@ const UiInput = props => {
     if (onChangeText) {
       handler(text);
     }
-    dispatch({ type: INPUT_CHANGE, value: text, isValid: true });
+    dispatch({ type: INPUT_CHANGE, value: text });
   };
 
   const { onInputChange, id } = props;
 
   useEffect(() => {
     if (onInputChange) {
-      onInputChange(id, inputState.value, inputState.isValid);
+      onInputChange(id, inputState.value);
     }
   }, [inputState, onInputChange, id]);
 
@@ -154,7 +156,10 @@ const UiInput = props => {
         style={[
           styles.input,
           { fontSize, fontFamily: theme.fontRegular, color },
+          // eslint-disable-next-line react-native/no-inline-styles
+          multiline ? { paddingTop: 40 } : {},
         ]}
+        multiline={multiline}
         onFocus={onFocus}
         onBlur={onBlur}
         ref={inputRef}
@@ -162,11 +167,18 @@ const UiInput = props => {
         autoCompleteType={autoCompleteType()}
         secureTextEntry={contentType === 'password' && !showInput}
       />
-      <Animated.Text style={[styles.placeholderContainer, placeholderAnim]}>
+      <Animated.Text
+        style={[
+          styles.placeholderContainer,
+          placeholderAnim,
+          // eslint-disable-next-line react-native/no-inline-styles
+          multiline ? { top: 24 } : { alignSelf: 'center' },
+        ]}>
         <Animated.Text
           style={[
             styles.placeholder,
             { fontFamily: theme.fontRegular, color: placeholderClr },
+            !isValid ? { color: theme.error } : {},
           ]}>
           {placeholder}
         </Animated.Text>
@@ -186,6 +198,7 @@ const UiInput = props => {
           />
         </TouchableOpacity>
       ) : null}
+      <ErrorMessage isValid={isValid} errCode={errCode} />
     </Pressable>
   );
 };
@@ -196,7 +209,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: 'relative',
     width: '100%',
-    height: 70,
+    minHeight: 68,
     borderRadius: 8,
   },
   input: {
@@ -224,7 +237,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 30,
     position: 'absolute',
-    alignSelf: 'center',
     left: 30,
     justifyContent: 'center',
   },

@@ -29,6 +29,7 @@ CREATE TABLE heroku_255da0fd4009d26.teams (
   id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(20) NOT NULL,
   ageGroup VARCHAR(5) NOT NULL,
+  type ENUM('rep', 'houseLeague'),
   PRIMARY KEY (id),
   UNIQUE INDEX ID_UNIQUE (id ASC));
 

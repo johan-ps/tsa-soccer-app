@@ -7,10 +7,12 @@ import {
   KeyboardAvoidingView,
   Pressable,
   Keyboard,
+  ScrollView,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { UiInput, UiButton, UiIconButton } from '../components/_components';
 import * as userActions from '../store/actions/UserActions';
+import * as loaderActions from '../store/actions/LoaderActions';
 import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
 
@@ -55,7 +57,6 @@ const formReducer = (state, action) => {
 const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
-  const userData = useSelector(state => state.userData);
   const theme = useSelector(state => state.theme.colors);
 
   const onChangeText = useCallback(
@@ -76,100 +77,107 @@ const LoginScreen = ({ navigation }) => {
 
   const loginHandler = async () => {
     Keyboard.dismiss();
+    dispatch(loaderActions.updateLoader(true));
     await dispatch(
       userActions.loginUser({
         username: formState.inputValues.username,
         password: formState.inputValues.password,
       }),
     );
+    dispatch(loaderActions.updateLoader(false));
     navigation.goBack();
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior="position"
-      style={{ backgroundColor: theme.secondaryBg }}>
-      <Pressable
-        onPress={() => {
-          Keyboard.dismiss();
-        }}
-        style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
-        <View style={styles.closeButton}>
-          <UiIconButton
-            icon="close-outline"
-            color={theme.actionBtnText}
-            backgroundColor={theme.actionBtnBg}
-            // backgroundColor="#EAEAEA"
-            size={24}
-            darkBg={false}
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        </View>
-        <View style={styles.imgContainer}>
-          <Image
-            style={styles.headerImg}
-            source={require('../assets/img/CTSA_Logo.png')}
-            resizeMode="cover"
-          />
-        </View>
-        <View style={styles.heading}>
-          <Text
-            style={[
-              styles.headingTitle,
-              { color: theme.primaryText, fontFamily: theme.fontMedium },
-            ]}>
-            Welcome to CTSA!
-          </Text>
-          <Text
-            style={[
-              styles.headingSubtitle,
-              { color: theme.secondaryText, fontFamily: theme.fontRegular },
-            ]}>
-            Join our community of over 100 players in the GTA
-          </Text>
-        </View>
-        <View style={styles.body}>
-          <UiInput
-            id="username"
-            initialValue={formState.inputValues.username}
-            inputValidities={formState.inputValidities.username}
-            contentType="username"
-            placeholder="Username"
-            style={styles.marginBottom}
-            onInputChange={onChangeText}
-            bg={theme.inputBg}
-            color={theme.inputText}
-            placeholderClr={theme.inputPlaceholder}
-            cursor={theme.cursor}
-          />
-          <UiInput
-            id="password"
-            initialValue={formState.inputValues.password}
-            inputValidities={formState.inputValidities.password}
-            contentType="password"
-            placeholder="Password"
-            icon={{ name: 'eye-outline', altName: 'eye-off-outline', size: 26 }}
-            onInputChange={onChangeText}
-            bg={theme.inputBg}
-            color={theme.inputText}
-            placeholderClr={theme.inputPlaceholder}
-            cursor={theme.cursor}
-          />
-          <UiButton
-            onPress={loginHandler}
-            label="Login"
-            width="100%"
-            borderRadius={8}
-            style={styles.button}
-            primaryClr={theme.buttonPrimaryBg}
-            secondaryClr={theme.buttonPrimaryText}
-          />
-        </View>
-        <View style={styles.footer} />
-      </Pressable>
-    </KeyboardAvoidingView>
+    <ScrollView style={{ backgroundColor: theme.secondaryBg }}>
+      <KeyboardAvoidingView
+        behavior="position"
+        style={{ backgroundColor: theme.secondaryBg }}>
+        <Pressable
+          onPress={() => {
+            Keyboard.dismiss();
+          }}
+          style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
+          <View style={styles.closeButton}>
+            <UiIconButton
+              icon="close-outline"
+              color={theme.actionBtnText}
+              backgroundColor={theme.actionBtnBg}
+              size={24}
+              darkBg={false}
+              onPress={() => {
+                navigation.goBack();
+              }}
+            />
+          </View>
+          <View style={styles.imgContainer}>
+            <Image
+              style={styles.headerImg}
+              source={require('../assets/img/CTSA_Logo.png')}
+              resizeMode="cover"
+            />
+          </View>
+          <View style={styles.heading}>
+            <Text
+              style={[
+                styles.headingTitle,
+                { color: theme.primaryText, fontFamily: theme.fontMedium },
+              ]}>
+              Welcome to CTSA!
+            </Text>
+            <Text
+              style={[
+                styles.headingSubtitle,
+                { color: theme.secondaryText, fontFamily: theme.fontRegular },
+              ]}>
+              Join our community of over 100 players in the GTA
+            </Text>
+          </View>
+          <View style={styles.body}>
+            <UiInput
+              id="username"
+              initialValue={formState.inputValues.username}
+              inputValidities={formState.inputValidities.username}
+              contentType="username"
+              placeholder="Username"
+              style={styles.marginBottom}
+              onInputChange={onChangeText}
+              bg={theme.inputBg}
+              color={theme.inputText}
+              placeholderClr={theme.inputPlaceholder}
+              cursor={theme.cursor}
+            />
+            <UiInput
+              id="password"
+              initialValue={formState.inputValues.password}
+              inputValidities={formState.inputValidities.password}
+              contentType="password"
+              placeholder="Password"
+              icon={{
+                name: 'eye-outline',
+                altName: 'eye-off-outline',
+                size: 26,
+              }}
+              onInputChange={onChangeText}
+              bg={theme.inputBg}
+              color={theme.inputText}
+              placeholderClr={theme.inputPlaceholder}
+              cursor={theme.cursor}
+            />
+            <UiButton
+              onPress={loginHandler}
+              label="Login"
+              width="100%"
+              borderRadius={8}
+              style={styles.button}
+              primaryClr={theme.buttonPrimaryBg}
+              secondaryClr={theme.buttonPrimaryText}
+            />
+          </View>
+          <View style={styles.footer} />
+        </Pressable>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
