@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Modal, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState, useCallback, useReducer } from 'react';
+import { View, Text, Modal, StyleSheet, ScrollView } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import Animated, {
   useSharedValue,
   withSpring,
@@ -11,13 +11,39 @@ import Animated, {
 } from 'react-native-reanimated';
 import { formatTeams } from '../../Util/utilities';
 import { UiButton, UiDropdown } from '../_components';
+import * as teamActions from '../../store/actions/TeamActions';
+import UiDatePicker from './UiDatePicker';
+import moment from 'moment';
+
+const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+
+const formInit = {
+  inputValues: {
+    teams: [],
+    startDate: null,
+    endDate: null,
+  },
+};
+
+const formReducer = (state, action) => {
+  if (action.type === FORM_INPUT_UPDATE) {
+    const updatedValues = { ...state.inputValues };
+    if (action.value !== undefined) {
+      updatedValues[action.input] = action.value;
+    }
+    return { inputValues: updatedValues };
+  } else {
+    return formInit;
+  }
+};
 
 const UiFilterModal = props => {
   let { visible } = props;
   const [showModal, setShowModal] = useState(visible);
   const theme = useSelector(state => state.theme.colors);
   const modalAnimation = useSharedValue(0);
-  const [selectedTeams, setSelectedTeams] = useState(null);
+  const dispatch = useDispatch();
+  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
 
   const toggleModal = () => {
     if (visible) {
@@ -34,6 +60,18 @@ const UiFilterModal = props => {
       });
     }
   };
+
+  const loadTeams = useCallback(async () => {
+    try {
+      await dispatch(teamActions.getTeams());
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    loadTeams();
+  }, [loadTeams]);
 
   useEffect(() => {
     toggleModal();
@@ -59,7 +97,7 @@ const UiFilterModal = props => {
 
   const primaryBtnHandler = () => {
     if (props.primaryBtnHandler) {
-      props.primaryBtnHandler(selectedTeams);
+      props.primaryBtnHandler(formState.inputValues.teams);
     }
     if (props.onCloseHandler) {
       props.onCloseHandler();
@@ -79,17 +117,29 @@ const UiFilterModal = props => {
 
   const onSelectHandler = useCallback(inputValue => {
     if (inputValue) {
-      let selectedTeamsArr = [];
+      let selectedTeams = [];
 
       for (let group in inputValue) {
         for (let teamId in inputValue[group].children) {
-          selectedTeamsArr.push(teamId);
+          selectedTeams.push(teamId);
         }
       }
 
-      setSelectedTeams(selectedTeamsArr);
+      dispatchFormState({
+        type: FORM_INPUT_UPDATE,
+        value: selectedTeams,
+        input: 'teams',
+      });
     }
   }, []);
+
+  const onDateChange = (inputId, value) => {
+    dispatchFormState({
+      type: FORM_INPUT_UPDATE,
+      value,
+      input: inputId,
+    });
+  };
 
   return (
     <Modal transparent={true} visible={showModal}>
@@ -108,7 +158,7 @@ const UiFilterModal = props => {
               ]}>
               {props.title}
             </Text>
-            <View>
+            <ScrollView style={{ height: '100%' }}>
               <UiDropdown
                 options={teams}
                 multiselect={true}
@@ -117,8 +167,35 @@ const UiFilterModal = props => {
                 size="large"
                 optionSize="large"
                 onSelect={onSelectHandler}
+                existingValues={formatTeams(formState.inputValues.teams)}
               />
-            </View>
+              <View style={styles.marginTop}>
+                <UiDatePicker
+                  id="startDate"
+                  placeholder={
+                    formState.inputValues.startDate
+                      ? moment(formState.inputValues.startDate).format(
+                          'dddd, D MMM YYYY',
+                        )
+                      : 'Select start date'
+                  }
+                  onChange={onDateChange}
+                />
+              </View>
+              <View style={styles.marginTop}>
+                <UiDatePicker
+                  id="endDate"
+                  placeholder={
+                    formState.inputValues.endDate
+                      ? moment(formState.inputValues.endDate).format(
+                          'dddd, D MMM YYYY',
+                        )
+                      : 'Select end date'
+                  }
+                  onChange={onDateChange}
+                />
+              </View>
+            </ScrollView>
           </View>
           <View style={styles.buttonContainer}>
             <UiButton
@@ -152,6 +229,9 @@ const UiFilterModal = props => {
 };
 
 const styles = StyleSheet.create({
+  marginTop: {
+    marginTop: 20,
+  },
   modalViewContainer: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -162,7 +242,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 26,
     width: '90%',
-    height: '60%',
+    height: '80%',
     maxWidth: 350,
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -176,6 +256,8 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     padding: 5,
+    overflow: 'hidden',
+    height: '90%',
   },
   title: {
     fontSize: 24,

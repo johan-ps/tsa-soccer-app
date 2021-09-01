@@ -35,10 +35,11 @@ const UiDropdown = props => {
     onSelect,
     isValid = true,
     errCode,
+    existingValues = {},
   } = props;
   const [selectedId, setSelectedId] = useState(defaultValue || -1);
   const [selectedLabel, setSelectedLabel] = useState(placeholder);
-  const [selectedValues, setSelectedValues] = useState({});
+  const [selectedValues, setSelectedValues] = useState(existingValues);
   const [selectedLabels, setSelectedLabels] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
   const [offsetX, setOffsetX] = useState(0);

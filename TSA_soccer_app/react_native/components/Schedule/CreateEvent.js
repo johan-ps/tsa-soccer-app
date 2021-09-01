@@ -1,20 +1,35 @@
-import React, { useState, useRef, useReducer, useCallback, useEffect } from 'react';
-import { Text, View, StyleSheet, Modal, ScrollView,Button, SafeAreaView, TouchableHighlight, Pressable, Animated, Easing, TouchableOpacity, Switch } from 'react-native';
+import React, {
+  useState,
+  useRef,
+  useReducer,
+  useCallback,
+  useEffect,
+} from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Modal,
+  ScrollView,
+  Button,
+  SafeAreaView,
+  TouchableHighlight,
+  Pressable,
+  Animated,
+  Easing,
+  TouchableOpacity,
+  Switch,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import DatePicker from 'react-native-date-picker'
+import DatePicker from 'react-native-date-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Icon from 'react-native-vector-icons/Ionicons'
-import moment from "moment";
-import REPEATS from '../../constants/Constants'
-import {updateVisibility} from '../../store/actions/TabbarActions'
+import Icon from 'react-native-vector-icons/Ionicons';
+import moment from 'moment';
+import REPEATS from '../../constants/Constants';
+import { updateVisibility } from '../../store/actions/TabbarActions';
 import { useFocusEffect } from '@react-navigation/native';
 
-import {
-  UiButton,
-  UiDropdown,
-  UiToggle,
-  UiInput,
-} from '../_components';
+import { UiButton, UiDropdown, UiToggle, UiInput } from '../_components';
 import UiTextArea from '../UiComponents/UiTextArea';
 import EventLocation from './EventLocation';
 
@@ -85,7 +100,6 @@ const formReducer = (state, action) => {
   }
 };
 
-
 const CreateEvent = props => {
   const { visible, route } = props;
   const { type } = route.params;
@@ -135,21 +149,20 @@ const CreateEvent = props => {
 
   useFocusEffect(() => {
     dispatch(updateVisibility(false));
-  })
+  });
 
   useEffect(() => {
     onChange('authorId', userId, true);
-    if(type === 'Game'){
+    if (type === 'Game') {
       onChange('type', 'Game', true);
-    }
-    else if(type === 'Practice'){
+    } else if (type === 'Practice') {
       onChange('type', 'Practice', true);
     }
   }, []);
 
   const onChange = useCallback(
     (inputId, inputValue, inputValidity) => {
-      console.log("Joell input:", inputId, inputValue, inputValidity);
+      console.log('Joell input:', inputId, inputValue, inputValidity);
       dispatchFormState({
         type: FORM_INPUT_UPDATE,
         value: inputValue,
@@ -165,12 +178,12 @@ const CreateEvent = props => {
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [shadow, setShadow] = useState(null)
+  const [shadow, setShadow] = useState(null);
   const dateAnimation = useRef(new Animated.Value(0)).current;
   const startTimeAnimation = useRef(new Animated.Value(0)).current;
 
   const onPressInDate = () => {
-    if(formState.inputValues.date === null){
+    if (formState.inputValues.date === null) {
       onChange('date', new Date(), true);
     }
     setShowDatePicker(true);
@@ -218,12 +231,12 @@ const CreateEvent = props => {
 
   const onSelectLocation = () => {
     setLocation(true);
-  }
+  };
 
   const onReturnLocation = location => {
     setLocationValue(location.name);
     onChange('locationId', location.id, true);
-  }
+  };
 
   const dateAnimStyle = {
     transform: [
@@ -247,21 +260,23 @@ const CreateEvent = props => {
     shadowColor: '#000000',
     shadowOpacity: 0.2,
     shadowOffset: { height: 2 },
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   };
 
   const shadowStyle = {
     borderColor: theme.primaryIconClr,
-  }
+  };
 
   const createEventHandler = async () => {
     await dispatch(
-      eventActions.createEvent({...formState.inputValues, date: moment(formState.inputValues.date).format('YYYY-MM-DD')}),
+      eventActions.createEvent({
+        ...formState.inputValues,
+        date: moment(formState.inputValues.date).format('YYYY-MM-DD'),
+      }),
     );
     props.navigation.goBack();
     dispatchFormState({ type: 'reset' });
   };
-
 
   // TODO: Fix up create new event features (fix new location stuff, fix datatimepicker stuff, add different for game/practice/other)
   // TODO: Add full calender view functionality
@@ -275,17 +290,19 @@ const CreateEvent = props => {
   // TODO: Add edit and delete functionality
 
   return (
-    <SafeAreaView style={{ backgroundColor: 'white'}}>
+    <SafeAreaView style={{ backgroundColor: 'white' }}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContentContainer}>
           <View style={styles.modalHeader}>
-            <Text style={styles.formHeading}>Create a{type === 'Other' ? `n ${type}` : ` ${type}`} Event</Text>
+            <Text style={styles.formHeading}>
+              Create a{type === 'Other' ? `n ${type}` : ` ${type}`} Event
+            </Text>
           </View>
           <ScrollView
             style={styles.scrollviewContainer}
             decelerationRate="fast">
             <View style={styles.modalBody}>
-              {type === 'Other' ?
+              {type === 'Other' ? (
                 <UiInput
                   id="title"
                   placeholder="Title"
@@ -294,11 +311,9 @@ const CreateEvent = props => {
                   style={{ marginBottom: 0 }}
                   onInputChange={onChange}
                 />
-                :
-                null
-              }
+              ) : null}
               <Text style={styles.formLabels}>Date</Text>
-              {/* <DateTimePicker 
+              {/* <DateTimePicker
                       value={date || new Date()}
                       onChange={(event, selectedDate)  => {
                         const currentDate = selectedDate || date;
@@ -309,47 +324,100 @@ const CreateEvent = props => {
                       display={'default'}
                       textColor={'red'}
                     /> */}
-              <Pressable 
+              <Pressable
                 onPress={() => {
-                  if(!shadow){ onPressInDate(); setShadow(shadowStyle);} else{ onPressOutDate(); setShadow(null); }
-                }} 
-                style={[{marginBottom: 10, justifyContent: 'center', alignItems: 'center'}]}
-              >
-                <View style={{flexDirection: 'column'}}>
-                  <View style={[styles.dateContainer, {borderWidth: showDatePicker ? 1 : 0, borderColor: 'red'}]}>
-                    <Text style={[{color: formState.inputValues.date ? 'black' : 'grey', shadowOpacity: 0, fontSize: 16}, styles.date]}>{formState.inputValues.date ? moment(formState.inputValues.date).format('dddd, D MMM YYYY') : 'Please Select'}</Text>
+                  if (!shadow) {
+                    onPressInDate();
+                    setShadow(shadowStyle);
+                  } else {
+                    onPressOutDate();
+                    setShadow(null);
+                  }
+                }}
+                style={[
+                  {
+                    marginBottom: 10,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  },
+                ]}>
+                <View style={{ flexDirection: 'column' }}>
+                  <View
+                    style={[
+                      styles.dateContainer,
+                      {
+                        borderWidth: showDatePicker ? 1 : 0,
+                        borderColor: 'red',
+                      },
+                    ]}>
+                    <Text
+                      style={[
+                        {
+                          color: formState.inputValues.date ? 'black' : 'grey',
+                          shadowOpacity: 0,
+                          fontSize: 16,
+                        },
+                        styles.date,
+                      ]}>
+                      {formState.inputValues.date
+                        ? moment(formState.inputValues.date).format(
+                            'dddd, D MMM YYYY',
+                          )
+                        : 'Please Select'}
+                    </Text>
                     <View style={styles.iconContainer}>
-                      <Icon color={showDatePicker ? '#e51b23' : '#A8A4B8'} name="calendar-outline" size={20} />
+                      <Icon
+                        color={showDatePicker ? '#e51b23' : '#A8A4B8'}
+                        name="calendar-outline"
+                        size={20}
+                      />
                     </View>
                   </View>
-                  <Animated.View style={{height: dateAnimation, width: '100%', paddingLeft: 10}}>
-                    { showDatePicker ?
+                  <Animated.View
+                    style={{
+                      height: dateAnimation,
+                      width: '100%',
+                      paddingLeft: 10,
+                    }}>
+                    {showDatePicker ? (
                       <DatePicker
                         date={formState.inputValues.date || new Date()}
-                        onDateChange={(date) => onChange("date", date, true)}
+                        onDateChange={date => onChange('date', date, true)}
                         mode={'date'}
                       />
-                      :
-                      null
-                    }
+                    ) : null}
                   </Animated.View>
                 </View>
               </Pressable>
-              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
-                <Text style={styles.optionLabels}>Time TBD</Text>
-                <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
-                  <Switch value={formState.inputValues.timeTbd} onValueChange={(value) => onChange('timeTbd', value, true)}/>
-                </View>
-              </View>
-              {!formState.inputValues.timeTbd ?
               <View
                 style={{
                   flexDirection: 'row',
-                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: 50,
                 }}>
-                  <View style={{width: '50%', justifyContent: 'center'}}>
+                <Text style={styles.optionLabels}>Time TBD</Text>
+                <View
+                  style={{
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    position: 'absolute',
+                  }}>
+                  <Switch
+                    value={formState.inputValues.timeTbd}
+                    onValueChange={value => onChange('timeTbd', value, true)}
+                  />
+                </View>
+              </View>
+              {!formState.inputValues.timeTbd ? (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <View style={{ width: '50%', justifyContent: 'center' }}>
                     <Text style={styles.formLabels}>Start Time</Text>
-                    <RNDateTimePicker 
+                    <RNDateTimePicker
                       mode={'time'}
                       display={'default'}
                       onChange={(event, date) => {
@@ -359,44 +427,59 @@ const CreateEvent = props => {
                       value={startTime || new Date()}
                     />
                   </View>
-                  <View style={{width: '50%', justifyContent: 'center'}}>
+                  <View style={{ width: '50%', justifyContent: 'center' }}>
                     <Text style={styles.formLabels}>End Time</Text>
-                    <RNDateTimePicker 
+                    <RNDateTimePicker
                       mode={'time'}
                       display={'default'}
                       onChange={(event, date) => {
                         setEndTime(date);
                         onChange('endTime', moment(date).format('h:m'), true);
                       }}
-                      value={endTime|| new Date()}
+                      value={endTime || new Date()}
                     />
                   </View>
-              </View>
-              :
-              null
-              }
+                </View>
+              ) : null}
               <Text style={styles.formLabels}>Location</Text>
-              <TouchableOpacity onPress={onSelectLocation} style={{marginBottom: 10}}>
+              <TouchableOpacity
+                onPress={onSelectLocation}
+                style={{ marginBottom: 10 }}>
                 <View style={[styles.dateContainer]}>
-                    <Text style={[styles.date, {color: locationValue === 'Please Select' ? 'grey' : 'black', shadowOpacity: 0, fontSize: 16}]}>{locationValue}</Text>
-                    <View style={styles.iconContainer}>
-                      <Icon color={showDatePicker ? '#e51b23' : '#A8A4B8'} name="location-outline" size={20} />
-                    </View>
+                  <Text
+                    style={[
+                      styles.date,
+                      {
+                        color:
+                          locationValue === 'Please Select' ? 'grey' : 'black',
+                        shadowOpacity: 0,
+                        fontSize: 16,
+                      },
+                    ]}>
+                    {locationValue}
+                  </Text>
+                  <View style={styles.iconContainer}>
+                    <Icon
+                      color={showDatePicker ? '#e51b23' : '#A8A4B8'}
+                      name="location-outline"
+                      size={20}
+                    />
+                  </View>
                 </View>
               </TouchableOpacity>
               <UiInput
-                  id="locationDetails"
-                  initialValue={formState.inputValues.locationDetails}
-                  isValid={formState.inputValidities.locationDetails}
-                  // errCode={formState.errors.description}
-                  placeholder="Location Details (Ex: Field #11)"
-                  multiline={true}
-                  onInputChange={onChange}
-                  bg={'#EAEAEA'}
-                  color={'black'}
-                  placeholderClr={'grey'}
-                  cursor={theme.cursor}
-                />
+                id="locationDetails"
+                initialValue={formState.inputValues.locationDetails}
+                isValid={formState.inputValidities.locationDetails}
+                // errCode={formState.errors.description}
+                placeholder="Location Details (Ex: Field #11)"
+                multiline={true}
+                onInputChange={onChange}
+                bg={'#EAEAEA'}
+                color={'black'}
+                placeholderClr={'grey'}
+                cursor={theme.cursor}
+              />
               {/* <UiTextArea placeholder={'Location Details (Ex: Field #11 or Park in Lot #2)'} style={[ifCircle, {padding: 0}]} id="locationDetails" onInputChange={onChange}/> */}
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown
@@ -408,32 +491,87 @@ const CreateEvent = props => {
                 placeholder="Choose Teams"
                 size="large"
               />
-              {type === 'Game' ?
-                <View style={{marginTop: 20}}>
-                  <UiInput id="opponent" placeholder={'Opponent'} style={{height: 55}} onInputChange={onChange}/>
+              {type === 'Game' ? (
+                <View style={{ marginTop: 20 }}>
+                  <UiInput
+                    id="opponent"
+                    placeholder={'Opponent'}
+                    style={{ height: 55 }}
+                    onInputChange={onChange}
+                  />
                 </View>
-                :
-                null
-              }
-              <View style={{marginTop: 20, marginBottom: 10}}>
-                <UiInput id="jersey" placeholder={'Jersey'} style={{height: 55}} onInputChange={onChange}/>
+              ) : null}
+              <View style={{ marginTop: 20, marginBottom: 10 }}>
+                <UiInput
+                  id="jersey"
+                  placeholder={'Jersey'}
+                  style={{ height: 55 }}
+                  onInputChange={onChange}
+                />
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50, marginTop: 10}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: 50,
+                  marginTop: 10,
+                }}>
                 <Text style={styles.optionLabels}>Notify Team(s)</Text>
-                <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
-                  <Switch value={formState.inputValues.notifyTeam} onValueChange={(value) => onChange('notifyTeam', value, true)}/>
+                <View
+                  style={{
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    position: 'absolute',
+                  }}>
+                  <Switch
+                    value={formState.inputValues.notifyTeam}
+                    onValueChange={value => onChange('notifyTeam', value, true)}
+                  />
                 </View>
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: 50,
+                }}>
                 <Text style={styles.optionLabels}>Arrive Early</Text>
-                <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
-                  <Switch value={formState.inputValues.arriveEarly} onValueChange={(value) => onChange('arriveEarly', value, true)}/>
+                <View
+                  style={{
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    position: 'absolute',
+                  }}>
+                  <Switch
+                    value={formState.inputValues.arriveEarly}
+                    onValueChange={value =>
+                      onChange('arriveEarly', value, true)
+                    }
+                  />
                 </View>
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: 50,
+                }}>
                 <Text style={styles.optionLabels}>Cancelled</Text>
-                <View style={{alignItems: 'flex-end', width: '100%', position: 'absolute'}}>
-                  <Switch value={formState.inputValues.cancelled} onValueChange={(value) => onChange('status', value ? 'approved' : 'cancelled', true)}/>
+                <View
+                  style={{
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    position: 'absolute',
+                  }}>
+                  <Switch
+                    value={formState.inputValues.cancelled}
+                    onValueChange={value =>
+                      onChange('status', value ? 'approved' : 'cancelled', true)
+                    }
+                  />
                 </View>
               </View>
               <Text style={styles.formLabels}>Repeat</Text>
@@ -443,9 +581,14 @@ const CreateEvent = props => {
                 placeholder="Please Select"
                 size="large"
               />
-              <View style={[{flexDirection: 'column', marginTop: 20}]}>
+              <View style={[{ flexDirection: 'column', marginTop: 20 }]}>
                 <Text style={styles.formLabels}>Extra Notes</Text>
-                <UiTextArea placeholder={'(Ex: Don\'t forget to bring consent form.)'} style={ifCircle} height={90} onInputChange={onChange}/>
+                <UiTextArea
+                  placeholder={"(Ex: Don't forget to bring consent form.)"}
+                  style={ifCircle}
+                  height={90}
+                  onInputChange={onChange}
+                />
               </View>
             </View>
           </ScrollView>
@@ -467,7 +610,11 @@ const CreateEvent = props => {
           />
         </View>
       </View>
-      <EventLocation showLocation={location} closeLocation={() => setLocation(false)} onSelect={onReturnLocation}/>
+      <EventLocation
+        showLocation={location}
+        closeLocation={() => setLocation(false)}
+        onSelect={onReturnLocation}
+      />
     </SafeAreaView>
   );
 };
@@ -480,7 +627,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     height: '100%',
-    backgroundColor: '#F2F2F2'
+    backgroundColor: '#F2F2F2',
   },
   modalContentContainer: {
     width: '100%',
@@ -523,7 +670,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: 'absolute',
-    right: 12
+    right: 12,
   },
   dateContainer: {
     display: 'flex',
@@ -533,7 +680,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     minHeight: 68,
     borderRadius: 8,
-    backgroundColor: '#EAEAEA'
+    backgroundColor: '#EAEAEA',
   },
   date: {
     width: '100%',
@@ -545,7 +692,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 10,
     paddingTop: 30,
-  }
+  },
 });
 
 export default CreateEvent;
