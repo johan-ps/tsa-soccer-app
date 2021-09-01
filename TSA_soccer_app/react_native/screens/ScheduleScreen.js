@@ -75,66 +75,73 @@ const ScheduleScreen = ({ navigation, events }) => {
     [dispatch],
   );
 
-  const showAlertWithThreeOptions = (title, message, options, callback) => {
-    Alert.alert(
-      title,
-      message,
-      [
-        {
-          text: options[0],
-          onPress: () => {
-            callback(0);
-          },
-        },
-        {
-          text: options[1],
-          onPress: () => {
-            callback(1);
-          },
-        },
-        {
-          text: options[2],
-          onPress: () => {
-            callback(2);
-          },
-        },
-      ],
-      {
-        cancelable: false,
-      },
-    );
-  };
-
   useEffect(() => {
     loadEventsFromDate(new Date());
   }, [dispatch, loadEventsFromDate]);
 
   const onAddClicked = () => {
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        options: ["Cancel", "Add Game", "Add Practice", "Add Other"],
-        tintColor: 'red',
-        destructiveButtonIndex: 3,
-        cancelButtonIndex: 0,
-        userInterfaceStyle: 'dark'
-      },
-      buttonIndex => {
-        if (buttonIndex === 0) {
-
-        } else if (buttonIndex === 1) {
-          navigation.navigate('CreateEvent', {
-            type: 'Game'
-          });
-        } else if (buttonIndex === 2) {
-          navigation.navigate('CreateEvent', {
-            type: 'Practice'
-          });
-        } else if (buttonIndex === 3) {
-          navigation.navigate('CreateEvent', {
-            type: 'Other'
-          });
-        }
-      });
+    if(Platform.os === 'ios'){
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ["Cancel", "Add Game", "Add Practice", "Add Other"],
+          tintColor: 'red',
+          destructiveButtonIndex: 3,
+          cancelButtonIndex: 0,
+          userInterfaceStyle: 'dark'
+        },
+        buttonIndex => {
+          if (buttonIndex === 0) {
+  
+          } else if (buttonIndex === 1) {
+            navigation.navigate('CreateEvent', {
+              type: 'Game'
+            });
+          } else if (buttonIndex === 2) {
+            navigation.navigate('CreateEvent', {
+              type: 'Practice'
+            });
+          } else if (buttonIndex === 3) {
+            navigation.navigate('CreateEvent', {
+              type: 'Other'
+            });
+          }
+        });
+    }
+    else{
+      Alert.alert(
+        "Create Event",
+        "Select what type of event you would like to create.",
+        [
+          {
+            text: "Add Game",
+            onPress: () => {
+              navigation.navigate('CreateEvent', {
+                type: 'Game'
+              });
+            },
+          },
+          {
+            text: "Add Practice",
+            onPress: () => {
+              navigation.navigate('CreateEvent', {
+                type: 'Practice'
+              });
+            },
+          },
+          {
+            text: "Add Other",
+            onPress: () => {
+              navigation.navigate('CreateEvent', {
+                type: 'Other'
+              });
+            },
+          },
+        ],
+        {
+          cancelable: true,
+        },
+      );
+    }
   };
 
   const onClickEvent = eventId => {
