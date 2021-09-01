@@ -51,7 +51,6 @@ const ScheduleHeader = props => {
       setDatesArray(newDatesArray);
     }
     if (value) {
-      console.log(value)
       setSelectedDate(value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

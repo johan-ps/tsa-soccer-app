@@ -102,7 +102,6 @@ const CreateAnnouncement = props => {
           includeExif: true,
         })
           .then(img => {
-            console.log('received base64 img');
             dispatchFormState({
               type: FORM_INPUT_UPDATE,
               value: {
@@ -128,7 +127,6 @@ const CreateAnnouncement = props => {
         includeExif: true,
       })
         .then(img => {
-          console.log('received base64 img');
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
@@ -158,7 +156,6 @@ const CreateAnnouncement = props => {
           mediaType: 'photo',
         })
           .then(img => {
-            console.log('received image', img);
             dispatchFormState({
               type: FORM_INPUT_UPDATE,
               value: {
@@ -184,7 +181,6 @@ const CreateAnnouncement = props => {
         mediaType: 'photo',
       })
         .then(img => {
-          console.log('received image', img);
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
