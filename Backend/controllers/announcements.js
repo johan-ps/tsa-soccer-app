@@ -5,7 +5,7 @@ exports.getAllAnnouncements = async (req, res, next) => {
     try {
         const [announcements, _] = await Announcement.findAll();
 
-        res.status(200).json({ announcements });
+        res.status(200).json({ announcements: announcements || [] });
     } catch (error) {
         next(error);
     }
@@ -16,7 +16,7 @@ exports.getAllAnnouncementsByTeams = async (req, res, next) => {
         const { teams = null } = req.body;
         const [announcements, _] = await Announcement.findAllByTeams(teams || []);
         
-        res.status(200).json({ announcements });
+        res.status(200).json({ announcements: announcements || [] });
     } catch (error) {
         next(error);
     }

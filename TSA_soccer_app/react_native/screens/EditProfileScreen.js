@@ -115,7 +115,6 @@ const EditProfileScreen = ({ navigation }) => {
                 height: img.height,
                 type: img.mime,
                 name: img.filename,
-                reqUri: img.data,
               },
               isValid: true,
               input: 'profileImg',
@@ -138,12 +137,11 @@ const EditProfileScreen = ({ navigation }) => {
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
-              uri: `file://${img.path}`,
+              uri: img.path,
               width: img.width,
               height: img.height,
               type: img.mime,
               name: `profileImg.${img.mime.split('/')[1]}`,
-              reqUri: img.data,
             },
             isValid: true,
             input: 'profileImg',
@@ -175,7 +173,6 @@ const EditProfileScreen = ({ navigation }) => {
                 height: img.height,
                 type: img.mime,
                 name: img.filename,
-                reqUri: img.data,
               },
               isValid: true,
               input: 'profileImg',
@@ -198,12 +195,11 @@ const EditProfileScreen = ({ navigation }) => {
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
-              uri: `file://${img.path}`,
+              uri: img.path,
               width: img.width,
               height: img.height,
               type: img.mime,
               name: `profileImg.${img.mime.split('/')[1]}`,
-              reqUri: img.data,
             },
             isValid: true,
             input: 'profileImg',

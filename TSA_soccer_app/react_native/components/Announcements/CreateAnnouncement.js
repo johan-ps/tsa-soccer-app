@@ -21,6 +21,7 @@ import ImageUpload from './ImageUpload';
 import * as announcementActions from '../../store/actions/AnnouncementActions';
 import * as loaderActions from '../../store/actions/LoaderActions';
 import * as teamActions from '../../store/actions/TeamActions';
+import { formatTeams } from '../../Util/utilities';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -82,45 +83,7 @@ const formReducer = (state, action) => {
 const CreateAnnouncement = props => {
   const { visible } = props;
   const theme = useSelector(state => state.theme.colors);
-  const teams = useSelector(state => state.teams);
-  // const teams = [
-  //   {
-  //     label: 'House League',
-  //     id: 0,
-  //     children: [
-  //       {
-  //         label: 'Markham House League',
-  //         id: 10,
-  //       },
-  //       {
-  //         label: 'Scarborough House League',
-  //         id: 17,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     label: 'Rep',
-  //     id: 1,
-  //     children: [
-  //       {
-  //         label: 'U14',
-  //         id: 13,
-  //       },
-  //       {
-  //         label: 'U11',
-  //         id: 14,
-  //       },
-  //       {
-  //         label: 'U10',
-  //         id: 15,
-  //       },
-  //       {
-  //         label: 'U9',
-  //         id: 16,
-  //       },
-  //     ],
-  //   },
-  // ];
+  const teams = useSelector(state => formatTeams(state.teams));
   const dispatch = useDispatch();
   const userData = useSelector(state => state.userData);
 
@@ -146,6 +109,8 @@ const CreateAnnouncement = props => {
                 uri: `data:${img.mime};base64,` + img.data,
                 width: img.width,
                 height: img.height,
+                type: img.mime,
+                name: `profileImg.${img.mime.split('/')[1]}`,
               },
               input: 'imageUrl',
             });
@@ -167,9 +132,11 @@ const CreateAnnouncement = props => {
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
-              uri: `file://${img.path}`,
+              uri: `${img.path}`,
               width: img.width,
               height: img.height,
+              type: img.mime,
+              name: `profileImg.${img.mime.split('/')[1]}`,
             },
             input: 'imageUrl',
           });
@@ -198,7 +165,8 @@ const CreateAnnouncement = props => {
                 uri: img.path,
                 width: img.width,
                 height: img.height,
-                mime: img.mime,
+                type: img.mime,
+                name: `profileImg.${img.mime.split('/')[1]}`,
               },
               input: 'imageUrl',
             });
@@ -220,10 +188,11 @@ const CreateAnnouncement = props => {
           dispatchFormState({
             type: FORM_INPUT_UPDATE,
             value: {
-              uri: `file://${img.path}`,
+              uri: `${img.path}`,
               width: img.width,
               height: img.height,
-              mime: img.mime,
+              type: img.mime,
+              name: `profileImg.${img.mime.split('/')[1]}`,
             },
             input: 'imageUrl',
           });
@@ -257,12 +226,12 @@ const CreateAnnouncement = props => {
   const createAnnouncementHandler = async () => {
     dispatch(loaderActions.updateLoader(true));
     try {
-      const teams = [];
+      const teamsParams = [];
       if (formState.inputValues.teams) {
         for (const groupId in formState.inputValues.teams) {
           for (const teamId in formState.inputValues.teams[groupId].children) {
             if (formState.inputValues.teams[groupId].children[teamId]) {
-              teams.push(teamId);
+              teamsParams.push(teamId);
             }
           }
         }
@@ -272,10 +241,11 @@ const CreateAnnouncement = props => {
           title: '',
           description: formState.inputValues.description,
           image: formState.inputValues.imageUrl,
-          teams: JSON.stringify(teams),
+          teams: JSON.stringify(teamsParams),
           authorId: userData.id,
         }),
       );
+      await dispatch(announcementActions.getAnnouncements());
       props.onClose();
       dispatchFormState({ type: 'reset' });
     } catch (error) {

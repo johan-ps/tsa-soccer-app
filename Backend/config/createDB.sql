@@ -4,7 +4,7 @@ CREATE TABLE heroku_255da0fd4009d26.announcements (
   title VARCHAR(45) NULL,
   description VARCHAR(5000) NOT NULL,
   authorId INT NOT NULL,
-  image LONGTEXT NOT NULL,
+  image LONGTEXT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (authorId) REFERENCES USERS(id),
   UNIQUE INDEX ID_UNIQUE (id ASC));

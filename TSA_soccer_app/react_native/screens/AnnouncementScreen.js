@@ -22,6 +22,7 @@ import * as announcementActions from '../store/actions/AnnouncementActions';
 import UiBadge from '../components/UiComponents/UiBadge';
 import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
+import * as loaderActions from '../store/actions/LoaderActions';
 
 const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();
@@ -35,20 +36,32 @@ const AnnouncementScreen = ({ navigation }) => {
   const userData = useSelector(state => state.userData);
   const dispatch = useDispatch();
   const [showBadge, setShowBadge] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const [createAnnouncement, setCreateAnnouncemnt] = useState(false);
 
   const loadAnnouncements = useCallback(async () => {
     try {
+      if (!loaded) {
+        dispatch(loaderActions.updateLoader(true));
+      }
       await dispatch(announcementActions.getAnnouncements());
+      if (!loaded) {
+        dispatch(loaderActions.updateLoader(false));
+      }
+      setLoaded(true);
     } catch (err) {
       console.log(err);
     }
-  }, [dispatch]);
+  }, [dispatch, loaded]);
 
   useEffect(() => {
     loadAnnouncements();
   }, [dispatch, loadAnnouncements]);
+
+  useFocusEffect(() => {
+    dispatch(tabbarActions.updateVisibility(true));
+  });
 
   const onDeleteHandler = id => {
     setDeleteId(id);

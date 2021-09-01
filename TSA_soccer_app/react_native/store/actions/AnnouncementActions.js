@@ -43,7 +43,13 @@ export const addAnnouncement = announcementData => {
 
       const formData = new FormData();
       for (const key in announcementData) {
-        formData.append(key, announcementData[key]);
+        console.log(announcementData[key]);
+        if (
+          announcementData[key] !== undefined &&
+          announcementData[key] !== null
+        ) {
+          formData.append(key, announcementData[key]);
+        }
       }
 
       const response = await fetch(

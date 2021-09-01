@@ -115,3 +115,26 @@ export const sortByDate = data => {
   data.sort(compareDate);
   return data;
 };
+
+export const formatTeams = teams => {
+  const teamsOpt = [
+    {
+      label: 'House League',
+      id: 0,
+      children: [],
+    },
+    {
+      label: 'Rep',
+      id: 1,
+      children: [],
+    },
+  ];
+  teams.forEach(team => {
+    if (team.type === 'rep') {
+      teamsOpt[1].children.push({ ...team, label: team.name });
+    } else {
+      teamsOpt[0].children.push({ ...team, label: team.name });
+    }
+  });
+  return teamsOpt;
+};

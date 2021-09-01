@@ -102,7 +102,8 @@ const AnnouncementCard = props => {
             imageViewStyle={styles.imageContainer}
             style={styles.image}
             source={image}
-            cond={true}
+            cond={image !== null}
+            alt={null}
             resizeMode="cover"
           />
           <View style={styles.bodyContentWrapper}>

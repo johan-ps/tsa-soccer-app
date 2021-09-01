@@ -1,7 +1,6 @@
 import { environmentUrl } from '../../constants/Environment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CONST from '../../constants/Constants';
-import { DELETE_EVENT } from './EventActions';
 
 export const GET_TEAMS = 'GET_TEAMS';
 export const ADD_TEAM = 'ADD_TEAM';
@@ -18,7 +17,7 @@ export const getTeams = () => {
 
       const resData = await response.json();
       const teams = resData.teams;
-      console.log(teams);
+
       dispatch({
         type: GET_TEAMS,
         teams,

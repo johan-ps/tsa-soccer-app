@@ -329,8 +329,9 @@ const UiDropdown = props => {
             </Text>
           )}
           <View horizontal={true} style={styles.selectLabelsContainer}>
-            {selectedLabels.map(label => (
+            {selectedLabels.map((label, i) => (
               <View
+                key={i}
                 style={[
                   styles.selectLabels,
                   { backgroundColor: theme.ddSelectLabelBg },
