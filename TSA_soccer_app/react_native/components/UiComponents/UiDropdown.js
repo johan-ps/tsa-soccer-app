@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -43,6 +43,7 @@ const UiDropdown = props => {
   const [showOptions, setShowOptions] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  const [height, setHeight] = useState(0);
   const [width, setWidth] = useState({ width: 170 });
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
@@ -70,15 +71,15 @@ const UiDropdown = props => {
 
   const getDropdownXY = event => {
     const layout = event.nativeEvent.layout;
-    setOffsetY(layout.height + layout.y + modalOffsetY);
-    setOffsetX(layout.x + modalOffsetX);
     setWidth({ width: layout.width });
+    setHeight(layout.height);
   };
 
   const onOpenHandler = () => {
     ddBtn.current.measure((fx, fy, width, height, px, py) => {
       setOffsetX(windowWidth - px - width);
-      setOffsetY(py + 20);
+      setOffsetY(py);
+      setHeight(height);
     });
     setShowOptions(true);
     setTimeout(() => {
@@ -97,10 +98,12 @@ const UiDropdown = props => {
     return { width };
   };
 
-  const positionStyle = {
-    top: offsetY,
-    left: offsetX,
-  };
+  const positionStyle = useMemo(() => {
+    return {
+      top: offsetY + height,
+      left: offsetX,
+    };
+  }, [offsetX, offsetY, height]);
 
   const onSelectOptionHandler = (option, child = null) => {
     if (multiselect) {
@@ -194,7 +197,7 @@ const UiDropdown = props => {
             <Animated.View
               style={[
                 styles.optionsContainer,
-                { width: '85%' },
+                width,
                 { backgroundColor: theme.ddBgClr },
                 positionStyle,
                 optionsAnimStyles,
@@ -317,7 +320,7 @@ const UiDropdown = props => {
           props.style,
         ]}
         ref={ddBtn}
-        onLayout={() => {}}>
+        onLayout={getDropdownXY}>
         <Ripple
           onPressIn={onFocusIn}
           onPress={onOpenHandler}
@@ -328,7 +331,7 @@ const UiDropdown = props => {
               {selectedLabel}
             </Text>
           )}
-          <View horizontal={true} style={styles.selectLabelsContainer}>
+          <View style={[styles.selectLabelsContainer]}>
             {selectedLabels.map((label, i) => (
               <View
                 key={i}
@@ -375,23 +378,22 @@ const styles = StyleSheet.create({
     maxHeight: 320,
   },
   selectLabels: {
-    width: 70,
-    height: 40,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 5,
-    padding: 2,
+    marginBottom: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   selectLabelsContainer: {
     flexDirection: 'row',
-    padding: 0,
-    width: 140,
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
   },
   dropdownContainer: {
+    minHeight: 58,
     borderRadius: 10,
-    height: 50,
-    width: 170,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 2,
@@ -402,6 +404,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'solid',
     overflow: 'hidden',
+    position: 'relative',
   },
   dropdownBtn: {
     borderRadius: 10,
@@ -410,7 +413,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 30,
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   selectedText: {
     color: '#A29FAF',
@@ -462,6 +465,9 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 50,
     backgroundColor: '#ffffff',
+    position: 'absolute',
+    alignSelf: 'center',
+    right: 20,
   },
 });
 

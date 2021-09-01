@@ -52,6 +52,23 @@ const AnnouncementScreen = ({ navigation }) => {
     }
   }, [dispatch, loaded]);
 
+  const loadFilteredAnnouncements = useCallback(
+    async teams => {
+      try {
+        dispatch(loaderActions.updateLoader(true));
+        if (!teams || teams.length === 0) {
+          await dispatch(announcementActions.getAnnouncements());
+        } else {
+          await dispatch(announcementActions.getFilteredAnnouncements(teams));
+        }
+        dispatch(loaderActions.updateLoader(false));
+      } catch (err) {
+        console.log('error<2>', err);
+      }
+    },
+    [dispatch],
+  );
+
   useEffect(() => {
     loadAnnouncements();
   }, [dispatch, loadAnnouncements]);
@@ -165,6 +182,7 @@ const AnnouncementScreen = ({ navigation }) => {
           secondaryLabel="Cancel"
           visible={filterVisible}
           title="Filter Announcements"
+          primaryBtnHandler={loadFilteredAnnouncements}
           onCloseHandler={toggleFilter}
         />
       </SafeAreaView>
