@@ -6,6 +6,7 @@ export const GET_EVENTS = 'GET_EVENTS';
 export const ADD_EVENT = 'ADD_EVENT';
 export const DELETE_EVENT = 'DELETE_EVENT';
 export const EDIT_EVENT = 'EDIT_EVENT';
+export const UPDATE_AVAILABILITY = 'UPDATE_AVAILABILITY';
 
 export const getEvents = () => {
   return async dispatch => {
@@ -84,12 +85,12 @@ export const getEventsOnDate = date => {
   }
 }
 
-export const getEventsFromDate = date => {
+export const getEventsFromDate = (date, userId) => {
   return async dispatch => {
     try {
-      console.log("Joell date", date);
+      console.log("Joell userId", userId);
       const response = await fetch(
-        `http://${environmentUrl}/api/events/startingFrom/?date=${date}`,
+        `http://${environmentUrl}/api/events/startingFrom/?date=${date}&userId=${userId}`,
         {
           method: 'GET'
         }
@@ -106,6 +107,50 @@ export const getEventsFromDate = date => {
         type: GET_EVENTS,
         events,
       });
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
+
+export const updateEventAvailability = (eventId, userId, status) => {
+  return async dispatch => {
+    try {
+      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
+      console.log("Joell ", {
+        eventId,
+        userId,
+        status: status.toLowerCase()
+      });
+      const response = await fetch(
+        `http://${environmentUrl}/api/events/updateAvailability`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({
+            eventId,
+            userId,
+            status: status.toLowerCase()
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.log(response);
+        throw new Error('Something went wrong getEventsonDate!');
+      }
+
+      const resData = await response.json();
+      const event = resData.event;
+      console.log("joell availability", event)
+      dispatch({
+        type: UPDATE_AVAILABILITY,
+        event
+      })
 
     } catch (err) {
       console.log(err);

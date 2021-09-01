@@ -87,7 +87,8 @@ const formReducer = (state, action) => {
 
 
 const CreateEvent = props => {
-  const { visible } = props;
+  const { visible, route } = props;
+  const { type } = route.params;
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const userId = userData && userData.id;
@@ -138,6 +139,12 @@ const CreateEvent = props => {
 
   useEffect(() => {
     onChange('authorId', userId, true);
+    if(type === 'Game'){
+      onChange('type', 'Game', true);
+    }
+    else if(type === 'Practice'){
+      onChange('type', 'Practice', true);
+    }
   }, []);
 
   const onChange = useCallback(
@@ -187,34 +194,33 @@ const CreateEvent = props => {
     }).start();
   };
 
-  const onPressInStartTime = () => {
-    setShowStartTimePicker(true);
-    Animated.spring(startTimeAnimation, {
-      friction: 100,
-      toValue: 100,
-      duration: 100,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: false
-    })
-  }
+  // const onPressInStartTime = () => {
+  //   setShowStartTimePicker(true);
+  //   Animated.spring(startTimeAnimation, {
+  //     friction: 100,
+  //     toValue: 100,
+  //     duration: 100,
+  //     easing: Easing.out(Easing.ease),
+  //     useNativeDriver: false
+  //   })
+  // }
 
-  const onPressOutStartTime = () => {
-    setShowStartTimePicker(false);
-    Animated.spring(startTimeAnimation, {
-      friction: 100,
-      toValue: 0,
-      duration: 100,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: false,
-    }).start();
-  };
+  // const onPressOutStartTime = () => {
+  //   setShowStartTimePicker(false);
+  //   Animated.spring(startTimeAnimation, {
+  //     friction: 100,
+  //     toValue: 0,
+  //     duration: 100,
+  //     easing: Easing.out(Easing.ease),
+  //     useNativeDriver: false,
+  //   }).start();
+  // };
 
   const onSelectLocation = () => {
     setLocation(true);
   }
 
   const onReturnLocation = location => {
-    console.log("Joell location", location);
     setLocationValue(location.name);
     onChange('locationId', location.id, true);
   }
@@ -273,31 +279,24 @@ const CreateEvent = props => {
       <View style={styles.modalContainer}>
         <View style={styles.modalContentContainer}>
           <View style={styles.modalHeader}>
-            <Text style={styles.formHeading}>Create an Event</Text>
+            <Text style={styles.formHeading}>Create a{type === 'Other' ? `n ${type}` : ` ${type}`} Event</Text>
           </View>
           <ScrollView
             style={styles.scrollviewContainer}
             decelerationRate="fast">
             <View style={styles.modalBody}>
-              <View style={{flexDirection: 'row', paddingBottom: 20}}>
-                <TouchableOpacity onPress={() => onChange('type', 'Game', true)} style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomLeftRadius: 10, borderTopLeftRadius: 10, borderColor: '#A9A9A9', backgroundColor: formState.inputValues.type === 'Game' ? 'red' : 'white'}}>
-                  <Text style={{fontSize: 18, fontWeight: '500'}}>Game</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => onChange('type', 'Practice', true)} style={{flex: 1, alignItems: 'center', padding: 5, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#A9A9A9', backgroundColor: formState.inputValues.type === 'Practice' ? 'red' : 'white'}}>
-                  <Text style={{fontSize: 18, fontWeight: '500'}}>Practice</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => onChange('type', 'Other', true)} style={{flex: 1, alignItems: 'center', padding: 5, borderWidth: 1, borderBottomRightRadius: 10, borderTopRightRadius: 10, borderColor: '#A9A9A9', backgroundColor: formState.inputValues.type === 'Other' ? 'red' : 'white'}}>
-                  <Text style={{fontSize: 18, fontWeight: '500'}}>Other</Text>
-                </TouchableOpacity>
-              </View>
-              <UiInput
-                id="title"
-                placeholder="Title"
-                borderTheme="underline"
-                fontSize={18}
-                style={{ marginBottom: 0 }}
-                onInputChange={onChange}
-              />
+              {type === 'Other' ?
+                <UiInput
+                  id="title"
+                  placeholder="Title"
+                  borderTheme="underline"
+                  fontSize={18}
+                  style={{ marginBottom: 0 }}
+                  onInputChange={onChange}
+                />
+                :
+                null
+              }
               <Text style={styles.formLabels}>Date</Text>
               {/* <DateTimePicker 
                       value={date || new Date()}
@@ -314,16 +313,16 @@ const CreateEvent = props => {
                 onPress={() => {
                   if(!shadow){ onPressInDate(); setShadow(shadowStyle);} else{ onPressOutDate(); setShadow(null); }
                 }} 
-                style={[ifCircle, {marginBottom: 10}, showDatePicker && shadow]}
+                style={[{marginBottom: 10, justifyContent: 'center', alignItems: 'center'}]}
               >
                 <View style={{flexDirection: 'column'}}>
-                  <View style={[styles.dateContainer]}>
-                    <Text style={{color: formState.inputValues.date ? 'black' : 'grey', shadowOpacity: 0, fontSize: 16}}>{formState.inputValues.date ? moment(formState.inputValues.date).format('dddd, D MMM YYYY') : 'Please Select'}</Text>
+                  <View style={[styles.dateContainer, {borderWidth: showDatePicker ? 1 : 0, borderColor: 'red'}]}>
+                    <Text style={[{color: formState.inputValues.date ? 'black' : 'grey', shadowOpacity: 0, fontSize: 16}, styles.date]}>{formState.inputValues.date ? moment(formState.inputValues.date).format('dddd, D MMM YYYY') : 'Please Select'}</Text>
                     <View style={styles.iconContainer}>
                       <Icon color={showDatePicker ? '#e51b23' : '#A8A4B8'} name="calendar-outline" size={20} />
                     </View>
                   </View>
-                  <Animated.View style={{height: dateAnimation, width: '100%', paddingRight: 20}}>
+                  <Animated.View style={{height: dateAnimation, width: '100%', paddingLeft: 10}}>
                     { showDatePicker ?
                       <DatePicker
                         date={formState.inputValues.date || new Date()}
@@ -377,15 +376,28 @@ const CreateEvent = props => {
               null
               }
               <Text style={styles.formLabels}>Location</Text>
-              <TouchableOpacity onPress={onSelectLocation} style={[ifCircle, {marginBottom: 10}]}>
+              <TouchableOpacity onPress={onSelectLocation} style={{marginBottom: 10}}>
                 <View style={[styles.dateContainer]}>
-                  <Text style={{color: locationValue === 'Please Select' ? 'grey' : 'black', shadowOpacity: 0, fontSize: 16}}>{locationValue}</Text>
-                  <View style={styles.iconContainer}>
-                    <Icon color={showDatePicker ? '#e51b23' : '#A8A4B8'} name="location-outline" size={20} />
-                  </View>
+                    <Text style={[styles.date, {color: locationValue === 'Please Select' ? 'grey' : 'black', shadowOpacity: 0, fontSize: 16}]}>{locationValue}</Text>
+                    <View style={styles.iconContainer}>
+                      <Icon color={showDatePicker ? '#e51b23' : '#A8A4B8'} name="location-outline" size={20} />
+                    </View>
                 </View>
               </TouchableOpacity>
-              <UiTextArea placeholder={'Location Details (Ex: Field #11 or Park in Lot #2)'} style={[ifCircle, {padding: 0}]} id="locationDetails" onInputChange={onChange}/>
+              <UiInput
+                  id="locationDetails"
+                  initialValue={formState.inputValues.locationDetails}
+                  isValid={formState.inputValidities.locationDetails}
+                  // errCode={formState.errors.description}
+                  placeholder="Location Details (Ex: Field #11)"
+                  multiline={true}
+                  onInputChange={onChange}
+                  bg={'#EAEAEA'}
+                  color={'black'}
+                  placeholderClr={'grey'}
+                  cursor={theme.cursor}
+                />
+              {/* <UiTextArea placeholder={'Location Details (Ex: Field #11 or Park in Lot #2)'} style={[ifCircle, {padding: 0}]} id="locationDetails" onInputChange={onChange}/> */}
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown
                 modalOffsetY={80}
@@ -396,10 +408,14 @@ const CreateEvent = props => {
                 placeholder="Choose Teams"
                 size="large"
               />
-              <View style={{marginTop: 10}}>
-                <UiInput id="opponent" placeholder={'Opponent'} style={{height: 55}} onInputChange={onChange}/>
-              </View>
-              <View style={{marginTop: 10, marginBottom: 10}}>
+              {type === 'Game' ?
+                <View style={{marginTop: 20}}>
+                  <UiInput id="opponent" placeholder={'Opponent'} style={{height: 55}} onInputChange={onChange}/>
+                </View>
+                :
+                null
+              }
+              <View style={{marginTop: 20, marginBottom: 10}}>
                 <UiInput id="jersey" placeholder={'Jersey'} style={{height: 55}} onInputChange={onChange}/>
               </View>
               <View style={{flexDirection: 'row', alignItems: 'center', width: '100%', height: 50, marginTop: 10}}>
@@ -512,11 +528,23 @@ const styles = StyleSheet.create({
   dateContainer: {
     display: 'flex',
     flexDirection: 'row',
-    padding: 10,
     alignItems: 'center',
     width: '100%',
-    backgroundColor: 'white',
-    borderRadius: 10
+    position: 'relative',
+    minHeight: 68,
+    borderRadius: 8,
+    backgroundColor: '#EAEAEA'
+  },
+  date: {
+    width: '100%',
+    height: '100%',
+    padding: 0,
+    margin: 0,
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    paddingTop: 30,
   }
 });
 

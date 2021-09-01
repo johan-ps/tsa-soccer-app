@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Platform,
+  SafeAreaView,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -302,134 +303,134 @@ const CreateAnnouncement = props => {
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      statusBarTranslucent={true}
-      animationType="slide">
-      <View
-        style={[styles.modalContainer, { backgroundColor: theme.secondaryBg }]}>
+      <Modal
+        visible={visible}
+        transparent={true}
+        statusBarTranslucent={true}
+        animationType="slide">
         <View
-          style={[
-            styles.modalContentContainer,
-            { backgroundColor: theme.secondaryBg },
-          ]}>
-          <View style={styles.modalHeader}>
-            <Text
-              style={[
-                styles.formHeading,
-                { color: theme.primaryText, fontFamily: theme.fontRegular },
-              ]}>
-              Create Announcement
-            </Text>
-          </View>
-          <ScrollView
-            style={styles.scrollviewContainer}
-            decelerationRate="fast">
-            <View style={styles.modalBody}>
-              <UiInput
-                id="description"
-                initialValue={formState.inputValues.description}
-                isValid={formState.inputValidities.description}
-                errCode={formState.errors.description}
-                placeholder="Description"
-                multiline={true}
-                onInputChange={onChangeText}
-                bg={theme.inputBg}
-                color={theme.inputText}
-                placeholderClr={theme.inputPlaceholder}
-                cursor={theme.cursor}
-              />
-              <Text style={styles.formLabels}>Team</Text>
-              <UiDropdown
-                id="teams"
-                onSelect={onSelectHandler}
-                modalOffsetY={110}
-                modalOffsetX={0}
-                options={teams}
-                multiselect={true}
-                group={true}
-                placeholder="Choose teams"
-                size="large"
-                optionSize="large"
-                isValid={formState.inputValidities.teams}
-                errCode={formState.errors.teams}
-              />
-              <Text style={styles.formLabels}>Upload Image</Text>
-              <ImageUpload
-                imgUrl={formState.inputValues.imageUrl}
-                onPress={() => {
-                  setImgPickerModalVisible(true);
-                }}
-              />
-              <View style={styles.uploadBtnContainer}>
-                <UiButton
-                  icon="upload"
-                  label="Upload Image"
-                  type="primary"
-                  primaryClr={theme.buttonSecondaryBg}
-                  secondaryClr={theme.buttonSecondaryText}
+          style={[styles.modalContainer, { backgroundColor: theme.secondaryBg }]}>
+          <View
+            style={[
+              styles.modalContentContainer,
+              { backgroundColor: theme.secondaryBg },
+            ]}>
+            <View style={styles.modalHeader}>
+              <Text
+                style={[
+                  styles.formHeading,
+                  { color: theme.primaryText, fontFamily: theme.fontRegular },
+                ]}>
+                Create Announcement
+              </Text>
+            </View>
+            <ScrollView
+              style={styles.scrollviewContainer}
+              decelerationRate="fast">
+              <View style={styles.modalBody}>
+                <UiInput
+                  id="description"
+                  initialValue={formState.inputValues.description}
+                  isValid={formState.inputValidities.description}
+                  errCode={formState.errors.description}
+                  placeholder="Description"
+                  multiline={true}
+                  onInputChange={onChangeText}
+                  bg={theme.inputBg}
+                  color={theme.inputText}
+                  placeholderClr={theme.inputPlaceholder}
+                  cursor={theme.cursor}
+                />
+                <Text style={styles.formLabels}>Team</Text>
+                <UiDropdown
+                  id="teams"
+                  onSelect={onSelectHandler}
+                  modalOffsetY={110}
+                  modalOffsetX={0}
+                  options={teams}
+                  multiselect={true}
+                  group={true}
+                  placeholder="Choose teams"
+                  size="large"
+                  optionSize="large"
+                  isValid={formState.inputValidities.teams}
+                  errCode={formState.errors.teams}
+                />
+                <Text style={styles.formLabels}>Upload Image</Text>
+                <ImageUpload
+                  imgUrl={formState.inputValues.imageUrl}
                   onPress={() => {
                     setImgPickerModalVisible(true);
                   }}
-                  darkBg={false}
                 />
-                {formState.inputValues.imageUrl ? (
+                <View style={styles.uploadBtnContainer}>
                   <UiButton
-                    icon="close"
-                    // label="Delete Image"
+                    icon="upload"
+                    label="Upload Image"
                     type="primary"
                     primaryClr={theme.buttonSecondaryBg}
                     secondaryClr={theme.buttonSecondaryText}
                     onPress={() => {
-                      clearImage();
+                      setImgPickerModalVisible(true);
                     }}
                     darkBg={false}
                   />
-                ) : null}
+                  {formState.inputValues.imageUrl ? (
+                    <UiButton
+                      icon="close"
+                      // label="Delete Image"
+                      type="primary"
+                      primaryClr={theme.buttonSecondaryBg}
+                      secondaryClr={theme.buttonSecondaryText}
+                      onPress={() => {
+                        clearImage();
+                      }}
+                      darkBg={false}
+                    />
+                  ) : null}
+                </View>
               </View>
-            </View>
-          </ScrollView>
+            </ScrollView>
+          </View>
+          <View style={styles.modalFooter}>
+            <UiButton
+              label="Cancel"
+              type="tertiary"
+              primaryClr={theme.buttonTertiaryText}
+              secondaryClr={theme.buttonTertiaryBg}
+              onPress={onCloseHandler}
+              darkBg={theme.name === 'dark'}
+            />
+            <UiButton
+              label="Create"
+              type="tertiary"
+              primaryClr={theme.buttonTertiaryText}
+              secondaryClr={theme.buttonTertiaryBg}
+              onPress={() => {
+                createAnnouncementHandler();
+              }}
+              darkBg={theme.name === 'dark'}
+            />
+          </View>
         </View>
-        <View style={styles.modalFooter}>
-          <UiButton
-            label="Cancel"
-            type="tertiary"
-            primaryClr={theme.buttonTertiaryText}
-            secondaryClr={theme.buttonTertiaryBg}
-            onPress={onCloseHandler}
-            darkBg={theme.name === 'dark'}
-          />
-          <UiButton
-            label="Create"
-            type="tertiary"
-            primaryClr={theme.buttonTertiaryText}
-            secondaryClr={theme.buttonTertiaryBg}
-            onPress={() => {
-              createAnnouncementHandler();
-            }}
-            darkBg={theme.name === 'dark'}
-          />
-        </View>
-      </View>
-      <UiModal
-        primaryLabel="Camera"
-        secondaryLabel="Library"
-        visible={imgPickerModalVisible}
-        title="Upload Image"
-        content={'How would you like to upload your image?'}
-        primaryBtnHandler={cameraHandler}
-        secondaryBtnHandler={imagePickerHandler}
-        onCloseHandler={() => {
-          setImgPickerModalVisible(false);
-        }}
-        icon="aperture-outline"
-        closeable={true}
-        onClose={() => {
-          setImgPickerModalVisible(false);
-        }}
-      />
-    </Modal>
+        <UiModal
+          primaryLabel="Camera"
+          secondaryLabel="Library"
+          visible={imgPickerModalVisible}
+          title="Upload Image"
+          content={'How would you like to upload your image?'}
+          primaryBtnHandler={cameraHandler}
+          secondaryBtnHandler={imagePickerHandler}
+          onCloseHandler={() => {
+            setImgPickerModalVisible(false);
+          }}
+          icon="aperture-outline"
+          closeable={true}
+          onClose={() => {
+            setImgPickerModalVisible(false);
+          }}
+        />
+      </Modal>
   );
 };
 

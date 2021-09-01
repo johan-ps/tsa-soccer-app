@@ -87,11 +87,11 @@ CREATE TABLE heroku_255da0fd4009d26.locations (
   PRIMARY KEY (id),
   UNIQUE INDEX ID_UNIQUE (id ASC));
 
-CREATE TABLE heroku_255da0fd4009d26.availabity (
+CREATE TABLE heroku_255da0fd4009d26.availability (
   id INT NOT NULL AUTO_INCREMENT,
   eventId INT NOT NULL,
   playerId INT NOT NULL,
-  status ENUM('going', 'unavailable'),
+  status ENUM('going', 'maybe', 'unavailable'),
   PRIMARY KEY (id),
   FOREIGN KEY (eventId) REFERENCES EVENTS(id),
   FOREIGN KEY (playerId) REFERENCES USERS (id),

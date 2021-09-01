@@ -13,6 +13,8 @@ router.get('/startingFrom', eventsController.getEventsFromDate)
 
 router.get('/date', eventsController.getEventsOnDate)
 
+router.post('/updateAvailability', isAuth, eventsController.updateEventAvailability)
+
 router.post('/create', isAuth, eventsController.createEvent)
 
 router.put('/:id/update', isAuth, eventsController.updateById)

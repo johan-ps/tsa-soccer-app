@@ -1,4 +1,5 @@
 const Event = require("../models/Event");
+const Team = require("../models/Team");
 const dateFormat = require('../utils/dateFormat');
 
 exports.getAllEvents = async (req, res, next) => {
@@ -36,8 +37,8 @@ exports.getEventsByTeam = async (req, res, next) => {
 
 exports.getEventsOnDate = async (req, res, next) => {
   try {
-    const {date} = req.body;
-    const [events, _] = await Event.findByDate(date);
+    const {date, userId} = req.body;
+    const [events, _] = await Event.findByDate(date, userId);
 
     res.status(200).json({ events });
   } catch (error) {
@@ -47,16 +48,25 @@ exports.getEventsOnDate = async (req, res, next) => {
 
 exports.getEventsFromDate = async (req, res, next) => {
   try {
-    const {date} = req.query;
+    const {date, userId} = req.query;
+    console.log("Joell userId", userId);
     let eventDate = new Date(date);
     eventDate = dateFormat.dateTime(eventDate);
-    const [eventsOnDate, _] = await Event.findByDate(eventDate);
-    console.log("Joell eventsOnDate", eventsOnDate);
-    const [eventsAfterDate, __] = await Event.findFromDate(eventDate);
-    console.log("Joell eventsAfterDate", eventsAfterDate);
+    const [eventsOnDate, _] = await Event.findByDate(eventDate, userId);
+    const [eventsAfterDate, __] = await Event.findFromDate(eventDate, userId);
     const events = {today: eventsOnDate, upcoming: eventsAfterDate};
 
     res.status(200).json({ events });
+  } catch (error) {
+      next(error);
+  }
+}
+
+exports.updateEventAvailability = async (req, res, next) => {
+  try {
+    const {eventId, userId, status} = req.body;
+    const [availability, _] = await Event.updateUserAvailability(eventId, userId, status);
+    res.status(200).json({ event: {id: eventId, availability: status}});
   } catch (error) {
       next(error);
   }
@@ -68,8 +78,12 @@ exports.createEvent = async (req, res, next) => {
 
       const newEvent = new Event(type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
       const [event, _] = await newEvent.save();
+      console.log("Joell event", event);
+      const [players, __] = await Team.findAllPlayers(teamId);
+      console.log("Joell players", players);
+      await newEvent.saveAvailability(event.insertId, players);
       console.log("Joell newEvent", newEvent)
-      res.status(200).json({event: {...newEvent, id: event.insertId} })
+      res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
     }
     catch(error){
       next(error);

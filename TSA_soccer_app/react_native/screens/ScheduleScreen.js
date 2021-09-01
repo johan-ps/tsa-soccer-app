@@ -24,17 +24,20 @@ const loadingLottieAnim = require('../assets/img/spinning-anim.json');
 import * as eventsActions from '../store/actions/EventActions';
 import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
+import * as loaderActions from '../store/actions/LoaderActions';
 
 const ScheduleScreen = ({ navigation }) => {
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
+  const userId = userData && userData.id;
   const events = useSelector(state => state.events);
   const eventsToday = events.today;
   const eventsUpcoming = events.upcoming;
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);
-  const [eventType, setEventType] = useState(null);
+
+  console.log("Joell events", events);
 
   useFocusEffect(() => {
     dispatch(tabbarActions.updateVisibility(true));
@@ -53,13 +56,21 @@ const ScheduleScreen = ({ navigation }) => {
   };
 
   const loadEventsFromDate = useCallback(
-    async date => {
+    async (date, isReload = false) => {
+      if(!isReload){
+        dispatch(loaderActions.updateLoader(true));
+      }
       try {
         await dispatch(
-          eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD')),
+          eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD'), userId),
         );
       } catch (err) {
         console.log(err);
+      }
+      finally {
+        if(!isReload){
+          dispatch(loaderActions.updateLoader(false));
+        }
       }
     },
     [dispatch],
@@ -99,16 +110,33 @@ const ScheduleScreen = ({ navigation }) => {
     loadEventsFromDate(new Date());
   }, [dispatch, loadEventsFromDate]);
 
-  // const onAddClicked = () => {
-  //   let eventType = 1;
-  //   openActionSheetwithOptions(
-  //     ['Cancel', 'Game', 'Practice', 'Other'],
-  //     'red',
-  //     3,
-  //     index => setEventType(index),
-  //   );
-  //   navigation.navigate('CreateEvent');
-  // };
+  const onAddClicked = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: ["Cancel", "Add Game", "Add Practice", "Add Other"],
+        tintColor: 'red',
+        destructiveButtonIndex: 3,
+        cancelButtonIndex: 0,
+        userInterfaceStyle: 'dark'
+      },
+      buttonIndex => {
+        if (buttonIndex === 0) {
+
+        } else if (buttonIndex === 1) {
+          navigation.navigate('CreateEvent', {
+            type: 'Game'
+          });
+        } else if (buttonIndex === 2) {
+          navigation.navigate('CreateEvent', {
+            type: 'Practice'
+          });
+        } else if (buttonIndex === 3) {
+          navigation.navigate('CreateEvent', {
+            type: 'Other'
+          });
+        }
+      });
+  };
 
   const onClickEvent = eventId => {
     console.log('joell e', eventId);
@@ -146,7 +174,7 @@ const ScheduleScreen = ({ navigation }) => {
               loadingLottieAnim={loadingLottieAnim}
               backgroundColor={theme.secondaryBg}
               enabled={refreshEnabled}
-              load={() => loadEventsFromDate(new Date())}
+              load={() => loadEventsFromDate(selectedDate, true)}
               onlyPullToRefresh={true}>
               <View style={[styles.bodyContainer]}>
                 {eventsToday && eventsToday.length > 0 ? (
@@ -232,7 +260,7 @@ const ScheduleScreen = ({ navigation }) => {
       </ScrollView>
       {/* {userData && userData.accessLevel > 0 && ( */}
         <AddButton
-          onPress={() => navigation.navigate('CreateEvent')}
+          onPress={onAddClicked}
         />
       {/* )} */}
     </View>

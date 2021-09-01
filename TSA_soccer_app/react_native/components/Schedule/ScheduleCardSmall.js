@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
@@ -53,9 +53,15 @@ const ScheduleCardSmall = props => {
   ];
   const [availability, setAvailability] = useState(defaultOption);
 
-  const onChangeAvailabilityHandler = id => {
-    setAvailability(options[id]);
-  };
+  useEffect(() => {
+    if(event.status){
+      for(let option of options){
+        if(option.label.toLowerCase() === event.status){
+          setAvailability(option);
+        }
+      }
+    }
+  }, [props.event]);
 
   return (
     <TouchableOpacity
@@ -95,8 +101,9 @@ const ScheduleCardSmall = props => {
           <StatusIndicator
             label={availability.label}
             icon={availability.icon}
-            onPress={onChangeAvailabilityHandler}
+            color={availability.color}
             size="small"
+            eventId={event.id}
           />
         </View>
         <View style={styles.body}>

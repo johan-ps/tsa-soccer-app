@@ -10,7 +10,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,10 +18,14 @@ import Animated, {
   interpolate,
   runOnJS,
 } from 'react-native-reanimated';
+import { updateEventAvailability } from '../../store/actions/EventActions';
 
 const StatusIndicator = props => {
-  const { label, icon, size = 'large' } = props;
+  const { label, icon, size = 'large', eventId } = props;
   const theme = useSelector(state => state.theme.colors);
+  const userData = useSelector(state => state.userData);
+  const userId = userData && userData.id;
+  const dispatch = useDispatch();
   const options = [
     { label: 'Going', id: 0 },
     { label: 'Maybe', id: 1 },
@@ -137,9 +141,15 @@ const StatusIndicator = props => {
     };
   });
 
-  const onChangeHandler = id => {
+  const updateAvailabilityHandler = async (label) => {
+    await dispatch(
+      updateEventAvailability(eventId, userId, label),
+    );
+  };
+
+  const onChangeHandler = option => {
     onCloseHandler();
-    props.onPress(id);
+    updateAvailabilityHandler(option.label);
   };
 
   return (
@@ -177,7 +187,7 @@ const StatusIndicator = props => {
                 <View style={styles.option} key={option.id}>
                   <TouchableNativeFeedback
                     onPress={() => {
-                      onChangeHandler(option.id);
+                      onChangeHandler(option);
                     }}
                     style={[styles.touchable]}
                     background={TouchableNativeFeedback.Ripple(
