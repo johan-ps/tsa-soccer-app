@@ -15,7 +15,6 @@ import {
   AddButton,
   UiModal,
   ErrorScreen,
-  CreateAnnouncement,
   UiFilterModal,
 } from '../components/_components';
 import * as announcementActions from '../store/actions/AnnouncementActions';
@@ -37,8 +36,6 @@ const AnnouncementScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [showBadge, setShowBadge] = useState(false);
   const [loaded, setLoaded] = useState(false);
-
-  const [createAnnouncement, setCreateAnnouncemnt] = useState(false);
 
   const loadAnnouncements = useCallback(async () => {
     try {
@@ -149,14 +146,6 @@ const AnnouncementScreen = ({ navigation }) => {
           </AnimScrollView>
         )}
         {userData && userData.accessLevel > 0 ? (
-          <CreateAnnouncement
-            visible={createAnnouncement}
-            onClose={() => {
-              setCreateAnnouncemnt(false);
-            }}
-          />
-        ) : null}
-        {userData && userData.accessLevel > 0 ? (
           <UiModal
             primaryLabel="Confirm"
             secondaryLabel="Cancel"
@@ -183,7 +172,7 @@ const AnnouncementScreen = ({ navigation }) => {
         <AddButton
           ref={addBtnRef}
           onPress={() => {
-            setCreateAnnouncemnt(true);
+            navigation.navigate('ModifyAnnouncement');
           }}
         />
       ) : null}

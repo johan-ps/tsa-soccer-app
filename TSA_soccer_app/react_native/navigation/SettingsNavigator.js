@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import MoreScreen from '../screens/MoreScreen';
 import LoginScreen from '../screens/LoginScreen';
@@ -22,7 +21,5 @@ const SettingsNavigator = () => {
     </Stack.Navigator>
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default SettingsNavigator;

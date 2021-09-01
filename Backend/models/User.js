@@ -64,12 +64,19 @@ class User {
     }
 
     static updateOneById(id, data) {
-        const { firstName, lastName, profileImg, phoneNum, email } = data;
+        const { firstName, lastName, profileImg = null, phoneNum, email } = data;
+
+        let imageInsert = '';
+
+        if (profileImg !== null) {
+            imageInsert = `profileImg = '${profileImg}',`;
+        }
+
         const sql = `
             UPDATE USERS
             SET firstName = '${firstName}',
                 lastName = '${lastName}',
-                profileImg = '${profileImg}',
+                ${imageInsert}
                 phoneNum = '${phoneNum}',
                 email = '${email}'
             WHERE id = '${id}'

@@ -8,7 +8,6 @@ import AnnouncementCard from './Announcements/AnnouncementCard';
 import NavHeader from './Announcements/NavHeader';
 import UiMenu from './UiComponents/UiMenu';
 import ErrorScreen from './Announcements/ErrorScreen';
-import CreateAnnouncement from './Announcements/CreateAnnouncement';
 import UiTextArea from './UiComponents/UiTextArea';
 import UiFilterModal from './UiComponents/UiFilterModal';
 import UiIcon from './UiComponents/UiIcon';
@@ -29,7 +28,6 @@ export {
   NavHeader,
   UiMenu,
   ErrorScreen,
-  CreateAnnouncement,
   UiTextArea,
   UiFilterModal,
   UiIcon,

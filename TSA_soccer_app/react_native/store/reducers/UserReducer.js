@@ -15,9 +15,9 @@ const userReducer = (state = INITIAL_STATE, action) => {
       };
     case UPDATE_USER:
       return {
+        ...state,
         ...action.userData,
-        authenticated: state.authenticated,
-        token: state.token,
+        profileImg: action.userData.profileImg || state.profileImg,
       };
     case LOGOUT_USER:
       return INITIAL_STATE;

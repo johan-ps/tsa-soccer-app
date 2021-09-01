@@ -14,6 +14,7 @@ import * as userActions from '../store/actions/UserActions';
 import ScheduleEventNavigator from './ScheduleEventNavigator';
 import SettingsNavigator from './SettingsNavigator';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import AnnouncementNavigator from './AnnouncementNavigator';
 
 const MainNav = createBottomTabNavigator();
 
@@ -71,7 +72,7 @@ const MainNavigator = () => {
         },
         keyboardHidesTabBar: true,
       }}>
-      <MainNav.Screen name="Home" component={AnnouncementScreen} />
+      <MainNav.Screen name="Home" component={AnnouncementNavigator} />
       <MainNav.Screen name="Schedule" component={ScheduleEventNavigator} />
       {/* <MainNav.Screen name="Team" component={TeamRosterNavigator} /> */}
       {/* <MainNav.Screen name="Messages" component={MessagesScreen} /> */}
