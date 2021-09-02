@@ -8,9 +8,11 @@ import {
   Easing,
 } from 'react-native';
 import Ripple from 'react-native-material-ripple';
+import { useSelector } from 'react-redux';
 
 const UiToggle = props => {
   const { labelLeft, labelRight, value, onInputChange } = props;
+  const theme = useSelector(state => state.theme.colors)
   const selectedLabel = value || labelLeft;
   const [selectedId, setSelectedId] = useState(0);
   const [focused, setFocused] = useState(false);
@@ -46,7 +48,8 @@ const UiToggle = props => {
         duration: 200,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start(() => onInputChange(labelRight));
+      }).start();
+      onInputChange(labelRight)
     } else {
       setSelectedId(0);
       Animated.timing(toggleAnimation, {
@@ -54,7 +57,8 @@ const UiToggle = props => {
         duration: 200,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
-      }).start(() => onInputChange(labelLeft));
+      }).start();
+      onInputChange(labelLeft)
     }
   };
 
@@ -81,21 +85,21 @@ const UiToggle = props => {
   };
 
   return (
-    <Animated.View style={[styles.toggleContainer, focusAnimStyle]}>
+    <Animated.View style={[styles.toggleContainer, focusAnimStyle, {backgroundColor: theme.inputBg}]}>
       <Ripple
         onPress={toggleHandler}
         onPressIn={onFocusIn}
         onPressOut={onFocusOut}
         style={styles.toggleContainerPressable}>
-        <Animated.View style={[styles.toggleSwitch, translateAnimStyle]}>
+        <Animated.View style={[styles.toggleSwitch, translateAnimStyle, {backgroundColor: theme.inputBg}]}>
           <Pressable
             onPress={toggleHandler}
-            style={styles.toggleSwitchPressable}>
-            <Text style={styles.toggleSwitchText}>{selectedLabel}</Text>
+            style={[styles.toggleSwitchPressable, {backgroundColor: theme.inputBg}]}>
+            <Text style={[styles.toggleSwitchText, {color: theme.inputText}]}>{selectedLabel}</Text>
           </Pressable>
         </Animated.View>
-        <Text style={styles.toggleLeftText}>{selectedLabel !== labelLeft ? labelLeft : null}</Text>
-        <Text style={styles.toggleRightText}>{selectedLabel !== labelRight ? labelRight: null}</Text>
+        <Text style={[styles.toggleLeftText, {color: theme.inputPlaceholder}]}>{labelLeft}</Text>
+        <Text style={[styles.toggleRightText, {color: theme.inputPlaceholder}]}>{labelRight}</Text>
       </Ripple>
     </Animated.View>
   );
@@ -111,12 +115,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     shadowRadius: 10,
     shadowColor: '#000000',
-    borderWidth: 1,
+    // borderWidth: 1,
     borderColor: '#ddd',
     borderBottomWidth: 0,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     elevation: 1,
+    zIndex: 1,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -142,6 +147,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 60,
     elevation: 2,
+    zIndex: 2,
     shadowRadius: 2,
     shadowColor: '#000000',
     shadowOpacity: 0.3,

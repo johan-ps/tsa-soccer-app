@@ -12,6 +12,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Switch,
+  KeyboardAvoidingView
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { formatTeams } from '../../Util/utilities';
@@ -25,6 +26,7 @@ import { UiButton, UiDropdown, UiToggle, UiInput } from '../_components';
 import EventLocation from './EventLocation';
 import * as eventActions from '../../store/actions/EventActions';
 import * as teamActions from '../../store/actions/TeamActions';
+import * as loaderActions from '../../store/actions/LoaderActions'
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
@@ -94,12 +96,12 @@ const formReducer = (state, action) => {
 const CreateEvent = props => {
   const { REPEATS } = constants;
   const { visible, route } = props;
-  const { type } = route.params;
+  const { type, selectedDate } = route.params;
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const userId = userData && userData.id;
   const unformattedTeams = useSelector(state => state.teams);
-  const teams = formatTeams(unformattedTeams);
+  const teams = unformattedTeams && formatTeams(unformattedTeams);
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
 
@@ -134,9 +136,12 @@ const CreateEvent = props => {
   );
 
   const [location, setLocation] = useState(false);
-  const [locationValue, setLocationValue] = useState('Please Select');
+  const [locationValue, setLocationValue] = useState('Choose Location');
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(null);
+  const [doesRepeat, setDoesRepeat] = useState(false);
+  const [repeatEndDate, setRepeatEndDate] = useState(false);
+  const [repeatDays, setRepeatDays] = useState([]);
 
   const loadTeams = useCallback(async () => {
     try {
@@ -169,6 +174,7 @@ const CreateEvent = props => {
           date: moment(formState.inputValues.date).format('YYYY-MM-DD'),
         }),
       );
+      loadEventsFromDate(selectedDate);
       props.navigation.goBack();
       dispatchFormState({ type: 'reset' });
     }
@@ -177,8 +183,20 @@ const CreateEvent = props => {
     } finally {
       dispatch(loaderActions.updateLoader(false));
     }
-    
   };
+
+  const loadEventsFromDate = useCallback(
+    async date => {
+      try {
+        await dispatch(
+          eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD'), userId),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [dispatch],
+  );
 
   // TODO: Add full calender view functionality
   // TODO: Add infinite scroll in upcoming ? (FLATLIST VIEW IN REACT NATIVE)
@@ -189,6 +207,9 @@ const CreateEvent = props => {
   console.log("Joell date", formState.inputValues.date);
   return (
     <SafeAreaView style={{ backgroundColor: theme.secondaryBg }}>
+      <KeyboardAvoidingView
+        behavior="position"
+        style={{ backgroundColor: theme.secondaryBg }}>
       <View style={[styles.modalContainer, { backgroundColor: theme.secondaryBg }]}>
         <View style={[styles.modalContentContainer, { backgroundColor: theme.secondaryBg }]}>
           <View style={styles.modalHeader}>
@@ -224,7 +245,7 @@ const CreateEvent = props => {
                       ? moment(formState.inputValues.date).format(
                           'dddd, D MMM YYYY',
                         )
-                      : 'Tap to Select'
+                      : 'Choose Date'
                   }
                   onChange={(id, date) => onChange(id, date, true)}
                   height={300}
@@ -292,7 +313,7 @@ const CreateEvent = props => {
                       styles.date,
                       {
                         color:
-                          locationValue === 'Please Select' ? '#C0C0CA' : theme.inputText,
+                          locationValue === 'Choose Location' ? '#C0C0CA' : theme.inputText,
                         shadowOpacity: 0,
                         fontSize: 16,
                       },
@@ -419,26 +440,72 @@ const CreateEvent = props => {
                 </View>
               ) : null}
               {type === 'Game' || type === 'Practice' ?
-                <View style={{ marginTop: 20, marginBottom: 10 }}>
-                  <UiInput
-                    id="jersey"
-                    placeholder={'Jersey'}
-                    bg={theme.inputBg}
-                    color={theme.inputText}
-                    placeholderClr={theme.inputPlaceholder}
-                    onInputChange={onChange}
-                  />
+                <View style={{flexDirection: 'row', marginTop: 20, marginBottom: 10 }}>
+                  <Text style={styles.formLabels}>Jersey</Text>
+                  <View style={{alignItems: 'flex-end', width: '85%'}}>
+                    <UiToggle
+                      labelLeft={'Home'}
+                      labelRight={'Away'}
+                      value={formState.inputValues.jersey.charAt(0).toUpperCase() + formState.inputValues.jersey.slice(1)}
+                      onInputChange={(aValue) => onChange('jersey', aValue.toLowerCase(), true)}
+                    />
+                  </View>
                 </View>
                 :
                 null
               }
-              <Text style={styles.formLabels}>Repeat</Text>
-              <UiDropdown
-                options={REPEATS}
-                multiselect={true}
-                placeholder="Please Select"
-                size="large"
-              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: 50,
+                }}>
+                <Text style={styles.optionLabels}>Repeat</Text>
+                <View
+                  style={{
+                    alignItems: 'flex-end',
+                    width: '100%',
+                    position: 'absolute',
+                  }}>
+                  <Switch
+                    value={doesRepeat}
+                    onValueChange={value =>
+                      setDoesRepeat(value)
+                    }
+                  />
+                </View>
+              </View>
+              {doesRepeat ?
+                <View>
+                  <UiDropdown
+                    options={REPEATS}
+                    multiselect={true}
+                    placeholder="Choose Interval"
+                    size="large"
+                    isValid={formState.inputValidities.repeats}
+                    group={false}
+                    onSelect={(value) => console.log("Joell value", value)}
+                  />
+                  <Text style={styles.formLabels}>Repeat End Date</Text>
+                  <View style={styles.marginTop}>
+                    <UiDatePicker
+                      id="repeatEndDate"
+                      placeholder={
+                        repeatEndDate
+                          ? moment(repeatEndDate).format(
+                              'dddd, D MMM YYYY',
+                            )
+                          : 'Tap to Select'
+                      }
+                      onChange={(id, date) => setRepeatEndDate(date)}
+                      height={300}
+                    />
+                  </View>
+                </View>
+                :
+                null
+              }
               <View style={[{ flexDirection: 'column', marginTop: 20 }]}>
                 <Text style={styles.formLabels}>Extra Notes</Text>
                 <UiInput
@@ -480,6 +547,7 @@ const CreateEvent = props => {
         closeLocation={() => setLocation(false)}
         onSelect={onReturnLocation}
       />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -534,7 +602,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: 'absolute',
-    right: 12,
+    right: 30,
   },
   dateContainer: {
     display: 'flex',

@@ -93,15 +93,18 @@ const ScheduleScreen = ({ navigation, events }) => {
   
           } else if (buttonIndex === 1) {
             navigation.navigate('CreateEvent', {
-              type: 'Game'
+              type: 'Game',
+              selectedDate: selectedDate
             });
           } else if (buttonIndex === 2) {
             navigation.navigate('CreateEvent', {
-              type: 'Practice'
+              type: 'Practice',
+              selectedDate: selectedDate
             });
           } else if (buttonIndex === 3) {
             navigation.navigate('CreateEvent', {
-              type: 'Other'
+              type: 'Other',
+              selectedDate: selectedDate
             });
           }
         });
@@ -263,11 +266,11 @@ const ScheduleScreen = ({ navigation, events }) => {
           </View>
         </View>
       </ScrollView>
-      {/* {userData && userData.accessLevel > 0 && ( */}
+      {userData && userData.accessLevel > 0 && (
         <AddButton
           onPress={onAddClicked}
         />
-      {/* )} */}
+      )}
     </View>
   );
 };

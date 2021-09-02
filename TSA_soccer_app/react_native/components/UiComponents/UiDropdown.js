@@ -328,7 +328,7 @@ const UiDropdown = props => {
           onPressOut={onFocusOut}
           style={[styles.dropdownBtn]}>
           {selectedLabels.length === 0 && (
-            <Text style={{ color: isValid ? theme.ddSClr : theme.error }}>
+            <Text style={{ color: isValid ? theme.ddSClr : theme.error, fontSize: 16 }}>
               {selectedLabel}
             </Text>
           )}
