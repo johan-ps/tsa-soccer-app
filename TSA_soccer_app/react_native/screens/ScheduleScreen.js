@@ -54,22 +54,25 @@ const ScheduleScreen = ({ navigation, events }) => {
 
   const loadEventsFromDate = useCallback(
     async (date, isReload = false) => {
-      if(!isReload){
+      if (!isReload) {
         dispatch(loaderActions.updateLoader(true));
       }
       try {
         await dispatch(
-          eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD'), userId),
+          eventsActions.getEventsFromDate(
+            moment(date).format('YYYY-MM-DD'),
+            userId,
+          ),
         );
       } catch (err) {
         console.log(err);
-      }
-      finally {
-        if(!isReload){
+      } finally {
+        if (!isReload) {
           dispatch(loaderActions.updateLoader(false));
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dispatch],
   );
 
@@ -78,61 +81,60 @@ const ScheduleScreen = ({ navigation, events }) => {
   }, [dispatch, loadEventsFromDate]);
 
   const onAddClicked = () => {
-    if(Platform.OS === 'ios'){
+    if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ["Cancel", "Add Game", "Add Practice", "Add Other"],
+          options: ['Cancel', 'Add Game', 'Add Practice', 'Add Other'],
           tintColor: 'red',
           cancelButtonIndex: 0,
-          userInterfaceStyle: 'dark'
+          userInterfaceStyle: 'dark',
         },
         buttonIndex => {
           if (buttonIndex === 0) {
-  
           } else if (buttonIndex === 1) {
             navigation.navigate('CreateEvent', {
               type: 'Game',
-              selectedDate: selectedDate
+              selectedDate: selectedDate,
             });
           } else if (buttonIndex === 2) {
             navigation.navigate('CreateEvent', {
               type: 'Practice',
-              selectedDate: selectedDate
+              selectedDate: selectedDate,
             });
           } else if (buttonIndex === 3) {
             navigation.navigate('CreateEvent', {
               type: 'Other',
-              selectedDate: selectedDate
+              selectedDate: selectedDate,
             });
           }
-        });
-    }
-    else{
+        },
+      );
+    } else {
       Alert.alert(
-        "Create Event",
-        "Select what type of event you would like to create.",
+        'Create Event',
+        'Select what type of event you would like to create.',
         [
           {
-            text: "Add Game",
+            text: 'Add Game',
             onPress: () => {
               navigation.navigate('CreateEvent', {
-                type: 'Game'
+                type: 'Game',
               });
             },
           },
           {
-            text: "Add Practice",
+            text: 'Add Practice',
             onPress: () => {
               navigation.navigate('CreateEvent', {
-                type: 'Practice'
+                type: 'Practice',
               });
             },
           },
           {
-            text: "Add Other",
+            text: 'Add Other',
             onPress: () => {
               navigation.navigate('CreateEvent', {
-                type: 'Other'
+                type: 'Other',
               });
             },
           },
@@ -185,9 +187,9 @@ const ScheduleScreen = ({ navigation, events }) => {
                 {eventsToday && eventsToday.length > 0 ? (
                   eventsToday.map((event, i) => (
                     <View key={i} style={styles.calendarCardContainer}>
-                      <CalendarCard 
-                        item={event} 
-                        key={i} 
+                      <CalendarCard
+                        item={event}
+                        key={i}
                         onPress={() => onClickEvent(event.id)}
                       />
                     </View>
@@ -268,9 +270,7 @@ const ScheduleScreen = ({ navigation, events }) => {
         </View>
       </ScrollView>
       {userData && userData.accessLevel > 0 && (
-        <AddButton
-          onPress={onAddClicked}
-        />
+        <AddButton onPress={onAddClicked} />
       )}
     </View>
   );
@@ -278,7 +278,7 @@ const ScheduleScreen = ({ navigation, events }) => {
 
 function mapStateToProps(state, ownProps) {
   return {
-      events: state.events
+    events: state.events,
   };
 }
 

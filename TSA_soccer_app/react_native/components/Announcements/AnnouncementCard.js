@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, { useMemo } from 'react';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { UiMenu, UiImage } from '../_components';
@@ -15,7 +14,6 @@ const AnnouncementCard = props => {
     date,
     title,
     description,
-    type,
     firstName,
     lastName,
     image,
