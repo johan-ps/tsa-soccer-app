@@ -79,20 +79,52 @@ class Announcement {
         return db.execute(sql);
     }
 
-    static findAllByTeams(teams) {
+    static findAllByFilters({ teams, startDate, endDate}) {
 
-        let teamsSql = '(';
-        teams.forEach((team, i) => {
-            teamsSql += `'${team}'`
+        let prevExists = false, filter = '';
 
-            if (i < teams.length - 1) {
-                teamsSql += ', '
+        if (teams && teams.length > 0) {
+            prevExists = true;
+            let teamsSql = '(';
+            teams.forEach((team, i) => {
+                teamsSql += `'${team}'`
+
+                if (i < teams.length - 1) {
+                    teamsSql += ', '
+                }
+            });
+            if (teams.length === 0) {
+                teamsSql += `''`
             }
-        });
-        if (teams.length === 0) {
-            teamsSql += `''`
+            teamsSql += ')'
+            filter = `
+                INNER JOIN ANNOUNCEMENTS_TEAMS as at
+                    ON at.announcementId = a.id
+                WHERE at.teamId in ${ teamsSql }
+            `
         }
-        teamsSql += ')'
+
+        if (startDate) {
+            let startDateFilter = `date(a.date) >= '${dateFormat.dateTime(new Date(startDate), false, true)}'`
+
+            if (prevExists) {
+                filter = `${filter} AND ${startDateFilter}`;
+            } else {
+                filter = `${filter} WHERE ${startDateFilter}`;
+            }
+            prevExists = true;
+        }
+
+        if (endDate) {
+            let endDateFilter = `date(a.date) <= '${dateFormat.dateTime(new Date(endDate), false)}'`
+
+            if (prevExists) {
+                filter = `${filter} AND ${endDateFilter}`;
+            } else {
+                filter = `${filter} WHERE ${endDateFilter}`;
+            }
+            prevExists = true;
+        }
 
         const sql = `
             SELECT
@@ -101,9 +133,8 @@ class Announcement {
             FROM ANNOUNCEMENTS as a 
             INNER JOIN USERS as u
                 ON authorId = u.id
-            INNER JOIN ANNOUNCEMENTS_TEAMS as at
-                ON at.announcementId = a.id
-            WHERE at.teamId in ${ teamsSql }
+            ${filter}
+            GROUP BY a.id
         `;
         
         return db.execute(sql);

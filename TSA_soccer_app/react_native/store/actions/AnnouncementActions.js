@@ -32,7 +32,7 @@ export const getAnnouncements = () => {
   };
 };
 
-export const getFilteredAnnouncements = teams => {
+export const getFilteredAnnouncements = filters => {
   return async dispatch => {
     try {
       const response = await fetch(
@@ -43,7 +43,7 @@ export const getFilteredAnnouncements = teams => {
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ teams }),
+          body: JSON.stringify({ ...filters }),
         },
       );
 
