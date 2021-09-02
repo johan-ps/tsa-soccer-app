@@ -12,11 +12,11 @@ import DatePicker from 'react-native-date-picker';
 import { useSelector } from 'react-redux';
 
 const UiDatePicker = props => {
-  const { placeholder, id, height = 230 } = props;
+  const { placeholder, id, height = 230, existingDate } = props;
   const [showDatePicker, setShowDatePicker] = useState(false);
   const dateAnim = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(existingDate || new Date());
 
   const onToggleHandler = () => {
     if(isNaN(new Date(placeholder))){

@@ -53,14 +53,10 @@ const AnnouncementScreen = ({ navigation }) => {
   }, [dispatch, loaded]);
 
   const loadFilteredAnnouncements = useCallback(
-    async teams => {
+    async filters => {
       try {
         dispatch(loaderActions.updateLoader(true));
-        if (!teams || teams.length === 0) {
-          await dispatch(announcementActions.getAnnouncements());
-        } else {
-          await dispatch(announcementActions.getFilteredAnnouncements(teams));
-        }
+        await dispatch(announcementActions.getFilteredAnnouncements(filters));
         dispatch(loaderActions.updateLoader(false));
       } catch (err) {
         console.log('error<2>', err);

@@ -35,11 +35,11 @@ const UiDropdown = props => {
     onSelect,
     isValid = true,
     errCode,
-    existingValues = {},
+    existingValues = [],
   } = props;
   const [selectedId, setSelectedId] = useState(defaultValue || -1);
   const [selectedLabel, setSelectedLabel] = useState(placeholder);
-  const [selectedValues, setSelectedValues] = useState(existingValues);
+  const [selectedValues, setSelectedValues] = useState({});
   const [selectedLabels, setSelectedLabels] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
   const [offsetX, setOffsetX] = useState(0);
@@ -63,6 +63,38 @@ const UiDropdown = props => {
       // dropdownAnimation.value = withTiming(1, { duration: 225 });
     });
   };
+
+  useEffect(() => {
+    let selectedVals = {};
+    let newSelectedValues = {};
+    let newSelectedLabels = [];
+
+    if (existingValues) {
+      existingValues.forEach(val => {
+        selectedVals[val] = true;
+      });
+
+      if (options) {
+        options.forEach(groupOpt => {
+          newSelectedValues[groupOpt.id] = {
+            selected: false,
+            children: {},
+          };
+          groupOpt.children.forEach(child => {
+            newSelectedValues[groupOpt.id].children[child.id] =
+              !!selectedVals[child.id];
+            if (selectedVals[child.id]) {
+              newSelectedLabels.push(child.label);
+            }
+          });
+        });
+      }
+    }
+
+    setSelectedValues(newSelectedValues);
+    setSelectedLabels(newSelectedLabels);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (onSelect) {

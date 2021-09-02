@@ -266,7 +266,9 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
 
         for (let group in inputValue) {
           for (let teamId in inputValue[group].children) {
-            selectedTeams.push(teamId);
+            if (inputValue[group].children[teamId]) {
+              selectedTeams.push(teamId);
+            }
           }
         }
 

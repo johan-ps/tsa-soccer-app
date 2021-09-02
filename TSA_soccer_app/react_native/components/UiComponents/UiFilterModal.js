@@ -16,9 +16,16 @@ import UiDatePicker from './UiDatePicker';
 import moment from 'moment';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
+const FORM_INPUT_APPLY = 'FORM_INPUT_APPLY';
+const FORM_INPUT_RESET = 'FORM_INPUT_RESET';
 
 const formInit = {
   inputValues: {
+    teams: [],
+    startDate: null,
+    endDate: null,
+  },
+  prevState: {
     teams: [],
     startDate: null,
     endDate: null,
@@ -31,7 +38,17 @@ const formReducer = (state, action) => {
     if (action.value !== undefined) {
       updatedValues[action.input] = action.value;
     }
-    return { inputValues: updatedValues };
+    return { inputValues: updatedValues, prevState: { ...state.prevState } };
+  } else if (action.type === FORM_INPUT_APPLY) {
+    return {
+      inputValues: { ...state.inputValues },
+      prevState: { ...state.inputValues },
+    };
+  } else if (action.type === FORM_INPUT_RESET) {
+    return {
+      inputValues: { ...state.prevState },
+      prevState: { ...state.prevState },
+    };
   } else {
     return formInit;
   }
@@ -96,8 +113,9 @@ const UiFilterModal = props => {
   });
 
   const primaryBtnHandler = () => {
+    dispatchFormState({ type: FORM_INPUT_APPLY });
     if (props.primaryBtnHandler) {
-      props.primaryBtnHandler(formState.inputValues.teams);
+      props.primaryBtnHandler(formState.inputValues);
     }
     if (props.onCloseHandler) {
       props.onCloseHandler();
@@ -105,6 +123,7 @@ const UiFilterModal = props => {
   };
 
   const secondaryBtnHandler = () => {
+    dispatchFormState({ type: FORM_INPUT_RESET });
     if (props.secondaryBtnHandler) {
       props.secondaryBtnHandler();
     }
@@ -121,7 +140,9 @@ const UiFilterModal = props => {
 
       for (let group in inputValue) {
         for (let teamId in inputValue[group].children) {
-          selectedTeams.push(teamId);
+          if (inputValue[group].children[teamId]) {
+            selectedTeams.push(teamId);
+          }
         }
       }
 
@@ -167,7 +188,7 @@ const UiFilterModal = props => {
                 size="large"
                 optionSize="large"
                 onSelect={onSelectHandler}
-                existingValues={formatTeams(formState.inputValues.teams)}
+                existingValues={formState.inputValues.teams}
               />
               <View style={styles.marginTop}>
                 <UiDatePicker
@@ -179,6 +200,7 @@ const UiFilterModal = props => {
                         )
                       : 'Select start date'
                   }
+                  existingDate={formState.inputValues.startDate}
                   onChange={onDateChange}
                   height={270}
                 />
@@ -193,6 +215,7 @@ const UiFilterModal = props => {
                         )
                       : 'Select end date'
                   }
+                  existingDate={formState.inputValues.endDate}
                   onChange={onDateChange}
                 />
               </View>
@@ -244,7 +267,6 @@ const styles = StyleSheet.create({
     padding: 26,
     width: '90%',
     height: '80%',
-    maxWidth: 350,
     flexDirection: 'column',
     justifyContent: 'space-between',
     elevation: 20,
