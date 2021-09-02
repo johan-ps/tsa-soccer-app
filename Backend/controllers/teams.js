@@ -26,7 +26,6 @@ exports.getAllUsersFromTeam = async (req, res, next) => {
         const { id } = req.params;
         const [coaches, _] = await Team.findAllCoaches(id);
         const [players, __] = await Team.findAllPlayers(id);
-        console.log("Joell players", players);
         const users = {coaches, players};
         res.status(200).json({ users });
     } catch (error) {
@@ -37,7 +36,6 @@ exports.getAllUsersFromTeam = async (req, res, next) => {
 
 exports.createTeam = async (req, res, next) => {
     try {
-        console.log("Joell req.body", req.body);
         let {name, ageGroup, type} = req.body;
         
         const newTeam = new Team(name, ageGroup, type);

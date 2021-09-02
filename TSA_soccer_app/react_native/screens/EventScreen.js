@@ -56,7 +56,6 @@ const EventScreen = ({ navigation, route }) => {
 
   const { eventId } = route.params;
   const [event, setEvent] = useState(null);
-  console.log('Joell event', event);
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme.colors);
   const [openAvailability, setOpenAvailability] = useState(false);

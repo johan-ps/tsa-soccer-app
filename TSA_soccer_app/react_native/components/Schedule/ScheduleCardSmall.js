@@ -54,7 +54,10 @@ const ScheduleCardSmall = props => {
   const [availability, setAvailability] = useState(defaultOption);
 
   useEffect(() => {
-    if(event.status){
+    if(event.status === null){
+      setAvailability(defaultOption);
+    }
+    else{
       for(let option of options){
         if(option.label.toLowerCase() === event.status){
           setAvailability(option);

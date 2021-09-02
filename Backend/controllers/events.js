@@ -16,7 +16,6 @@ exports.getEventById = async (req, res, next) => {
   try {
     const {id} = req.params;
     const [event, _] = await Event.findById(id);
-    console.log("Joell event", event);
     res.status(200).json({ event });
   } catch (error) {
       next(error);
@@ -78,11 +77,8 @@ exports.createEvent = async (req, res, next) => {
 
       const newEvent = new Event(type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
       const [event, _] = await newEvent.save();
-      console.log("Joell event", event);
       const [players, __] = await Team.findAllPlayers(teamId);
-      console.log("Joell players", players);
       await newEvent.saveAvailability(event.insertId, players);
-      console.log("Joell newEvent", newEvent)
       res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
     }
     catch(error){

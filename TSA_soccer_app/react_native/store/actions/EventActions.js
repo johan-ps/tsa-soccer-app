@@ -47,7 +47,6 @@ export const getEventById = id => {
 
       const resData = await response.json();
       const event = resData.event;
-      console.log("joell event", event);
 
       return event;
 
@@ -118,11 +117,7 @@ export const updateEventAvailability = (eventId, userId, status) => {
   return async dispatch => {
     try {
       let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
-      console.log("Joell ", {
-        eventId,
-        userId,
-        status: status.toLowerCase()
-      });
+
       const response = await fetch(
         `http://${environmentUrl}/api/events/updateAvailability`,
         {
@@ -146,7 +141,6 @@ export const updateEventAvailability = (eventId, userId, status) => {
 
       const resData = await response.json();
       const event = resData.event;
-      console.log("joell availability", event)
       dispatch({
         type: UPDATE_AVAILABILITY,
         event
@@ -167,7 +161,6 @@ export const createEvent = eventData => {
       if (!authToken) {
         throw new Error('No token set');
       }
-      console.log("Joell eventData", eventData);
       const response = await fetch(
         `http://${environmentUrl}/api/events/create`,
         {

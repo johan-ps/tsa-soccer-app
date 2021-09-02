@@ -18,7 +18,6 @@ export const getLocations = () => {
 
       const resData = await response.json();
       const locations = resData.locations;
-      console.log("Joell locations", locations);
       dispatch({
         type: GET_LOCATIONS,
         locations,
@@ -33,7 +32,6 @@ export const createLocation = locationData => {
   return async dispatch => {
     try {
       let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
-      console.log("Joell locationData", locationData);
 
       const response = await fetch(
         `http://${environmentUrl}/api/locations/create`,

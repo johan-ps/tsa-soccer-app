@@ -21,7 +21,10 @@ const CalendarCard = props => {
   const [availability, setAvailability] = useState(defaultOption);
 
   useEffect(() => {
-    if(item.status != null){
+    if(item.status === null){
+      setAvailability(defaultOption);
+    }
+    else{
       for(let option of options){
         if(option.label.toLowerCase() === item.status){
           setAvailability(option);

@@ -67,7 +67,6 @@ const EventLocation = props => {
   const [search, setSearch] = useState('')
   const [newLocation, setNewLocation] = useState(false);
   const preExistingLocations = useSelector(state => state.locations);
-  console.log("Joell preExistionLocations", preExistingLocations);
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const dispatch = useDispatch();
@@ -141,7 +140,6 @@ const EventLocation = props => {
     fetch(apiUrl)
     .then((response) => response.json())
     .then((data) => {
-        console.log("Joell data", data.result);
       onChange('name', data.result.name, true);
       onChange('latitude', data.result.geometry.location.lat, true);
       onChange('longitude', data.result.geometry.location.lng, true);

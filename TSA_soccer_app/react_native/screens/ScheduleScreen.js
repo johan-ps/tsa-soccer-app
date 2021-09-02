@@ -36,8 +36,6 @@ const ScheduleScreen = ({ navigation, events }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);
 
-  console.log("Joell events", events);
-
   useFocusEffect(() => {
     dispatch(tabbarActions.updateVisibility(true));
   });
@@ -147,7 +145,6 @@ const ScheduleScreen = ({ navigation, events }) => {
   };
 
   const onClickEvent = eventId => {
-    console.log('joell e', eventId);
     navigation.navigate('Event', {
       eventId: eventId,
     });
@@ -188,7 +185,11 @@ const ScheduleScreen = ({ navigation, events }) => {
                 {eventsToday && eventsToday.length > 0 ? (
                   eventsToday.map((event, i) => (
                     <View key={i} style={styles.calendarCardContainer}>
-                      <CalendarCard item={event} key={i} />
+                      <CalendarCard 
+                        item={event} 
+                        key={i} 
+                        onPress={() => onClickEvent(event.id)}
+                      />
                     </View>
                   ))
                 ) : (

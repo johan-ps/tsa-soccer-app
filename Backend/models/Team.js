@@ -29,7 +29,7 @@ class Team {
                 '${ this.type }'
             );
         `;
-        console.log('Joell sql', sql)
+        
         return db.execute(sql);
     }
 

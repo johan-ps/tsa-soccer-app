@@ -93,6 +93,13 @@ const formReducer = (state, action) => {
   }
 };
 
+// TODO: Add repeating event functionality
+// TODO: Add dropdown functionality for teams and repeating
+// TODO: Add error handling
+// TODO: fix relod of new event availability?
+// TODO: fix update immiedietly for create event
+// TODO: reload bug when scroll down and back up
+
 const CreateEvent = props => {
   const { REPEATS } = constants;
   const { visible, route } = props;
@@ -179,7 +186,6 @@ const CreateEvent = props => {
       dispatchFormState({ type: 'reset' });
     }
     catch (error) {
-      console.log("Joell error", error);
     } finally {
       dispatch(loaderActions.updateLoader(false));
     }
@@ -198,13 +204,18 @@ const CreateEvent = props => {
     [dispatch],
   );
 
+  const onSelectHandler = useCallback(inputValue => {
+    if (inputValue) {
+      onChange('teamId', inputValue, true);
+    }
+  }, []);
+
   // TODO: Add full calender view functionality
   // TODO: Add infinite scroll in upcoming ? (FLATLIST VIEW IN REACT NATIVE)
   // TODO: FIX UIDropdown Multiselect to show what you select in the text
   // TODO: Fix UI for availability modal in event screen
   // TODO: Add Scroll in EventScreen where image moves up!
   // TODO: Add edit and delete functionality
-  console.log("Joell date", formState.inputValues.date);
   return (
     <SafeAreaView style={{ backgroundColor: theme.secondaryBg }}>
       <KeyboardAvoidingView
@@ -227,7 +238,7 @@ const CreateEvent = props => {
             <View style={styles.modalBody}>
               {type === 'Other' ? (
                 <UiInput
-                  id="title"
+                  id="type"
                   placeholder="Title"
                   bg={theme.inputBg}
                   style={{marginTop: 20}}
@@ -350,7 +361,7 @@ const CreateEvent = props => {
                 placeholder="Choose teams"
                 size="large"
                 optionSize="large"
-                onSelect={values => console.log("values", values)}
+                onSelect={onSelectHandler}
                 // existingValues={formatTeams(formState.inputValues.teams)}
               />
               {/* <UiDropdown
@@ -420,9 +431,9 @@ const CreateEvent = props => {
                     position: 'absolute',
                   }}>
                   <Switch
-                    value={formState.inputValues.cancelled}
+                    value={formState.inputValues.status === 'approved' ? false : true}
                     onValueChange={value =>
-                      onChange('status', value ? 'approved' : 'cancelled', true)
+                      onChange('status', value ? 'cancelled' : 'approved' , true)
                     }
                   />
                 </View>

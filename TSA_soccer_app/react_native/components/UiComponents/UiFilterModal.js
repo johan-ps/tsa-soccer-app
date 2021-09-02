@@ -202,7 +202,7 @@ const UiFilterModal = props => {
                   }
                   existingDate={formState.inputValues.startDate}
                   onChange={onDateChange}
-                  height={270}
+                  height={280}
                 />
               </View>
               <View style={styles.marginTop}>
@@ -217,6 +217,7 @@ const UiFilterModal = props => {
                   }
                   existingDate={formState.inputValues.endDate}
                   onChange={onDateChange}
+                  height={280}
                 />
               </View>
             </ScrollView>

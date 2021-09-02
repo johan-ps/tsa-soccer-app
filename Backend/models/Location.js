@@ -46,7 +46,6 @@ class Location {
                 '${ this.longitude }'
             );
         `;
-        console.log("Joell sql", sql)
         return db.execute(sql);
     }
 

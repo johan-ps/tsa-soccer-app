@@ -92,7 +92,6 @@ saveAvailability(id, players) {
       )
       VALUES ${ availabilityInsert };
   `;
-  console.log("Joell sql", sql);
   return db.execute(sql);
 }
 
@@ -115,7 +114,6 @@ static findAll() {
 
 static findById(id) {
   const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.jersey, e.status, e.opponent, e.notes, e.teamId, l.name, l.street, l.city, l.province, l.postalCode, l.latitude, l.longitude FROM EVENTS e, LOCATIONS l WHERE e.ID = ${id} AND l.id = e.locationId`;
-  console.log("Joell id sql", sql);
   return db.execute(sql)
 }
 
@@ -135,8 +133,6 @@ static findByDate(date, userId) {
   // else{
     // sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name FROM EVENTS e, LOCATIONS l WHERE e.date = '${date}' AND l.id = e.locationId ORDER BY startTime ASC`;
   // }
-
-  console.log("Joell sql", sql);
 
   return db.execute(sql);
 }

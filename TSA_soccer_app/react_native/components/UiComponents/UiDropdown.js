@@ -74,19 +74,21 @@ const UiDropdown = props => {
         selectedVals[val] = true;
       });
 
-      if (options) {
+      if (options && options.length > 0) {
         options.forEach(groupOpt => {
           newSelectedValues[groupOpt.id] = {
             selected: false,
             children: {},
           };
-          groupOpt.children.forEach(child => {
-            newSelectedValues[groupOpt.id].children[child.id] =
-              !!selectedVals[child.id];
-            if (selectedVals[child.id]) {
-              newSelectedLabels.push(child.label);
-            }
-          });
+          if(groupOpt.children){
+            groupOpt.children.forEach(child => {
+              newSelectedValues[groupOpt.id].children[child.id] =
+                !!selectedVals[child.id];
+              if (selectedVals[child.id]) {
+                newSelectedLabels.push(child.label);
+              }
+            });
+          }
         });
       }
     }
@@ -100,7 +102,7 @@ const UiDropdown = props => {
     if (onSelect) {
       onSelect(selectedValues);
     }
-  }, [selectedValues, onSelect]);
+  }, [selectedValues, onSelect, multiselect]);
 
   const getDropdownXY = event => {
     const layout = event.nativeEvent.layout;
@@ -169,8 +171,17 @@ const UiDropdown = props => {
       setSelectedValues(newSelectedValues);
       return;
     }
-    setSelectedId(option.id);
-    setSelectedLabel(option.label);
+    if(child){
+      setSelectedId(child.id);
+      setSelectedLabel(child.label);
+      if (onSelect) {
+        onSelect(child.id);
+      }
+    }
+    else{
+      setSelectedId(option.id);
+      setSelectedLabel(option.label);
+    }
     dropdownAnimation.value = withTiming(0, { duration: 225 }, () => {
       runOnJS(setShowOptions)(false);
     });
