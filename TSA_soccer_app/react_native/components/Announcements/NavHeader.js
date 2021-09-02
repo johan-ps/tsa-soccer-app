@@ -100,7 +100,9 @@ const NavHeader = forwardRef((props, ref) => {
         {iconListRight.map(icon => {
           return (
             <TouchableOpacity
-              onPress={props.toggleFilter}
+              onPress={() => {
+                props.toggleFilter(true);
+              }}
               key={icon.id}
               style={styles.iconContainer}>
               <Icon name={icon.name} color={theme.searchText} size={20} />

@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useCallback, useReducer } from 'react';
-import { View, Text, Modal, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import Animated, {
   useSharedValue,
@@ -14,6 +21,9 @@ import { UiButton, UiDropdown } from '../_components';
 import * as teamActions from '../../store/actions/TeamActions';
 import UiDatePicker from './UiDatePicker';
 import moment from 'moment';
+import * as loaderActions from '../../store/actions/LoaderActions';
+import * as announcementActions from '../../store/actions/AnnouncementActions';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const FORM_INPUT_APPLY = 'FORM_INPUT_APPLY';
@@ -30,6 +40,16 @@ const formInit = {
     startDate: null,
     endDate: null,
   },
+  inputValidities: {
+    teams: true,
+    startDate: true,
+    endDate: true,
+  },
+  errors: {
+    teams: null,
+    startDate: null,
+    endDate: null,
+  },
 };
 
 const formReducer = (state, action) => {
@@ -38,19 +58,40 @@ const formReducer = (state, action) => {
     if (action.value !== undefined) {
       updatedValues[action.input] = action.value;
     }
-    return { inputValues: updatedValues, prevState: { ...state.prevState } };
+
+    const updatedValidities = { ...state.inputValidities };
+    if (action.isValid !== undefined) {
+      updatedValidities[action.input] = action.isValid;
+    }
+
+    const updatedErrors = { ...state.errors };
+    if (action.error !== undefined) {
+      updatedErrors[action.input] = action.error;
+    }
+
+    return {
+      inputValues: updatedValues,
+      inputValidities: updatedValidities,
+      errors: updatedErrors,
+      prevState: { ...state.prevState },
+    };
   } else if (action.type === FORM_INPUT_APPLY) {
     return {
+      ...state,
       inputValues: { ...state.inputValues },
       prevState: { ...state.inputValues },
     };
   } else if (action.type === FORM_INPUT_RESET) {
     return {
+      ...state,
       inputValues: { ...state.prevState },
       prevState: { ...state.prevState },
     };
   } else {
-    return formInit;
+    return {
+      ...formInit,
+      prevState: { ...state.prevState },
+    };
   }
 };
 
@@ -77,6 +118,31 @@ const UiFilterModal = props => {
       });
     }
   };
+
+  const loadFilteredAnnouncements = useCallback(
+    async filters => {
+      try {
+        dispatch(loaderActions.updateLoader(true));
+        await dispatch(announcementActions.getFilteredAnnouncements(filters));
+        props.onCloseHandler(false);
+      } catch (error) {
+        if (error && error.length > 0) {
+          error.forEach(err => {
+            dispatchFormState({
+              type: FORM_INPUT_UPDATE,
+              isValid: false,
+              error: err.errCode,
+              input: err.field,
+            });
+          });
+        }
+      } finally {
+        dispatch(loaderActions.updateLoader(false));
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dispatch],
+  );
 
   const loadTeams = useCallback(async () => {
     try {
@@ -114,22 +180,12 @@ const UiFilterModal = props => {
 
   const primaryBtnHandler = () => {
     dispatchFormState({ type: FORM_INPUT_APPLY });
-    if (props.primaryBtnHandler) {
-      props.primaryBtnHandler(formState.inputValues);
-    }
-    if (props.onCloseHandler) {
-      props.onCloseHandler();
-    }
+    props.onUpdateFilter(formState.inputValues);
+    loadFilteredAnnouncements(formState.inputValues);
   };
 
   const secondaryBtnHandler = () => {
-    dispatchFormState({ type: FORM_INPUT_RESET });
-    if (props.secondaryBtnHandler) {
-      props.secondaryBtnHandler();
-    }
-    if (props.onCloseHandler) {
-      props.onCloseHandler();
-    }
+    dispatchFormState({ type: 'reset' });
   };
 
   const teams = useSelector(state => formatTeams(state.teams));
@@ -149,6 +205,7 @@ const UiFilterModal = props => {
       dispatchFormState({
         type: FORM_INPUT_UPDATE,
         value: selectedTeams,
+        isValid: true,
         input: 'teams',
       });
     }
@@ -158,8 +215,14 @@ const UiFilterModal = props => {
     dispatchFormState({
       type: FORM_INPUT_UPDATE,
       value,
+      isValid: true,
       input: inputId,
     });
+  };
+
+  const onCloseHandler = () => {
+    dispatchFormState({ type: FORM_INPUT_RESET });
+    props.onCloseHandler(false);
   };
 
   return (
@@ -171,6 +234,9 @@ const UiFilterModal = props => {
             { backgroundColor: theme.cardBg },
             animStyle,
           ]}>
+          <TouchableOpacity style={styles.closeBtn} onPress={onCloseHandler}>
+            <Icon name="close-outline" color={theme.primaryText} size={40} />
+          </TouchableOpacity>
           <View style={styles.textContainer}>
             <Text
               style={[
@@ -179,7 +245,7 @@ const UiFilterModal = props => {
               ]}>
               {props.title}
             </Text>
-            <ScrollView style={{ height: '100%' }}>
+            <ScrollView>
               <UiDropdown
                 options={teams}
                 multiselect={true}
@@ -189,6 +255,8 @@ const UiFilterModal = props => {
                 optionSize="large"
                 onSelect={onSelectHandler}
                 existingValues={formState.inputValues.teams}
+                isValid={formState.inputValidities.teams}
+                errCode={formState.errors.teams}
               />
               <View style={styles.marginTop}>
                 <UiDatePicker
@@ -203,6 +271,8 @@ const UiFilterModal = props => {
                   existingDate={formState.inputValues.startDate}
                   onChange={onDateChange}
                   height={280}
+                  isValid={formState.inputValidities.startDate}
+                  errCode={formState.errors.startDate}
                 />
               </View>
               <View style={styles.marginTop}>
@@ -218,6 +288,8 @@ const UiFilterModal = props => {
                   existingDate={formState.inputValues.endDate}
                   onChange={onDateChange}
                   height={280}
+                  isValid={formState.inputValidities.endDate}
+                  errCode={formState.errors.endDate}
                 />
               </View>
             </ScrollView>
@@ -254,8 +326,13 @@ const UiFilterModal = props => {
 };
 
 const styles = StyleSheet.create({
+  closeBtn: {
+    position: 'absolute',
+    top: 30,
+    right: 20,
+  },
   marginTop: {
-    marginTop: 20,
+    marginTop: 40,
   },
   modalViewContainer: {
     flex: 1,

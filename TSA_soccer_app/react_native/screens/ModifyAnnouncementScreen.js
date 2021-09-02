@@ -232,7 +232,7 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
       navigation.goBack();
       dispatchFormState({ type: 'reset' });
     } catch (error) {
-      if (error) {
+      if (error && error.length > 0) {
         error.forEach(err => {
           dispatchFormState({
             type: FORM_INPUT_UPDATE,

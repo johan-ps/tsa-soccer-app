@@ -36,34 +36,27 @@ const AnnouncementScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [showBadge, setShowBadge] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [filters, setFilters] = useState(null);
 
   const loadAnnouncements = useCallback(async () => {
     try {
       if (!loaded) {
         dispatch(loaderActions.updateLoader(true));
       }
-      await dispatch(announcementActions.getAnnouncements());
+      if (filters) {
+        await dispatch(announcementActions.getFilteredAnnouncements(filters));
+      } else {
+        await dispatch(announcementActions.getAnnouncements());
+      }
+    } catch (err) {
+      console.log('error<1>', err);
+    } finally {
       if (!loaded) {
         dispatch(loaderActions.updateLoader(false));
       }
       setLoaded(true);
-    } catch (err) {
-      console.log('error<1>', err);
     }
-  }, [dispatch, loaded]);
-
-  const loadFilteredAnnouncements = useCallback(
-    async filters => {
-      try {
-        dispatch(loaderActions.updateLoader(true));
-        await dispatch(announcementActions.getFilteredAnnouncements(filters));
-        dispatch(loaderActions.updateLoader(false));
-      } catch (err) {
-        console.log('error<2>', err);
-      }
-    },
-    [dispatch],
-  );
+  }, [dispatch, filters, loaded]);
 
   useEffect(() => {
     loadAnnouncements();
@@ -82,8 +75,8 @@ const AnnouncementScreen = ({ navigation }) => {
     setModalVisible(false);
   };
 
-  const toggleFilter = () => {
-    setFilterVisible(!filterVisible);
+  const toggleFilter = visible => {
+    setFilterVisible(visible);
   };
 
   const deleteAnnouncement = () => {
@@ -175,11 +168,11 @@ const AnnouncementScreen = ({ navigation }) => {
 
         <UiFilterModal
           primaryLabel="Apply"
-          secondaryLabel="Cancel"
+          secondaryLabel="Reset"
           visible={filterVisible}
           title="Filter Announcements"
-          primaryBtnHandler={loadFilteredAnnouncements}
           onCloseHandler={toggleFilter}
+          onUpdateFilter={setFilters}
         />
       </SafeAreaView>
       {userData && userData.accessLevel > 0 ? (
