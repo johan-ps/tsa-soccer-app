@@ -180,6 +180,7 @@ const UiFilterModal = props => {
                       : 'Select start date'
                   }
                   onChange={onDateChange}
+                  height={270}
                 />
               </View>
               <View style={styles.marginTop}>

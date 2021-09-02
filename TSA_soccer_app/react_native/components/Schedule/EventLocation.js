@@ -340,7 +340,7 @@ const EventLocation = props => {
             {search !== '' && <TouchableOpacity onPress={() => onSelectLocation(search)} style={{alignItems: 'center', width: '100%', height: 60, backgroundColor:'#A9A9A9', padding: 10, paddingRight: 50, flexDirection: 'row'}}>
             <Icon name={'location'} size={20} style={{marginRight: 10}}/>
               <View>
-              <Text numberOfLines={1} style={{color: 'black', fontSize: 16, fontWeight: '500'}}>{search}</Text>
+                <Text numberOfLines={1} style={{color: 'black', fontSize: 16, fontWeight: '500'}}>{search}</Text>
               </View>
             </TouchableOpacity>}
             </ScrollView>

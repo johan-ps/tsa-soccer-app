@@ -12,13 +12,18 @@ import DatePicker from 'react-native-date-picker';
 import { useSelector } from 'react-redux';
 
 const UiDatePicker = props => {
-  const { placeholder, id } = props;
+  const { placeholder, id, height = 230 } = props;
   const [showDatePicker, setShowDatePicker] = useState(false);
   const dateAnim = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
   const [date, setDate] = useState(new Date());
 
   const onToggleHandler = () => {
+    if(isNaN(new Date(placeholder))){
+      if (props.onChange) {
+        props.onChange(id, new Date());
+      }
+    }
     if (showDatePicker) {
       dateAnim.value = withTiming(0);
       setShowDatePicker(false);
@@ -31,7 +36,7 @@ const UiDatePicker = props => {
 
   const dateStyle = useAnimatedStyle(() => {
     return {
-      height: interpolate(dateAnim.value, [0, 1], [58, 230]),
+      height: interpolate(dateAnim.value, [0, 1], [58, height]),
     };
   });
 
@@ -93,6 +98,9 @@ const styles = StyleSheet.create({
   datePicker: {
     width: '100%',
   },
+  placeholder: {
+    fontSize: 16
+  }
 });
 
 export default UiDatePicker;
