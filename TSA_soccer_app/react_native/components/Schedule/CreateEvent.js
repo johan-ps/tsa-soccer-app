@@ -47,7 +47,7 @@ const formInit = {
     opponent: '',
     jersey: '',
     arriveEarly: false,
-    teamId: 5, //TODO: change to null
+    teamId: null, //TODO: change to null
   },
   inputValidities: {
     type: true,
@@ -66,27 +66,53 @@ const formInit = {
     arriveEarly: true,
     teamId: true,
   },
+  errors: {
+    type: null,
+    date: null,
+    timeTBD: null,
+    startTime: null,
+    endTime: null,
+    locationId: null,
+    locationDetails: null,
+    authorId: null,
+    notes: null,
+    status: null,
+    notifyTeam: null,
+    opponent: null,
+    jersey: null,
+    arriveEarly: null,
+    teamId: null,
+  },
   formIsValid: true,
 };
 
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = {
-      ...state.inputValues,
-      [action.input]: action.value,
-    };
-    const updatedValidities = {
-      ...state.inputValidities,
-      [action.input]: action.isValid,
-    };
+    const updatedValues = { ...state.inputValues };
+    if (action.value !== undefined) {
+      updatedValues[action.input] = action.value;
+    }
+
+    const updatedValidities = { ...state.inputValidities };
+    if (action.isValid !== undefined) {
+      updatedValidities[action.input] = action.isValid;
+    }
+
+    const updatedErrors = { ...state.errors };
+    if (action.error !== undefined) {
+      updatedErrors[action.input] = action.error;
+    }
+
     let updatedFormIsValid = true;
     for (let key in updatedValidities) {
       updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
     }
+
     return {
       formIsValid: updatedFormIsValid,
       inputValues: updatedValues,
       inputValidities: updatedValidities,
+      errors: updatedErrors,
     };
   } else {
     return formInit;
@@ -181,11 +207,21 @@ const CreateEvent = props => {
           date: moment(formState.inputValues.date).format('YYYY-MM-DD'),
         }),
       );
-      loadEventsFromDate(selectedDate);
+      // loadEventsFromDate(selectedDate);
       props.navigation.goBack();
       dispatchFormState({ type: 'reset' });
     }
     catch (error) {
+      if (error) {
+        error.forEach(err => {
+          dispatchFormState({
+            type: FORM_INPUT_UPDATE,
+            isValid: false,
+            error: err.errCode,
+            input: err.field,
+          });
+        });
+      }
     } finally {
       dispatch(loaderActions.updateLoader(false));
     }
@@ -245,6 +281,7 @@ const CreateEvent = props => {
                   color={theme.inputText}
                   placeholderClr={theme.inputPlaceholder}
                   onInputChange={onChange}
+                  errCode={formState.errors.type}
                 />
               ) : null}
               <Text style={styles.formLabels}>Date</Text>
@@ -344,7 +381,6 @@ const CreateEvent = props => {
                 id="locationDetails"
                 initialValue={formState.inputValues.locationDetails}
                 isValid={formState.inputValidities.locationDetails}
-                // errCode={formState.errors.description}
                 placeholder="Location Details (Ex: Field #11)"
                 multiline={true}
                 onInputChange={onChange}
@@ -362,17 +398,9 @@ const CreateEvent = props => {
                 size="large"
                 optionSize="large"
                 onSelect={onSelectHandler}
-                // existingValues={formatTeams(formState.inputValues.teams)}
+                isValid={formState.inputValidities.teamId}
+                errCode={formState.errors.teamId}
               />
-              {/* <UiDropdown
-                modalOffsetY={80}
-                modalOffsetX={0}
-                options={teams}
-                multiselect={true}
-                group={true}
-                placeholder="Choose Teams"
-                size="large"
-              /> */}
               <View
                 style={{
                   flexDirection: 'row',

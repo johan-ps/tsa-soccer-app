@@ -74,12 +74,82 @@ exports.updateEventAvailability = async (req, res, next) => {
 exports.createEvent = async (req, res, next) => {
     try {
       let { type, date, timeTBD, startTime, endTime, locationId, locationDetails = null, authorId, notes, status, notifyTeam, opponent = null, jersey, arriveEarly = null, teamId } = req.body;
+      let isValid = true, errors = [];
 
-      const newEvent = new Event(type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
-      const [event, _] = await newEvent.save();
-      const [players, __] = await Team.findAllPlayers(teamId);
-      await newEvent.saveAvailability(event.insertId, players);
-      res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
+      if (!type || type.length === 0) {
+          isValid = false;
+          errors.push({
+              errCode: '0001',
+              field: 'type',
+          });
+      }
+      
+      if (!date || date.length === 0) {
+          isValid = false;
+          errors.push({
+              errCode: '0002',
+              field: 'date',
+          });
+      }
+
+      if (!startTime || startTime.length === 0) {
+        isValid = false;
+        errors.push({
+            errCode: '0003',
+            field: 'startTime',
+        });
+      }
+
+      if (!endTime || endTime.length === 0) {
+        isValid = false;
+        errors.push({
+            errCode: '0004',
+            field: 'startTime',
+        });
+      }
+
+      if(startTime > endTime){
+        isValid = false;
+        errors.push({
+            errCode: '0005',
+            field: 'endTime',
+        });
+      }
+
+      if (!locationId) {
+        isValid = false;
+        errors.push({
+            errCode: '0006',
+            field: 'locationId',
+        });
+      }
+
+      if (!authorId) {
+        isValid = false;
+        errors.push({
+            errCode: '0007',
+            field: 'authorId',
+        });
+      }
+
+      if (!teamId) {
+        isValid = false;
+        errors.push({
+            errCode: '0007',
+            field: 'teamId',
+        });
+      }
+
+      if (isValid) {
+        const newEvent = new Event(type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
+        const [event, _] = await newEvent.save();
+        const [players, __] = await Team.findAllPlayers(teamId);
+        await newEvent.saveAvailability(event.insertId, players);
+        res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
+      }
+      else{
+        res.status(400).json({ errors });
+      }
     }
     catch(error){
       next(error);
