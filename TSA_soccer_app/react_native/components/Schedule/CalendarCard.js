@@ -9,6 +9,8 @@ const CalendarCard = props => {
   const { onPress, item } = props;
   const calanderCard = useRef();
   const theme = useSelector(state => state.theme.colors);
+  const userData = useSelector(state => state.userData);
+  console.log("joell userData", userData.a);
   const defaultOption = {
     label: 'Set Availability',
     color: theme.schCardAccent,
@@ -32,6 +34,12 @@ const CalendarCard = props => {
       }
     }
   }, [props.item]);
+
+  useEffect(() => {
+    if(!userData.authenticated){
+      setAvailability(defaultOption);
+    }
+  }, [userData])
 
   return (
     <TouchableOpacity
@@ -58,12 +66,16 @@ const CalendarCard = props => {
             ]}>
             {item.type}
           </Text>
-          <StatusIndicator
-            label={availability.label}
-            icon={availability.icon}
-            color={availability.color}
-            eventId={item.id}
-          />
+          {userData.authenticated ?
+            <StatusIndicator
+              label={availability.label}
+              icon={availability.icon}
+              color={availability.color}
+              eventId={item.id}
+            />
+            :
+            null
+          }
         </View>
         <View style={styles.itemContainer}>
           <Icon name="timer-outline" size={20} color={theme.secondaryText} />
@@ -72,7 +84,7 @@ const CalendarCard = props => {
               styles.itemContent,
               { color: theme.secondaryText, fontFamily: theme.fontRegular },
             ]}>
-            {moment('May 15, 2021 ' + item.startTime).format('h:mm')} - {moment('May 15, 2021 ' + item.endTime).format('h:mm')}
+            {moment('May 15, 2021 ' + item.startTime).format('hh:mm A')} - {moment('May 15, 2021 ' + item.endTime).format('hh:mm A')}
           </Text>
         </View>
         <View style={styles.itemContainer}>

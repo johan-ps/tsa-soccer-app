@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Text,
   View,
@@ -27,6 +27,7 @@ import * as tabbarActions from '../store/actions/TabbarActions';
 import * as loaderActions from '../store/actions/LoaderActions';
 
 const ScheduleScreen = ({ navigation, events }) => {
+  const addBtnRef = useRef();
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const userId = userData && userData.id;
@@ -35,12 +36,14 @@ const ScheduleScreen = ({ navigation, events }) => {
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);
+  console.log("Joell refreshEnabled", refreshEnabled);
 
   useFocusEffect(() => {
     dispatch(tabbarActions.updateVisibility(true));
   });
 
   const onScrollHandler = ({ nativeEvent }) => {
+    console.log("Joell nativeEvent", nativeEvent)
     if (nativeEvent.contentOffset.y <= 0) {
       if (!refreshEnabled) {
         setRefreshEnabled(true);
@@ -75,7 +78,7 @@ const ScheduleScreen = ({ navigation, events }) => {
 
   useEffect(() => {
     loadEventsFromDate(new Date());
-  }, [dispatch, loadEventsFromDate]);
+  }, [dispatch, loadEventsFromDate, userId]);
 
   const onAddClicked = () => {
     if(Platform.OS === 'ios'){
@@ -157,6 +160,7 @@ const ScheduleScreen = ({ navigation, events }) => {
         onScroll={onScrollHandler}
         style={styles.container}
         bounces={false}
+        scrollEventThrottle={0}
         alwaysBounceHorizontal={false}
         alwaysBounceVertical={false}>
         <View
@@ -269,6 +273,7 @@ const ScheduleScreen = ({ navigation, events }) => {
       </ScrollView>
       {userData && userData.accessLevel > 0 && (
         <AddButton
+          ref={addBtnRef}
           onPress={onAddClicked}
         />
       )}

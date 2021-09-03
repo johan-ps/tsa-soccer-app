@@ -174,7 +174,8 @@ export const createEvent = eventData => {
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong add event!');
+        const error = await response.json();
+        throw error;
       }
 
       const resData = await response.json();
@@ -185,7 +186,11 @@ export const createEvent = eventData => {
         event: event,
       });
     } catch (err) {
-      console.log(err);
+      console.log('err<>', err);
+
+      if (err && err.errors && err.errors.length > 0) {
+        throw err.errors;
+      }
     }
   };
 };

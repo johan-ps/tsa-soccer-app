@@ -83,7 +83,7 @@ exports.createEvent = async (req, res, next) => {
               field: 'type',
           });
       }
-      
+      console.log("Joell date", date);
       if (!date || date.length === 0) {
           isValid = false;
           errors.push({
@@ -95,7 +95,7 @@ exports.createEvent = async (req, res, next) => {
       if (!startTime || startTime.length === 0) {
         isValid = false;
         errors.push({
-            errCode: '0003',
+            errCode: '0002',
             field: 'startTime',
         });
       }
@@ -103,23 +103,25 @@ exports.createEvent = async (req, res, next) => {
       if (!endTime || endTime.length === 0) {
         isValid = false;
         errors.push({
-            errCode: '0004',
+            errCode: '0002',
             field: 'startTime',
         });
       }
-
-      if(startTime > endTime){
+      
+      const startTimeDate = new Date('2021-05-15T' + startTime);
+      const endTimeDate = new Date('2021-05-15T' + endTime);
+      if(startTimeDate.getTime() > endTimeDate.getTime()){
         isValid = false;
         errors.push({
-            errCode: '0005',
-            field: 'endTime',
+            errCode: '0004',
+            field: 'startTime',
         });
       }
 
       if (!locationId) {
         isValid = false;
         errors.push({
-            errCode: '0006',
+            errCode: '0002',
             field: 'locationId',
         });
       }
@@ -127,15 +129,15 @@ exports.createEvent = async (req, res, next) => {
       if (!authorId) {
         isValid = false;
         errors.push({
-            errCode: '0007',
+            errCode: '0002',
             field: 'authorId',
         });
       }
-
+      console.log("Joell teamId", teamId);
       if (!teamId) {
         isValid = false;
         errors.push({
-            errCode: '0007',
+            errCode: '0002',
             field: 'teamId',
         });
       }
@@ -148,7 +150,8 @@ exports.createEvent = async (req, res, next) => {
         res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
       }
       else{
-        res.status(400).json({ errors });
+        console.log("Joell errors", errors);
+        res.status(400).json({ errors: errors });
       }
     }
     catch(error){

@@ -5,6 +5,7 @@ import {
   EDIT_EVENT,
   UPDATE_AVAILABILITY
 } from '../actions/EventActions';
+import moment from 'moment';
 
 const INITIAL_STATE = [];
 
@@ -14,10 +15,10 @@ const eventReducer = (state = INITIAL_STATE, action) => {
       return action.events;
     case ADD_EVENT:
       let updatedState = state;
-      if(moment(action.event.date).isAfter(new Date())){
+      if(moment(action.event.date).isAfter(moment())){
         updatedState.upcoming.push(action.event);
       }
-      else{
+      else if (moment(action.event.date).isSame(moment())){
         updatedState.today.push(action.event);
       }
       return updatedState;

@@ -85,6 +85,7 @@ const AnnouncementScreen = ({ navigation }) => {
   };
 
   const onScrollUp = () => {
+    console.log("Joell scrollUp");
     if (addBtnRef && addBtnRef.current) {
       addBtnRef.current.onScrollUp();
     }

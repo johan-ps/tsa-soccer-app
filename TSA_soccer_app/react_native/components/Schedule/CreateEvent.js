@@ -28,6 +28,7 @@ import * as eventActions from '../../store/actions/EventActions';
 import * as teamActions from '../../store/actions/TeamActions';
 import * as loaderActions from '../../store/actions/LoaderActions'
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import ErrorMessage from '../UiComponents/ErrorMessage';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -145,9 +146,9 @@ const CreateEvent = props => {
   useEffect(() => {
     onChange('authorId', userId, true);
     setStartTime(new Date());
-    onChange('startTime', moment().format('h:m'), true);
+    onChange('startTime', moment(new Date(), 'hh:mm A').format('HH:mm'), true);
     setEndTime(new Date(moment().add(2, 'hours')));
-    onChange('endTime', moment().add(2, 'hours').format('h:m'), true);
+    onChange('endTime', moment().add(2, 'hours').format('HH:mm'), true);
     if(type === 'Game'){
       onChange('type', 'Game', true);
     } else if (type === 'Practice') {
@@ -204,7 +205,8 @@ const CreateEvent = props => {
       await dispatch(
         eventActions.createEvent({
           ...formState.inputValues,
-          date: moment(formState.inputValues.date).format('YYYY-MM-DD'),
+          date: formState.inputValues.date ? moment(formState.inputValues.date).format('YYYY-MM-DD') : null,
+          teamId: Number.isInteger(formState.inputValues.teamId) ? formState.inputValues.teamId : null
         }),
       );
       // loadEventsFromDate(selectedDate);
@@ -273,16 +275,19 @@ const CreateEvent = props => {
             decelerationRate="fast">
             <View style={styles.modalBody}>
               {type === 'Other' ? (
-                <UiInput
-                  id="type"
-                  placeholder="Title"
-                  bg={theme.inputBg}
-                  style={{marginTop: 20}}
-                  color={theme.inputText}
-                  placeholderClr={theme.inputPlaceholder}
-                  onInputChange={onChange}
-                  errCode={formState.errors.type}
-                />
+                <View style={{marginBottom: 20}}>
+                  <UiInput
+                    id="type"
+                    placeholder="Title"
+                    bg={theme.inputBg}
+                    style={{marginTop: 20}}
+                    color={theme.inputText}
+                    placeholderClr={theme.inputPlaceholder}
+                    onInputChange={onChange}
+                    isValid={formState.inputValidities.type}
+                    errCode={formState.errors.type}
+                  />
+                </View>
               ) : null}
               <Text style={styles.formLabels}>Date</Text>
               <View style={styles.marginTop}>
@@ -297,6 +302,8 @@ const CreateEvent = props => {
                   }
                   onChange={(id, date) => onChange(id, date, true)}
                   height={300}
+                  isValid={formState.inputValidities.date}
+                  errCode={formState.errors.date}
                 />
               </View>
               <View
@@ -327,41 +334,53 @@ const CreateEvent = props => {
                   }}>
                   <View style={{ width: '50%', justifyContent: 'center' }}>
                     <Text style={styles.formLabels}>Start Time</Text>
-                    <RNDateTimePicker
-                      mode={'time'}
-                      display={'default'}
-                      onChange={(event, date) => {
-                        setStartTime(date);
-                        onChange('startTime', moment(date).format('h:m'), true);
-                      }}
-                      value={startTime || new Date()}
-                    />
+                    <View>
+                      <RNDateTimePicker
+                        mode={'time'}
+                        display={'default'}
+                        onChange={(event, date) => {
+                          setStartTime(date);
+                          onChange('startTime', moment(date, 'hh:mm A').format('HH:mm'), true);
+                        }}
+                        value={startTime || new Date()}
+                      />
+                    </View>
                   </View>
                   <View style={{ width: '50%', justifyContent: 'center' }}>
                     <Text style={styles.formLabels}>End Time</Text>
-                    <RNDateTimePicker
-                      mode={'time'}
-                      display={'default'}
-                      onChange={(event, date) => {
-                        setEndTime(date);
-                        onChange('endTime', moment(date).format('h:m'), true);
-                      }}
-                      value={endTime || new Date()}
-                    />
+                    <View>
+                      <RNDateTimePicker
+                        mode={'time'}
+                        display={'default'}
+                        onChange={(event, date) => {
+                          setEndTime(date);
+                          onChange('endTime', moment(date, 'hh:mm A').format('HH:mm'), true);
+                        }}
+                        value={endTime || new Date()}
+                      />
+                    </View>
                   </View>
                 </View>
               ) : null}
+              {!formState.inputValidities.startTime ?
+                <View style={{marginBottom: 30, marginTop: 10}}>
+                  <ErrorMessage isValid={formState.inputValidities.startTime} errCode={formState.errors.startTime} />
+                  <ErrorMessage isValid={formState.inputValidities.endTime} errCode={formState.errors.endTime} />
+                </View>
+                :
+                null
+              }
               <Text style={styles.formLabels}>Location</Text>
               <TouchableOpacity
                 onPress={onSelectLocation}
-                style={{ marginBottom: 10 }}>
+                style={{ marginBottom: formState.inputValidities.locationId ? 10 : 0}}>
                 <View style={[styles.dateContainer, {backgroundColor: theme.inputBg}]}>
                   <Text
                     style={[
                       styles.date,
                       {
-                        color:
-                          locationValue === 'Choose Location' ? '#C0C0CA' : theme.inputText,
+                        color: !formState.inputValidities.locationId ? 'red' : 
+                          (locationValue === 'Choose Location' ? '#C0C0CA' : theme.inputText),
                         shadowOpacity: 0,
                         fontSize: 16,
                       },
@@ -370,13 +389,20 @@ const CreateEvent = props => {
                   </Text>
                   <View style={styles.iconContainer}>
                     <Icon
-                      color={'#A8A4B8'}
+                      color={!formState.inputValidities.locationId ? 'red' : '#A8A4B8'}
                       name="location-outline"
                       size={20}
                     />
                   </View>
                 </View>
               </TouchableOpacity>
+              {!formState.inputValidities.locationId ?
+                <View style={{marginBottom: 30}}>
+                  <ErrorMessage isValid={formState.inputValidities.locationId} errCode={formState.errors.locationId} />
+                </View>
+                :
+                null
+              }
               <UiInput
                 id="locationDetails"
                 initialValue={formState.inputValues.locationDetails}
@@ -407,7 +433,7 @@ const CreateEvent = props => {
                   alignItems: 'center',
                   width: '100%',
                   height: 50,
-                  marginTop: 10,
+                  marginTop: 20,
                 }}>
                 <Text style={styles.optionLabels}>Notify Team(s)</Text>
                 <View
@@ -663,6 +689,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 10,
     paddingTop: 20,
+  },
+  marginTop: {
+    marginTop: 5,
+    marginBottom: 15
   }
 });
 

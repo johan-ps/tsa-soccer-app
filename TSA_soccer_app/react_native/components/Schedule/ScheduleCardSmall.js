@@ -41,6 +41,7 @@ const playersList = [
 const ScheduleCardSmall = props => {
   const { onPress, event } = props;
   const theme = useSelector(state => state.theme.colors);
+  const userData = useSelector(state => state.userData);
   const defaultOption = {
     label: 'Set Availability',
     icon: 'information-outline',
@@ -101,13 +102,17 @@ const ScheduleCardSmall = props => {
               {moment.utc(event.date).format('DD')}
             </Text>
           </View>
-          <StatusIndicator
-            label={availability.label}
-            icon={availability.icon}
-            color={availability.color}
-            size="small"
-            eventId={event.id}
-          />
+          {userData.authenticated ?
+            <StatusIndicator
+              label={availability.label}
+              icon={availability.icon}
+              color={availability.color}
+              size="small"
+              eventId={event.id}
+            />
+            :
+            null
+          }
         </View>
         <View style={styles.body}>
           <Text
@@ -124,7 +129,7 @@ const ScheduleCardSmall = props => {
               styles.time,
               { color: theme.schCardText, fontFamily: theme.fontLight },
             ]}>
-             {moment('May 15, 2021 ' + event.startTime).format('h:mm')} - {moment('May 15, 2021 ' + event.endTime).format('h:mm')} pm
+              {moment('May 15, 2021 ' + event.startTime).format('hh:mm A')} - {moment('May 15, 2021 ' + event.endTime).format('hh:mm A')}
           </Text>
         </View>
         <TeamListPreview players={playersList} size={35} max={3} />
