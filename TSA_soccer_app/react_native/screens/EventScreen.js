@@ -7,6 +7,7 @@ import {
   TouchableHighlight,
   Image,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -18,6 +19,16 @@ import AvailabilityMenu from '../components/Schedule/AvailabilityMenu';
 import LottieView from 'lottie-react-native';
 import { getEventById } from '../store/actions/EventActions';
 import moment from 'moment';
+import { useFocusEffect } from '@react-navigation/native';
+import * as tabbarActions from '../store/actions/TabbarActions';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  useAnimatedScrollHandler,
+  runOnJS,
+  interpolate,
+} from 'react-native-reanimated';
+const windowHeight = Dimensions.get('window').height;
 
 const EventScreen = ({ navigation, route }) => {
   const loadingLottieAnim = require('../assets/img/soccer-empty-state.json');
@@ -55,16 +66,21 @@ const EventScreen = ({ navigation, route }) => {
   ];
 
   const { eventId } = route.params;
-  const [event, setEvent] = useState(null);
+  const [event, setEvent] = useState({});
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme.colors);
   const [openAvailability, setOpenAvailability] = useState(false);
+  const [outerScrollEnabled, setOuterScrollEnabled] = useState(true);
+  const [innerScrollEnabled, setInnerScrollEnabled] = useState(false);
+  const scrollAnim = useSharedValue(0);
+  const [blurRadius, setBlurRadius] = useState(0);
 
   const loadEventById = useCallback(
     async id => {
       try {
         const event = await dispatch(getEventById(id));
         setEvent(event[0]);
+        console.log(event[0]);
       } catch (err) {
         console.log(err);
       }
@@ -72,9 +88,13 @@ const EventScreen = ({ navigation, route }) => {
     [dispatch],
   );
 
+  useFocusEffect(() => {
+    dispatch(tabbarActions.updateVisibility(false));
+  });
+
   useEffect(() => {
     loadEventById(eventId);
-  }, [dispatch, loadEventById]);
+  }, [dispatch, eventId, loadEventById]);
 
   const [region, setRegion] = useState();
   const [marker, setMarker] = useState();
@@ -83,191 +103,356 @@ const EventScreen = ({ navigation, route }) => {
     setRegion(region);
   };
 
-  return (
-    <View style={{ backgroundColor: '#1E2630' }}>
-      {event ? (
-        <View style={styles.container}>
-          <View>
-            <ImageBackground
-              style={styles.profilePicture}
-              source={{
-                uri: 'https://weaselsfc.com/wp-content/uploads/2020/03/light-sport-night-sunlight-soccer-darkness-934558-pxhere.com_-e1583360836579.jpg',
-              }}>
-              <View>
-                <LinearGradient
-                  colors={['rgba(41, 41, 41, 0.8)', 'transparent']}
-                  style={styles.contentContainer}>
-                  <View style={styles.iconContainer}>
-                    <Icon
-                      name="chevron-back-outline"
-                      size={35}
-                      onPress={() => navigation.goBack()}
-                      color="white"
-                    />
-                    <AvailabilityMenu />
-                  </View>
-                </LinearGradient>
-                <View style={styles.headerContainer}>
-                  <Text style={styles.text}>
-                    {event && event.type}{' '}
-                    {event && event.type === 'Game'
-                      ? `vs. ${event.opponent}`
-                      : null}
-                  </Text>
-                </View>
-                <LinearGradient
-                  colors={['transparent', 'rgba(41, 41, 41, 0.3)']}
-                  style={styles.contentContainer}>
-                  <View style={{ flexDirection: 'row', paddingLeft: 40 }}>
-                    <View style={styles.infoHeaderContainer}>
-                      <View style={{ paddingRight: 10 }}>
-                        <Icon name="calendar-sharp" size={20} color="white" />
-                      </View>
-                      <View>
-                        <Text style={styles.infoTextTop}>
-                          {moment
-                            .utc(event && event.date)
-                            .format('DD MMMM, YYYY')}
-                        </Text>
-                        <Text style={styles.infoTextBottom}>
-                          {moment.utc(event && event.date).format('dddd')}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={[styles.infoHeaderContainer, { paddingLeft: 25 }]}>
-                      <View style={{ paddingRight: 10 }}>
-                        <Icon name="time-outline" size={20} color="white" />
-                      </View>
-                      <View style={{ flexDirection: 'column' }}>
-                        <Text style={styles.infoTextTop}>
-                          {event &&
-                            moment('May 15, 2021 ' + event.startTime).format(
-                              'h:mm',
-                            )}{' '}
-                          pm
-                        </Text>
-                        <Text style={styles.infoTextBottom}>
-                          -{' '}
-                          {event &&
-                            moment('May 15, 2021 ' + event.endTime).format(
-                              'h:mm',
-                            )}{' '}
-                          pm
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </LinearGradient>
-              </View>
-            </ImageBackground>
-          </View>
-          <ScrollView>
-            <View style={styles.descriptionTextContainer}>
-              <Text style={[styles.infoTextTop, { paddingBottom: 10 }]}>
-                Notes
-              </Text>
-              <Text style={styles.infoTextBottom}>{event && event.notes}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                paddingLeft: 40,
-                paddingRight: 40,
-              }}>
-              <View style={styles.infoContainer}>
-                <View style={{ paddingRight: 10 }}>
-                  <Icon name="shirt-outline" size={20} color="white" />
-                </View>
-                <View>
-                  <Text style={styles.infoTextTop}>
-                    {event &&
-                      event.jersey.charAt(0).toUpperCase() +
-                        event.jersey.slice(1)}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.infoContainer}>
-                <View style={{ paddingRight: 10 }}>
-                  <Icon name="football-outline" size={20} color="white" />
-                </View>
-                <View>
-                  <Text style={styles.infoTextTop}>
-                    {event && event.opponent}
-                  </Text>
-                </View>
-              </View>
-            </View>
+  const onScrollHandler = useAnimatedScrollHandler(nativeEvent => {
+    scrollAnim.value = nativeEvent.contentOffset.y;
+    if (
+      Math.abs(
+        nativeEvent.contentSize.height -
+          nativeEvent.layoutMeasurement.height -
+          nativeEvent.contentOffset.y,
+      ) <= 0.5
+    ) {
+      if (!innerScrollEnabled) {
+        runOnJS(setInnerScrollEnabled)(true);
+        runOnJS(setBlurRadius)(5);
+      }
+    } else if (innerScrollEnabled) {
+      runOnJS(setBlurRadius)(0);
+      runOnJS(setInnerScrollEnabled)(false);
+    }
+  });
 
+  const teamStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: interpolate(scrollAnim.value, [0, 164], [0, -50]),
+        },
+      ],
+    };
+  });
+
+  const typeStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: interpolate(scrollAnim.value, [0, 164], [0, -85]),
+        },
+      ],
+    };
+  });
+
+  return (
+    <View style={{ backgroundColor: theme.secondaryBg }}>
+      {event ? (
+        <Animated.ScrollView
+          onScroll={onScrollHandler}
+          style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
+          <ImageBackground
+            style={styles.eventBg}
+            blurRadius={blurRadius}
+            borderBottomLeftRadius={30}
+            borderBottomRightRadius={30}
+            source={require('../assets/img/event-bg.jpg')}>
+            <LinearGradient
+              colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.8)']}
+              style={styles.contentContainer}>
+              <View style={styles.iconContainer}>
+                <Icon
+                  name="chevron-back-outline"
+                  size={35}
+                  onPress={() => navigation.goBack()}
+                  color="white"
+                />
+                <AvailabilityMenu />
+              </View>
+              <View style={styles.headerContainer}>
+                <View style={styles.dateContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.eventDate,
+                      {
+                        fontFamily: theme.fontMedium,
+                        color: theme.primaryText,
+                      },
+                      teamStyle,
+                    ]}>
+                    U8 Markham Houseleague
+                  </Animated.Text>
+                </View>
+                <Animated.Text
+                  style={[
+                    styles.eventHeading,
+                    {
+                      fontFamily: theme.fontMedium,
+                      color: theme.primaryText,
+                    },
+                    typeStyle,
+                  ]}>
+                  {event && event.type}{' '}
+                  {event && event.type === 'Game'
+                    ? `vs. ${event.opponent}`
+                    : null}
+                </Animated.Text>
+              </View>
+            </LinearGradient>
+          </ImageBackground>
+          <ScrollView
+            style={[
+              styles.eventContentContainer,
+              { height: windowHeight - 210 },
+            ]}
+            nestedScrollEnabled={true}
+            scrollEnabled={innerScrollEnabled}
+            contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.mainEventContent}>
+              <View style={styles.timeContainer}>
+                <Icon name="timer-outline" size={24} color="white" />
+                <View style={styles.timeInnerContainer}>
+                  <Text
+                    style={[
+                      styles.date,
+                      {
+                        fontFamily: theme.fontMedium,
+                        color: theme.secondaryText,
+                      },
+                    ]}>
+                    {moment.utc(event.date).format('MMMM D, YYYY')}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.time,
+                      {
+                        fontFamily: theme.fontRegular,
+                        color: theme.secondaryText,
+                      },
+                    ]}>
+                    {moment(event.startTime, 'HH:mm:ss').format('h:mm')} -{' '}
+                    {moment(event.endTime, 'HH:mm:ss').format('h:mm a')}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.locationContainer}>
+                <Icon name="navigate-outline" size={24} color="white" />
+                <View style={styles.locationInnerContainer}>
+                  <Text
+                    style={[
+                      styles.locationName,
+                      {
+                        fontFamily: theme.fontMedium,
+                        color: theme.secondaryText,
+                      },
+                    ]}>
+                    {event.name}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.locationDetails,
+                      {
+                        fontFamily: theme.fontRegular,
+                        color: theme.secondaryText,
+                      },
+                    ]}>
+                    {event.street}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.locationDetails,
+                      {
+                        fontFamily: theme.fontRegular,
+                        color: theme.secondaryText,
+                      },
+                    ]}>
+                    {event.city}, {event.province} {event.postalCode}
+                  </Text>
+                </View>
+              </View>
+            </View>
             <View
-              style={[
-                styles.infoContainer,
-                { width: '100%', paddingLeft: 40, paddingRight: 40 },
-              ]}>
-              <View style={{ paddingRight: 10 }}>
-                <Icon name="location-outline" size={20} color="white" />
-              </View>
-              <View style={{ flexDirection: 'column' }}>
-                <View style={{ paddingRight: 10, paddingBottom: 5 }}>
-                  <Text style={styles.infoTextTop}>{event && event.name}</Text>
-                </View>
-                <View>
-                  <Text style={styles.infoTextBottom}>
-                    {event && event.street}
-                  </Text>
-                  <Text style={styles.infoTextBottom}>
-                    {event && event.city}, {event && event.province}
-                  </Text>
-                  <Text style={styles.infoTextBottom}>
-                    {event && event.postalCode}
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <View style={styles.mapContainer}>
-              <MapView
-                style={styles.map}
-                region={{
-                  latitude: parseInt(event.latitude),
-                  longitude: parseInt(event.longitude),
-                  latitudeDelta: 0.005,
-                  longitudeDelta: 0.005,
-                }}
-                loadingEnabled={true}
-                loadingBackgroundColor="black"
-                userInterfaceStyle="dark"
-                mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
-                <Marker
-                  key={1}
-                  coordinate={{
-                    latitude: parseInt(event.latitude),
-                    longitude: parseInt(event.longitude),
+              style={[styles.lineBreak, { borderColor: theme.secondaryText }]}
+            />
+            <View style={styles.eventDetailsContainer}>
+              <Text
+                style={[
+                  styles.eventDetailsHeading,
+                  { fontFamily: theme.fontMedium, color: theme.primaryText },
+                ]}>
+                Event Details
+              </Text>
+              <Text
+                style={[
+                  styles.eventDetails,
+                  { fontFamily: theme.fontThin, color: theme.secondaryText },
+                ]}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+              </Text>
+              <View style={styles.mapContainer}>
+                {/* <MapView
+                  style={styles.map}
+                  region={{
+                    latitude: parseInt(event.latitude, 10),
+                    longitude: parseInt(event.longitude, 10),
+                    latitudeDelta: 0.005,
+                    longitudeDelta: 0.005,
                   }}
-                  title={event && event.name}>
-                  <Image
-                    source={{
-                      uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+                  loadingEnabled={true}
+                  loadingBackgroundColor="black"
+                  userInterfaceStyle="dark"
+                  mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
+                  <Marker
+                    key={1}
+                    coordinate={{
+                      latitude: parseInt(event.latitude, 10),
+                      longitude: parseInt(event.longitude, 10),
                     }}
-                    style={{ height: 35, width: 35 }}
-                  />
-                </Marker>
-              </MapView>
-            </View>
-            <View style={{ paddingLeft: 40, paddingRight: 40 }}>
-              <TeamListPreview
+                    title={event && event.name}>
+                    <Image
+                      source={{
+                        uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+                      }}
+                      style={{ height: 35, width: 35 }}
+                    />
+                  </Marker>
+                </MapView> */}
+              </View>
+              <View style={{ paddingLeft: 40, paddingRight: 40 }}>
+                <TeamListPreview
+                  players={playersList}
+                  onPlusPress={() => setOpenAvailability(true)}
+                />
+              </View>
+              <TeamAvailabilityPopup
                 players={playersList}
-                onPlusPress={() => setOpenAvailability(true)}
+                visible={openAvailability}
+                onClose={() => {
+                  setOpenAvailability(false);
+                }}
               />
             </View>
-            <TeamAvailabilityPopup
-              players={playersList}
-              visible={openAvailability}
-              onClose={() => {
-                setOpenAvailability(false);
-              }}
-            />
+            <View style={styles.eventDetailsContainer}>
+              <Text
+                style={[
+                  styles.eventDetailsHeading,
+                  { fontFamily: theme.fontMedium, color: theme.primaryText },
+                ]}>
+                Event Details
+              </Text>
+              <Text
+                style={[
+                  styles.eventDetails,
+                  { fontFamily: theme.fontThin, color: theme.secondaryText },
+                ]}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+              </Text>
+              <View style={styles.mapContainer}>
+                {/* <MapView
+                  style={styles.map}
+                  region={{
+                    latitude: parseInt(event.latitude, 10),
+                    longitude: parseInt(event.longitude, 10),
+                    latitudeDelta: 0.005,
+                    longitudeDelta: 0.005,
+                  }}
+                  loadingEnabled={true}
+                  loadingBackgroundColor="black"
+                  userInterfaceStyle="dark"
+                  mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
+                  <Marker
+                    key={1}
+                    coordinate={{
+                      latitude: parseInt(event.latitude, 10),
+                      longitude: parseInt(event.longitude, 10),
+                    }}
+                    title={event && event.name}>
+                    <Image
+                      source={{
+                        uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+                      }}
+                      style={{ height: 35, width: 35 }}
+                    />
+                  </Marker>
+                </MapView> */}
+              </View>
+              <View style={{ paddingLeft: 40, paddingRight: 40 }}>
+                <TeamListPreview
+                  players={playersList}
+                  onPlusPress={() => setOpenAvailability(true)}
+                />
+              </View>
+              <TeamAvailabilityPopup
+                players={playersList}
+                visible={openAvailability}
+                onClose={() => {
+                  setOpenAvailability(false);
+                }}
+              />
+            </View>
+            <View style={styles.eventDetailsContainer}>
+              <Text
+                style={[
+                  styles.eventDetailsHeading,
+                  { fontFamily: theme.fontMedium, color: theme.primaryText },
+                ]}>
+                Event Details
+              </Text>
+              <Text
+                style={[
+                  styles.eventDetails,
+                  { fontFamily: theme.fontThin, color: theme.secondaryText },
+                ]}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+              </Text>
+              <View style={styles.mapContainer}>
+                {/* <MapView
+                  style={styles.map}
+                  region={{
+                    latitude: parseInt(event.latitude, 10),
+                    longitude: parseInt(event.longitude, 10),
+                    latitudeDelta: 0.005,
+                    longitudeDelta: 0.005,
+                  }}
+                  loadingEnabled={true}
+                  loadingBackgroundColor="black"
+                  userInterfaceStyle="dark"
+                  mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
+                  <Marker
+                    key={1}
+                    coordinate={{
+                      latitude: parseInt(event.latitude, 10),
+                      longitude: parseInt(event.longitude, 10),
+                    }}
+                    title={event && event.name}>
+                    <Image
+                      source={{
+                        uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+                      }}
+                      style={{ height: 35, width: 35 }}
+                    />
+                  </Marker>
+                </MapView> */}
+              </View>
+              <View style={{ paddingLeft: 40, paddingRight: 40 }}>
+                <TeamListPreview
+                  players={playersList}
+                  onPlusPress={() => setOpenAvailability(true)}
+                />
+              </View>
+              <TeamAvailabilityPopup
+                players={playersList}
+                visible={openAvailability}
+                onClose={() => {
+                  setOpenAvailability(false);
+                }}
+              />
+            </View>
           </ScrollView>
-        </View>
+        </Animated.ScrollView>
       ) : (
         <View
           style={{
@@ -288,10 +473,59 @@ const EventScreen = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+  eventContentContainer: {
+    padding: 25,
+  },
+  scrollContainer: {
+    // paddingBottom: 120,
+  },
+  mainEventContent: {
+    paddingHorizontal: 10,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  timeInnerContainer: {
+    marginLeft: 10,
+  },
+  date: {
+    fontSize: 16,
+  },
+  time: {
+    fontSize: 14,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+  },
+  locationInnerContainer: {
+    marginLeft: 10,
+  },
+  locationName: {
+    fontSize: 16,
+  },
+  locationDetails: {
+    fontSize: 14,
+  },
+  lineBreak: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'solid',
+    marginVertical: 20,
+  },
+  eventDetailsContainer: {
+    paddingHorizontal: 10,
+  },
+  eventDetails: {
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  eventDetailsHeading: {
+    fontSize: 24,
+    marginBottom: 10,
+  },
   container: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#1E2630',
   },
   lottieView: {
     height: 200,
@@ -301,97 +535,35 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  headerContainer: {
-    paddingLeft: 40,
-    paddingTop: 100,
+  eventBg: {
+    height: 350,
+    width: '100%',
+    overflow: 'hidden',
   },
-  text: {
-    fontSize: 30,
-    color: 'white',
-    fontWeight: '600',
-  },
-  iconContainer: {
-    marginVertical: 10,
-    paddingHorizontal: 35,
-    flexDirection: 'row',
+  contentContainer: {
+    height: '100%',
+    width: '100%',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    overflow: 'hidden',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  headerContainer: {
     width: '100%',
-    paddingTop: 40,
-  },
-  listHeading: {
-    fontSize: 14,
-    width: '100%',
-    padding: 8,
-    backgroundColor: '#F0F0F0',
-    color: '#696969',
-  },
-  verticalLine: {
-    width: 1,
-    height: 100,
-    backgroundColor: '#A9A9A9',
-    marginTop: 40,
-    marginLeft: 70,
-  },
-  profilePicture: {
-    height: 300,
-    width: '100%',
-    backgroundColor: 'transparent',
-  },
-  profilePictureContainer: {
-    borderRadius: 60,
-    borderColor: 'red',
-    borderWidth: 3,
-    height: 120,
-    width: 120,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 20,
-    marginBottom: 10,
-    backgroundColor: 'rgba(255, 0, 13, 0.1)',
-    left: 20,
+    marginBottom: 50,
   },
-  playerNameContainer: {
-    flexDirection: 'column',
-    width: '100%',
-    left: 50,
-  },
-  playerFirstName: {
+  eventHeading: {
     fontSize: 40,
-    fontWeight: '600',
-    width: 150,
   },
-  playerLastName: {
-    fontSize: 40,
-    color: '#A9A9A9',
+  dateContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  infoHeaderContainer: {
-    flexDirection: 'row',
-    paddingTop: 25,
-    paddingRight: 10,
-    width: 150,
-  },
-  infoContainer: {
-    flexDirection: 'row',
-    paddingTop: 20,
-    paddingRight: 10,
-    width: 150,
-  },
-  infoTextTop: {
-    fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'left',
-    color: 'white',
-  },
-  infoTextBottom: {
-    fontSize: 12,
-    color: '#ebe8e8',
-    textAlign: 'left',
-  },
-  descriptionTextContainer: {
-    paddingTop: 20,
-    paddingLeft: 40,
-    paddingRight: 40,
+  eventDate: {
+    fontSize: 20,
+    marginBottom: 20,
   },
   mapContainer: {
     height: 140,
@@ -404,17 +576,102 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     borderRadius: 10,
   },
-  contentContainer: {
-    // flex : 1,
-    // paddingTop: 50,
-    // paddingHorizontal: 20,
-    // paddingVertical: 20,
-    overflow: 'visible',
-    alignSelf: 'stretch',
-  },
   availabilityIconContainer: {
     borderRadius: 5,
   },
+
+  // iconContainer: {
+  //   marginVertical: 10,
+  //   paddingHorizontal: 35,
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   alignItems: 'center',
+  //   width: '100%',
+  //   paddingTop: 40,
+  // },
+  // listHeading: {
+  //   fontSize: 14,
+  //   width: '100%',
+  //   padding: 8,
+  //   backgroundColor: '#F0F0F0',
+  //   color: '#696969',
+  // },
+  // verticalLine: {
+  //   width: 1,
+  //   height: 100,
+  //   backgroundColor: '#A9A9A9',
+  //   marginTop: 40,
+  //   marginLeft: 70,
+  // },
+  // profilePictureContainer: {
+  //   borderRadius: 60,
+  //   borderColor: 'red',
+  //   borderWidth: 3,
+  //   height: 120,
+  //   width: 120,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   margin: 20,
+  //   marginBottom: 10,
+  //   backgroundColor: 'rgba(255, 0, 13, 0.1)',
+  //   left: 20,
+  // },
+  // playerNameContainer: {
+  //   flexDirection: 'column',
+  //   width: '100%',
+  //   left: 50,
+  // },
+  // playerFirstName: {
+  //   fontSize: 40,
+  //   fontWeight: '600',
+  //   width: 150,
+  // },
+  // playerLastName: {
+  //   fontSize: 40,
+  //   color: '#A9A9A9',
+  // },
+  // infoHeaderContainer: {
+  //   flexDirection: 'row',
+  //   paddingTop: 25,
+  //   paddingRight: 10,
+  //   width: 150,
+  // },
+  // infoContainer: {
+  //   flexDirection: 'row',
+  //   paddingTop: 20,
+  //   paddingRight: 10,
+  //   width: 150,
+  // },
+  // infoTextTop: {
+  //   fontSize: 14,
+  //   fontWeight: '500',
+  //   textAlign: 'left',
+  //   color: 'white',
+  // },
+  // infoTextBottom: {
+  //   fontSize: 12,
+  //   color: '#ebe8e8',
+  //   textAlign: 'left',
+  // },
+  // descriptionTextContainer: {
+  //   paddingTop: 20,
+  //   paddingLeft: 40,
+  //   paddingRight: 40,
+  // },
+  // mapContainer: {
+  //   height: 140,
+  //   width: '80%',
+  //   margin: 20,
+  //   marginLeft: 40,
+  //   marginRight: 40,
+  // },
+  // map: {
+  //   ...StyleSheet.absoluteFillObject,
+  //   borderRadius: 10,
+  // },
+  // availabilityIconContainer: {
+  //   borderRadius: 5,
+  // },
 });
 
 export default EventScreen;
