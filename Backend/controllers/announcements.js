@@ -14,10 +14,25 @@ exports.getAllAnnouncements = async (req, res, next) => {
 exports.getAllAnnouncementsByFilters = async (req, res, next) => {
     try {
         const { teams = null, startDate = null, endDate = null } = req.body;
+        let isValid = true, errors = [];
 
-        const [announcements, _] = await Announcement.findAllByFilters({ teams, startDate, endDate});
+        if (startDate && endDate) {
+            if (new Date(startDate).getTime() > new Date(endDate).getTime()) {
+                isValid = false;
+                errors.push({
+                    errCode: '0003',
+                    field: 'startDate',
+                })
+            }
+        }
 
-        res.status(200).json({ announcements: announcements || [] });
+        if (isValid) {
+            const [announcements, _] = await Announcement.findAllByFilters({ teams, startDate, endDate});
+
+            res.status(200).json({ announcements: announcements || [] });
+        } else {
+            res.status(400).json({ errors });
+        }
     } catch (error) {
         next(error);
     }

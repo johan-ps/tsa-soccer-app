@@ -48,7 +48,8 @@ export const getFilteredAnnouncements = filters => {
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong get announcements!');
+        const error = await response.json();
+        throw error;
       }
 
       const resData = await response.json();
@@ -61,6 +62,10 @@ export const getFilteredAnnouncements = filters => {
       });
     } catch (err) {
       console.log(err);
+
+      if (err && err.errors && err.errors.length > 0) {
+        throw err.errors;
+      }
     }
   };
 };

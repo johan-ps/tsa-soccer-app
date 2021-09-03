@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -10,19 +10,29 @@ import Animated, {
 import Icon from 'react-native-vector-icons/Ionicons';
 import DatePicker from 'react-native-date-picker';
 import { useSelector } from 'react-redux';
+import ErrorMessage from './ErrorMessage';
 
 const UiDatePicker = props => {
-  const { placeholder, id, height = 230, existingDate } = props;
+  const {
+    placeholder,
+    id,
+    height = 230,
+    existingDate,
+    isValid,
+    errCode,
+  } = props;
   const [showDatePicker, setShowDatePicker] = useState(false);
   const dateAnim = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
   const [date, setDate] = useState(existingDate || new Date());
+  const [isInit, setIsInit] = useState(!!existingDate);
 
   const onToggleHandler = () => {
-    if(isNaN(new Date(placeholder))){
+    if (!isInit) {
       if (props.onChange) {
         props.onChange(id, new Date());
       }
+      setIsInit(true);
     }
     if (showDatePicker) {
       dateAnim.value = withTiming(0);
@@ -55,13 +65,16 @@ const UiDatePicker = props => {
           <Text
             style={[
               styles.placeholder,
-              { color: theme.secondaryText, fontFamily: theme.fontRegular },
+              {
+                color: isValid ? theme.secondaryText : theme.error,
+                fontFamily: theme.fontRegular,
+              },
             ]}>
             {placeholder}
           </Text>
           <View style={styles.iconContainer}>
             <Icon
-              color={showDatePicker ? theme.ddSClr : '#A8A4B8'}
+              color={isValid ? theme.ddSClr : theme.error}
               name="calendar-outline"
               size={20}
             />
@@ -78,6 +91,7 @@ const UiDatePicker = props => {
           style={[styles.datePicker, { backgroundColor: theme.ddBgClr }]}
         />
       )}
+      <ErrorMessage isValid={isValid} errCode={errCode} />
     </Animated.View>
   );
 };
@@ -99,8 +113,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   placeholder: {
-    fontSize: 16
-  }
+    fontSize: 16,
+  },
 });
 
 export default UiDatePicker;
