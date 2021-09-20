@@ -36,9 +36,13 @@ exports.getEventsByTeam = async (req, res, next) => {
 
 exports.getEventsOnDate = async (req, res, next) => {
   try {
-    const {date, userId} = req.body;
-    const [events, _] = await Event.findByDate(date, userId);
-
+    const {date, userId} = req.query;
+    console.log("Joell userId", userId);
+    console.log("Joell date", date);
+    let eventDate = new Date(date);
+    eventDate = dateFormat.dateTime(eventDate);
+    const [events, _] = await Event.findByDate(eventDate, userId);
+    console.log("Joell events", events);
     res.status(200).json({ events });
   } catch (error) {
       next(error);
@@ -56,6 +60,17 @@ exports.getEventsFromDate = async (req, res, next) => {
     const events = {today: eventsOnDate, upcoming: eventsAfterDate};
 
     res.status(200).json({ events });
+  } catch (error) {
+      next(error);
+  }
+}
+
+exports.getAllEventDatesForMonth = async (req, res, next) => {
+  try {
+    const {startOfMonth, endOfMonth} = req.query;
+    const [dates, _] = await Event.findAllEventDatesForMonth(dateFormat.dateTime(new Date(startOfMonth)), dateFormat.dateTime(new Date(endOfMonth)));
+    console.log("Joell dates", dates);
+    res.status(200).json({ dates });
   } catch (error) {
       next(error);
   }
@@ -107,7 +122,7 @@ exports.createEvent = async (req, res, next) => {
             field: 'startTime',
         });
       }
-      
+
       const startTimeDate = new Date('2021-05-15T' + startTime);
       const endTimeDate = new Date('2021-05-15T' + endTime);
       if(startTimeDate.getTime() > endTimeDate.getTime()){

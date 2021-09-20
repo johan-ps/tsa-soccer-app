@@ -10,7 +10,6 @@ const CalendarCard = props => {
   const calanderCard = useRef();
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
-  console.log("joell userData", userData.a);
   const defaultOption = {
     label: 'Set Availability',
     color: theme.schCardAccent,

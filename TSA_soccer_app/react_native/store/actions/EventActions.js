@@ -7,6 +7,8 @@ export const ADD_EVENT = 'ADD_EVENT';
 export const DELETE_EVENT = 'DELETE_EVENT';
 export const EDIT_EVENT = 'EDIT_EVENT';
 export const UPDATE_AVAILABILITY = 'UPDATE_AVAILABILITY';
+export const GET_EVENTS_TODAY = 'GET_EVENTS_TODAY';
+export const GET_EVENT_DATES = 'GET_EVENT_DATES';
 
 export const getEvents = () => {
   return async dispatch => {
@@ -56,11 +58,12 @@ export const getEventById = id => {
   }
 }
 
-export const getEventsOnDate = date => {
+export const getEventsOnDate = (date, userId) => {
   return async dispatch => {
     try {
+      console.log("Joell userId", userId);
       const response = await fetch(
-        `http://${environmentUrl}/api/events/date?date=${date}`,
+        `http://${environmentUrl}/api/events/date?date=${date}&userId=${userId}`,
         {
           method: 'GET',
         }
@@ -74,7 +77,7 @@ export const getEventsOnDate = date => {
       const events = resData.events;
 
       dispatch({
-        type: GET_EVENTS,
+        type: GET_EVENTS_TODAY,
         events,
       });
 
@@ -105,6 +108,37 @@ export const getEventsFromDate = (date, userId) => {
       dispatch({
         type: GET_EVENTS,
         events,
+      });
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
+
+export const getEventDatesByMonth = (startOfMonth, endOfMonth) => {
+  return async dispatch => {
+    try {
+      console.log("Joell startOfMonth", startOfMonth);
+      console.log("Joell endOfMonth", endOfMonth);
+      const response = await fetch(
+        `http://${environmentUrl}/api/events/month/?startOfMonth=${startOfMonth}&endOfMonth=${endOfMonth}`,
+        {
+          method: 'GET'
+        }
+      );
+
+      if (!response.ok) {
+        console.log(response);
+        throw new Error('Something went wrong getEventsonDate!');
+      }
+
+      const resData = await response.json();
+      const dates = resData.dates;
+      console.log('joell dates', dates);
+      dispatch({
+        type: GET_EVENT_DATES,
+        dates,
       });
 
     } catch (err) {

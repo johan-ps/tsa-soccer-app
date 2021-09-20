@@ -7,15 +7,16 @@ import {
   StyleSheet,
   useWindowDimensions,
   SafeAreaView,
-  TouchableOpacity,
 } from 'react-native';
+import { UiImage } from '../components/_components';
 import { Calendar } from 'react-native-calendars';
 import CalendarCard from '../components/Schedule/CalendarCard';
-import { Events } from '../data/events';
 import moment from 'moment';
-import Icon from 'react-native-vector-icons/Ionicons';
+const loadingLottieAnim = require('../assets/img/spinning-anim.json');
+import AnimScrollView from '../components/AnimScrollView';
 import DropdownSwitch from '../components/Schedule/DropdownSwitch';
-import * as tabbarActions from '../store/actions/TabbarActions';
+import * as loaderActions from '../store/actions/LoaderActions';
+import * as eventActions from '../store/actions/EventActions'
 
 const CalendarScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
@@ -24,7 +25,12 @@ const CalendarScreen = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(CURRENT_DATE);
   const [markedDates, setMarkedDates] = useState({});
   const theme = useSelector(state => state.theme.colors);
+  const userData = useSelector(state => state.userData);
+  const userId = userData && userData.id;
   const events = useSelector(state => state.events);
+  const eventsToday = events && events.today;
+  console.log("Joell eventstoday", eventsToday);
+  const eventDates = events && events.dates;
   const options = useMemo(() => {
     return [
       { label: 'Calender', id: 0 },
@@ -34,37 +40,120 @@ const CalendarScreen = ({ navigation }) => {
   const [mode, setMode] = useState(options[0]);
   const dispatch = useDispatch();
 
-  const loadEventsOnDate = useCallback(async date => {
-    try {
-      // await dispatch(announcementActions.getEventsOnDate(date));
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+  const loadEventsOnDate = useCallback(
+    async (date, isReload = false) => {
+      console.log("Joell date", date);
+      if(!isReload){
+        dispatch(loaderActions.updateLoader(true));
+      }
+      try {
+        await dispatch(eventActions.getEventsOnDate(moment.utc(date).format('YYYY-MM-DD'), userId));
+      } 
+      catch (err) {
+        console.log(err);
+      } 
+      finally {
+        if(!isReload){
+          dispatch(loaderActions.updateLoader(false));
+        }
+      }
+    }, 
+    [dispatch]
+  );
+
+  const loadEventDatesForMonth = useCallback(
+    async (date) => {
+      dispatch(loaderActions.updateLoader(true));
+      try {
+        let firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        const startOfMonth = moment(firstDay).format('YYYY-MM-DD');
+        const endOfMonth = moment(lastDay).format('YYYY-MM-DD');
+        console.log("Joell startofmonth", startOfMonth);
+        console.log("Joell endOfMonth", endOfMonth);
+        await dispatch(eventActions.getEventDatesByMonth(startOfMonth, endOfMonth));
+      } 
+      catch (err) {
+        console.log(err);
+      } 
+      finally {
+        dispatch(loaderActions.updateLoader(false));
+      }
+    }, 
+    [dispatch]
+  );
 
   useEffect(() => {
-    getSelectedDayEvents(moment().format('YYYY-MM-DD'));
+    getSelectedDayEvents(CURRENT_DATE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    loadEventsOnDate();
+    loadEventsOnDate(CURRENT_DATE, false);
   }, [dispatch, loadEventsOnDate]);
 
+  useEffect(() => {
+    loadEventDatesForMonth(CURRENT_DATE);
+    if(eventDates){
+      setMonthDots(eventDates);
+    }
+  }, [dispatch, loadEventDatesForMonth]);
+
+  // useEffect(() => {
+    
+  // }, [eventDates])
+
   const getSelectedDayEvents = date => {
+    console.log("Joell date", date);
     let newMarkedDates = { ...markedDates };
-    delete newMarkedDates[selectedDate];
+    console.log("Joell eventDates", eventDates);
+    let hasEvents = false;
+    if(eventDates){
+      eventDates.forEach(newDate => {
+        if(new Date(newDate.date) == new Date(selectedDate)){
+          hasEvents = true;
+          return;
+        }
+      })
+    }
+    console.log("Joell hasEvents", hasEvents);
+    if(hasEvents){
+      newMarkedDates[selectedDate] = {
+        marked: true,
+        dotColor: 'red',
+      };
+    }
+    else{
+      delete newMarkedDates[selectedDate];
+    }
     newMarkedDates[date] = {
+      ...newMarkedDates[date],
       selected: true,
       color: 'red',
       textColor: '#FFFFFF',
       startingDay: true,
       endingDay: true,
     };
+    console.log("Joell newMarkedDates", newMarkedDates);
     setSelectedDate(date);
     setMarkedDates(newMarkedDates);
-    loadEventsOnDate(date);
+    loadEventsOnDate(new Date(date), false);
   };
+
+  const setMonthDots = (dates) => {
+    let newMarkedDates = { ...markedDates };
+    console.log("Joell before newMarkedDates", newMarkedDates);
+
+    dates.forEach(date => {
+      newMarkedDates[moment.utc(date.date).format('YYYY-MM-DD')] = {
+        ...newMarkedDates[moment.utc(date.date).format('YYYY-MM-DD')],
+        marked: true,
+        dotColor: 'red',
+      }
+    });
+    console.log("Joell newMarkedDates", newMarkedDates);
+    setMarkedDates(newMarkedDates);
+  }
 
   const onChangeRouteHandler = id => {
     setMode(options[id]);
@@ -146,10 +235,57 @@ const CalendarScreen = ({ navigation }) => {
           markingType={'period'}
           markedDates={markedDates}
         />
-        <View style={{ marginTop: 20 }}>
-          <CalendarCard item={Events[0]} />
-        </View>
       </View>
+      <AnimScrollView
+        scrollOffset={0}
+        loadingLottieAnim={loadingLottieAnim}
+        backgroundColor={theme.secondaryBg}
+        load={() => {
+          loadEventDatesForMonth(moment.utc(CURRENT_DATE).format('MM'), moment.utc(CURRENT_DATE).format('YYYY'));
+          loadEventsOnDate(selectedDate, true)
+        }}
+        onlyPullToRefresh={true}>
+        <View style={{ marginTop: 20 }}>
+          {eventsToday && eventsToday.length > 0 ? (
+            eventsToday.map((event, i) => (
+              <View key={i} style={styles.calendarCardContainer}>
+                <CalendarCard 
+                  item={event} 
+                  key={i} 
+                  onPress={() => onClickEvent(event.id)}
+                />
+              </View>
+            ))
+          ) : (
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                marginTop: 20,
+              }}>
+              <UiImage
+                cond={true}
+                style={styles.emptyImg}
+                source={require('../assets/img/no-events.png')}
+                resizeMode="contain"
+              />
+              <View style={styles.textContainer}>
+                <Text
+                  style={[
+                    styles.heading,
+                    {
+                      color: theme.secondaryText,
+                      fontFamily: theme.fontBold,
+                    },
+                  ]}>
+                  No Events Today
+                </Text>
+              </View>
+            </View>
+          )}
+        </View>
+      </AnimScrollView>
     </SafeAreaView>
   );
 };
@@ -208,6 +344,24 @@ const styles = StyleSheet.create({
   },
   team: {
     fontSize: 18,
+  },
+  calendarCardContainer: {
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingTop: 15,
+  },
+  emptyImg: {
+    height: 200,
+    width: 200,
+    borderRadius: 20,
+  },
+  textContainer: {
+    width: '90%',
+  },
+  heading: {
+    fontSize: 24,
+    textAlign: 'center',
+    lineHeight: 40,
   },
 });
 

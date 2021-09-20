@@ -127,7 +127,7 @@ static findByTeam(teamId) {
 static findByDate(date, userId) {
   let sql = '';
   console.log("Joell userId", userId);
-  if(userId !== 'undefined'){
+  if(userId !== 'undefined' && userId !== undefined){
     sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name, a.status FROM EVENTS e, LOCATIONS l, AVAILABILITY a WHERE e.date = '${date}' AND l.id = e.locationId AND a.playerId = ${userId} AND a.eventId = e.id ORDER BY startTime ASC`;
   }
   else{
@@ -140,7 +140,7 @@ static findByDate(date, userId) {
 
 static findFromDate(date, userId){
   let sql = '';
-  if(userId !== 'undefined'){
+  if(userId !== 'undefined' && userId !== undefined){
     sql =  `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.opponent, e.status, a.status FROM EVENTS e, AVAILABILITY a WHERE a.playerId = ${userId} AND a.eventId = e.id AND e.date > '${date}' ORDER BY date ASC LIMIT 10`;
   }
   else{
@@ -149,9 +149,15 @@ static findFromDate(date, userId){
 
   return db.execute(sql);
 }
+// TODO: fix query
+static findAllEventDatesForMonth(startOfMonth, endOfMonth){
+  const sql = `SELECT date from EVENTS WHERE date >= '${startOfMonth}' AND date <= '${endOfMonth}';`; 
+  console.log("Joell sql", sql);
+  return db.execute(sql);
+}
 
 static deleteById(id){
-  const sql = `DELETE FROM EVENTS WHERE id = '${id}'`;
+  const sql = `DELETE FROM EVENTS WHERE id = '${id}';`;
 
   return db.execute(sql);
 }
