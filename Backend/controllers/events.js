@@ -36,9 +36,13 @@ exports.getEventsByTeam = async (req, res, next) => {
 
 exports.getEventsOnDate = async (req, res, next) => {
   try {
-    const {date, userId} = req.body;
-    const [events, _] = await Event.findByDate(date, userId);
-
+    const {date, userId} = req.query;
+    console.log("Joell userId", userId);
+    console.log("Joell date", date);
+    let eventDate = new Date(date);
+    eventDate = dateFormat.dateTime(eventDate);
+    const [events, _] = await Event.findByDate(eventDate, userId);
+    console.log("Joell events", events);
     res.status(200).json({ events });
   } catch (error) {
       next(error);
@@ -61,6 +65,17 @@ exports.getEventsFromDate = async (req, res, next) => {
   }
 }
 
+exports.getAllEventDatesForMonth = async (req, res, next) => {
+  try {
+    const {startOfMonth, endOfMonth} = req.query;
+    const [dates, _] = await Event.findAllEventDatesForMonth(dateFormat.dateTime(new Date(startOfMonth)), dateFormat.dateTime(new Date(endOfMonth)));
+    console.log("Joell dates", dates);
+    res.status(200).json({ dates });
+  } catch (error) {
+      next(error);
+  }
+}
+
 exports.updateEventAvailability = async (req, res, next) => {
   try {
     const {eventId, userId, status} = req.body;
@@ -74,12 +89,85 @@ exports.updateEventAvailability = async (req, res, next) => {
 exports.createEvent = async (req, res, next) => {
     try {
       let { type, date, timeTBD, startTime, endTime, locationId, locationDetails = null, authorId, notes, status, notifyTeam, opponent = null, jersey, arriveEarly = null, teamId } = req.body;
+      let isValid = true, errors = [];
 
-      const newEvent = new Event(type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
-      const [event, _] = await newEvent.save();
-      const [players, __] = await Team.findAllPlayers(teamId);
-      await newEvent.saveAvailability(event.insertId, players);
-      res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
+      if (!type || type.length === 0) {
+          isValid = false;
+          errors.push({
+              errCode: '0001',
+              field: 'type',
+          });
+      }
+      console.log("Joell date", date);
+      if (!date || date.length === 0) {
+          isValid = false;
+          errors.push({
+              errCode: '0002',
+              field: 'date',
+          });
+      }
+
+      if (!startTime || startTime.length === 0) {
+        isValid = false;
+        errors.push({
+            errCode: '0002',
+            field: 'startTime',
+        });
+      }
+
+      if (!endTime || endTime.length === 0) {
+        isValid = false;
+        errors.push({
+            errCode: '0002',
+            field: 'startTime',
+        });
+      }
+
+      const startTimeDate = new Date('2021-05-15T' + startTime);
+      const endTimeDate = new Date('2021-05-15T' + endTime);
+      if(startTimeDate.getTime() > endTimeDate.getTime()){
+        isValid = false;
+        errors.push({
+            errCode: '0004',
+            field: 'startTime',
+        });
+      }
+
+      if (!locationId) {
+        isValid = false;
+        errors.push({
+            errCode: '0002',
+            field: 'locationId',
+        });
+      }
+
+      if (!authorId) {
+        isValid = false;
+        errors.push({
+            errCode: '0002',
+            field: 'authorId',
+        });
+      }
+      console.log("Joell teamId", teamId);
+      if (!teamId) {
+        isValid = false;
+        errors.push({
+            errCode: '0002',
+            field: 'teamId',
+        });
+      }
+
+      if (isValid) {
+        const newEvent = new Event(type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
+        const [event, _] = await newEvent.save();
+        const [players, __] = await Team.findAllPlayers(teamId);
+        await newEvent.saveAvailability(event.insertId, players);
+        res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
+      }
+      else{
+        console.log("Joell errors", errors);
+        res.status(400).json({ errors: errors });
+      }
     }
     catch(error){
       next(error);

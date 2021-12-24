@@ -23,10 +23,10 @@ const PlayerListItem = props => {
       onPress={() => navigation.navigate('PlayerProfile')}
       style={styles.touchableContainer}>
       <View
-        style={[styles.container, player.last ? { borderBottomWidth: 0 } : {}, {backgroundColor: theme.moreScreenOptionsBgClr}]}>
+        style={[styles.container, player.last ? { borderBottomWidth: 0 } : {}, {backgroundColor: theme.schBg}]}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image style={styles.logo} source={{ uri: player.image }} />
-          <Text style={[styles.text, {color: theme.cardHClr}]}>{player.name}</Text>
+          <Text style={[styles.text, {color: theme.primaryText}]}>{player.name}</Text>
         </View>
         <Icon color="#A9A9A9" size={20} name="chevron-forward-outline" />
       </View>

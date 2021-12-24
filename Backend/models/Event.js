@@ -71,28 +71,27 @@ save() {
 
 saveAvailability(id, players) {
   let availabilityInsert = '';
+  if(players){
+    if(this.teamId){
+      players.forEach((player, i) => {
+        availabilityInsert += `('${ id }', '${ player.id }', NULL)`;
 
-  if(this.teamId){
-    players.forEach((player, i) => {
-      availabilityInsert += `('${ id }', '${ player.id }', NULL)`;
-
-      if (i < players.length - 1) {
-        availabilityInsert += ', '
+        if (i < players.length - 1) {
+          availabilityInsert += ', '
+      }
+      });
     }
-    });
+
+    const sql = `
+        INSERT INTO AVAILABILITY (
+            eventId,
+            playerId,
+            status
+        )
+        VALUES ${ availabilityInsert };
+    `;
+    return db.execute(sql);
   }
-
-  console.log("Joel availabilityInsert", availabilityInsert);
-
-  const sql = `
-      INSERT INTO AVAILABILITY (
-          eventId,
-          playerId,
-          status
-      )
-      VALUES ${ availabilityInsert };
-  `;
-  return db.execute(sql);
 }
 
 static updateUserAvailability(eventId, userId, status) {
@@ -127,30 +126,38 @@ static findByTeam(teamId) {
 
 static findByDate(date, userId) {
   let sql = '';
-  // if(isAuth){
+  console.log("Joell userId", userId);
+  if(userId !== 'undefined' && userId !== undefined){
     sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name, a.status FROM EVENTS e, LOCATIONS l, AVAILABILITY a WHERE e.date = '${date}' AND l.id = e.locationId AND a.playerId = ${userId} AND a.eventId = e.id ORDER BY startTime ASC`;
-  // }
-  // else{
-    // sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name FROM EVENTS e, LOCATIONS l WHERE e.date = '${date}' AND l.id = e.locationId ORDER BY startTime ASC`;
-  // }
+  }
+  else{
+    sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name FROM EVENTS e, LOCATIONS l WHERE e.date = '${date}' AND l.id = e.locationId ORDER BY startTime ASC`;
+  }
+  console.log("Joell sql", sql);
 
   return db.execute(sql);
 }
 
 static findFromDate(date, userId){
   let sql = '';
-  // if(isAuth){
+  if(userId !== 'undefined' && userId !== undefined){
     sql =  `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.opponent, e.status, a.status FROM EVENTS e, AVAILABILITY a WHERE a.playerId = ${userId} AND a.eventId = e.id AND e.date > '${date}' ORDER BY date ASC LIMIT 10`;
-  // }
-  // else{
-    // sql =  `SELECT id, type, date, timeTBD, startTime, endTime, opponent, status FROM EVENTS WHERE date > '${date}' ORDER BY date ASC LIMIT 10`;
-  // }
+  }
+  else{
+    sql =  `SELECT id, type, date, timeTBD, startTime, endTime, opponent, status FROM EVENTS WHERE date > '${date}' ORDER BY date ASC LIMIT 10`;
+  }
 
+  return db.execute(sql);
+}
+// TODO: fix query
+static findAllEventDatesForMonth(startOfMonth, endOfMonth){
+  const sql = `SELECT date from EVENTS WHERE date >= '${startOfMonth}' AND date <= '${endOfMonth}';`; 
+  console.log("Joell sql", sql);
   return db.execute(sql);
 }
 
 static deleteById(id){
-  const sql = `DELETE FROM EVENTS WHERE id = '${id}'`;
+  const sql = `DELETE FROM EVENTS WHERE id = '${id}';`;
 
   return db.execute(sql);
 }

@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     bottom: -25,
     left: 0,
     flexDirection: 'row',
+    alignItems: 'center'
   },
   errMsg: {
     fontSize: 13,

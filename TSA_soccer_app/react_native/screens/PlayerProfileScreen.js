@@ -34,7 +34,7 @@ const PlayerProfileScreen = ({ navigation }) => {
     <View
       style={[
         styles.container,
-        { backgroundColor: theme.moreScreenOptionsBgClr },
+        { backgroundColor: theme.searchBg },
       ]}>
       {/* TODO: Back button */}
       <View style={styles.iconContainer}>
@@ -47,11 +47,6 @@ const PlayerProfileScreen = ({ navigation }) => {
           <Icon name="chatbubbles-outline" size={30} color="white" />
         </View>
       </View>
-      {/* <View style={styles.parallelogram}>
-        <TriangleUp style={styles.parallelogramRight} />
-        <View style={styles.parallelogramInner} />
-        <TriangleDown style={styles.parallelogramLeft} />
-      </View> */}
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.headerContainer}>
           <View style={styles.profilePictureContainer}>

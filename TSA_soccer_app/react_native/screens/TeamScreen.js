@@ -52,11 +52,10 @@ const TeamScreen = ({ navigation }) => {
 
   return (
     <View>
-      <ScrollView style={[styles.container, {backgroundColor: theme.primaryBtnClr}]}>
-        <View style={[styles.subContainer, {backgroundColor: theme.primaryBtnClr}]}>
-          {/* <Text style={styles.heading}>Team Roster</Text> */}
+      <ScrollView style={[styles.container, {backgroundColor: theme.searchBg}]}>
+        <View style={[styles.subContainer, {backgroundColor: theme.schBg}]}>
           <Text style={[styles.subHeading, {color:theme.cardHClr}]}>
-            Toronto Soccer Association U13 Rep
+            U8 Markham Houseleague
           </Text>
         </View>
         <Text style={[styles.listHeading, {backgroundColor: theme.moreScreenSettingsBgClr}]}>Coaches - {coachesList.length}</Text>
