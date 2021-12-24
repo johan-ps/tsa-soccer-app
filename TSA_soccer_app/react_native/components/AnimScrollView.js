@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -40,6 +40,7 @@ const AnimScrollView = props => {
 
   const refreshing = useSharedValue(false);
   const offsetY = useSharedValue(0);
+  const outerDisabled = useSharedValue(false);
 
   const translateY = useSharedValue(0);
   const reanimatedStyle = useAnimatedStyle(() => {
@@ -125,6 +126,7 @@ const AnimScrollView = props => {
         },
         () => {
           refreshing.value = false;
+          outerDisabled.value = false;
         },
       );
     } catch (err) {
@@ -139,6 +141,12 @@ const AnimScrollView = props => {
       runOnJS(loadData)();
     }
   });
+
+  useDerivedValue(() => {
+    if (props.setScrollEnabled) {
+      runOnJS(props.setScrollEnabled)(outerDisabled.value);
+    }
+  }, [outerDisabled.value]);
 
   const panGestureEvent = useAnimatedGestureHandler({
     onStart: (event, context) => {
@@ -156,11 +164,17 @@ const AnimScrollView = props => {
       }
       let ty = event.translationY + context.translateY;
       if (ty > 8) {
+        outerDisabled.value = true;
         let friction = Math.pow(1 - Math.min(ty / 3000, 1), 2) * 0.6;
         translateY.value = ty * friction;
       } else {
+        outerDisabled.value = false;
         translateY.value = ty;
       }
+
+      // if (scrollUpperBound === 0 && translateY.value < 0) {
+      //   translateY.value = -scrollUpperBound;
+      // }
 
       if (
         (Math.abs(translateY.value) > scrollUpperBound &&
@@ -191,14 +205,20 @@ const AnimScrollView = props => {
             },
           );
         } else {
-          translateY.value = withSpring(0, {
-            damping: 100,
-            mass: 10,
-            stiffness: 1000,
-            overshootClamping: true,
-            restDisplacementThreshold: 0,
-            restSpeedThreshold: 0,
-          });
+          translateY.value = withSpring(
+            0,
+            {
+              damping: 100,
+              mass: 10,
+              stiffness: 1000,
+              overshootClamping: true,
+              restDisplacementThreshold: 0,
+              restSpeedThreshold: 0,
+            },
+            () => {
+              outerDisabled.value = false;
+            },
+          );
         }
       } else {
         translateY.value = withDecay({

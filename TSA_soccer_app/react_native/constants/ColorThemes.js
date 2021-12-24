@@ -19,7 +19,7 @@ export default {
 
     // background
     primaryBg: '#414141',
-    secondaryBg: '#231E20',
+    secondaryBg: '#1D1E22',
 
     // cards
     cardBg: '#1D1E22',

@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   StatusBar,
   Platform,
+  FlatList,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import AnimScrollView from '../components/AnimScrollView';
@@ -37,6 +38,20 @@ const AnnouncementScreen = ({ navigation }) => {
   const [showBadge, setShowBadge] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState(null);
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [refreshEnabled, setRefreshEnabled] = useState(true);
+
+  const onScrollHandler = ({ nativeEvent }) => {
+    if (nativeEvent.contentOffset.y <= 0) {
+      if (!refreshEnabled) {
+        setRefreshEnabled(true);
+      }
+    } else {
+      if (refreshEnabled) {
+        setRefreshEnabled(false);
+      }
+    }
+  };
 
   const loadAnnouncements = useCallback(async () => {
     try {
@@ -85,7 +100,6 @@ const AnnouncementScreen = ({ navigation }) => {
   };
 
   const onScrollUp = () => {
-    console.log("Joell scrollUp");
     if (addBtnRef && addBtnRef.current) {
       addBtnRef.current.onScrollUp();
     }
@@ -105,6 +119,11 @@ const AnnouncementScreen = ({ navigation }) => {
 
   const loadFailHandler = () => {
     setShowBadge(true);
+  };
+
+  const outerScrollHandler = disabled => {
+    // console.log('outer disabled', disabled)
+    // setScrollEnabled(disabled);
   };
 
   return (
@@ -133,9 +152,29 @@ const AnnouncementScreen = ({ navigation }) => {
           <AnimScrollView
             backgroundColor={theme.primaryBg}
             onScrollUp={onScrollUp}
+            // enabled={refreshEnabled}
+            // onlyPullToRefresh={true}
             onScrollDown={onScrollDown}
+            setScrollEnabled={outerScrollHandler}
             loadFail={loadFailHandler}
             load={loadAnnouncements}>
+            {/* <FlatList
+              onScroll={onScrollHandler}
+              scrollEnabled={scrollEnabled}
+              data={announcements}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => {
+                return (
+                  <AnnouncementCard
+                    key={item.id}
+                    onDelete={() => {
+                      onDeleteHandler(item.id);
+                    }}
+                    announcementData={item}
+                  />
+                );
+              }}
+            /> */}
             <View>
               {announcements.map(announcement => {
                 return (
