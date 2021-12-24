@@ -60,7 +60,8 @@ const ScheduleScreen = ({ navigation, events }) => {
       try {
         await dispatch(
           eventsActions.getEventsFromDate(
-            moment(date).format('YYYY-MM-DD'),
+            '2021-09-02',
+            // moment(date).format('YYYY-MM-DD'),
             userId,
           ),
         );
