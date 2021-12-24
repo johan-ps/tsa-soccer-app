@@ -329,12 +329,11 @@ const CreateEvent = props => {
               {!formState.inputValues.timeTbd ? (
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
+                    flexDirection: 'row'
                   }}>
-                  <View style={{ width: '50%', justifyContent: 'center' }}>
+                  <View style={{ width: '50%', justifyContent: 'flex-start' }}>
                     <Text style={styles.formLabels}>Start Time</Text>
-                    <View>
+                    <View style={{ right: '40%'}}>
                       <RNDateTimePicker
                         mode={'time'}
                         display={'default'}
@@ -346,9 +345,9 @@ const CreateEvent = props => {
                       />
                     </View>
                   </View>
-                  <View style={{ width: '50%', justifyContent: 'center' }}>
+                  <View style={{ width: '50%', justifyContent: 'flex-end' }}>
                     <Text style={styles.formLabels}>End Time</Text>
-                    <View>
+                    <View style={{ right: '45%' }}>
                       <RNDateTimePicker
                         mode={'time'}
                         display={'default'}

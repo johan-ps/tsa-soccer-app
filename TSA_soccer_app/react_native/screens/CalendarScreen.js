@@ -17,14 +17,16 @@ import AnimScrollView from '../components/AnimScrollView';
 import DropdownSwitch from '../components/Schedule/DropdownSwitch';
 import * as loaderActions from '../store/actions/LoaderActions';
 import * as eventActions from '../store/actions/EventActions'
-
+// TODO: DATE IS 5 hours ahead here!!!
 const CalendarScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
   const [createEvent, setCreateEvent] = useState(false);
-  const CURRENT_DATE = new Date();
+  const CURRENT_DATE = new Date(moment());
+  console.log("Joell date", CURRENT_DATE);
   const [selectedDate, setSelectedDate] = useState(CURRENT_DATE);
   const [markedDates, setMarkedDates] = useState({});
   const theme = useSelector(state => state.theme.colors);
+  const [colour, setColour] = useState(theme.cardBg);
   const userData = useSelector(state => state.userData);
   const userId = userData && userData.id;
   const events = useSelector(state => state.events);
@@ -42,7 +44,6 @@ const CalendarScreen = ({ navigation }) => {
 
   const loadEventsOnDate = useCallback(
     async (date, isReload = false) => {
-      console.log("Joell date", date);
       if(!isReload){
         dispatch(loaderActions.updateLoader(true));
       }
@@ -84,6 +85,10 @@ const CalendarScreen = ({ navigation }) => {
   );
 
   useEffect(() => {
+    loadEventsOnDate(CURRENT_DATE, false);
+  }, [dispatch, navigation])
+
+  useEffect(() => {
     getSelectedDayEvents(CURRENT_DATE);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -98,6 +103,10 @@ const CalendarScreen = ({ navigation }) => {
       setMonthDots(eventDates);
     }
   }, [dispatch, loadEventDatesForMonth]);
+
+  useEffect(() => {
+    setColour(theme.cardBg);
+  }, [dispatch, theme]);
 
   // useEffect(() => {
     
@@ -155,6 +164,7 @@ const CalendarScreen = ({ navigation }) => {
     setMarkedDates(newMarkedDates);
   }
 
+  // TODO: change dates on press
   const onChangeRouteHandler = id => {
     setMode(options[id]);
     if (id === 1) {
@@ -220,8 +230,8 @@ const CalendarScreen = ({ navigation }) => {
             textDayFontSize: 18,
             textMonthFontSize: 24,
             textDayHeaderFontSize: 15,
-            backgroundColor: theme.cardBg,
-            calendarBackground: theme.cardBg,
+            backgroundColor: colour,
+            calendarBackground: colour,
             arrowColor: 'red',
             textDayFontWeight: '400',
             textMonthFontWeight: 'bold',

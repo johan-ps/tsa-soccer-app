@@ -44,6 +44,7 @@ const ScheduleHeader = props => {
     if (showDates) {
       let newDatesArray = [];
       let date = moment();
+      console.log("Joell dateeeeess", date);
       while (endDate.diff(date, 'days') >= 0) {
         newDatesArray.push(date.clone());
         date.add(1, 'days');
@@ -56,6 +57,7 @@ const ScheduleHeader = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // TODO :: reload dates on press
   const onChangeRouteHandler = id => {
     if (props.onPress) {
       setMode(options[id]);

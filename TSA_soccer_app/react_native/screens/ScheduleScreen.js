@@ -77,6 +77,11 @@ const ScheduleScreen = ({ navigation, events }) => {
   );
 
   useEffect(() => {
+    console.log("Joell load navigate", moment());
+    loadEventsFromDate(new Date());
+  }, [dispatch, navigation])
+
+  useEffect(() => {
     loadEventsFromDate(new Date());
   }, [dispatch, loadEventsFromDate, userId]);
 
@@ -282,6 +287,7 @@ const ScheduleScreen = ({ navigation, events }) => {
 };
 
 function mapStateToProps(state, ownProps) {
+  console.log("Joell map events", state.events)
   return {
       events: state.events
   };

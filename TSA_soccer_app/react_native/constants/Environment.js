@@ -4,3 +4,5 @@
 export const environmentUrl = '10.0.0.184:3000';
 // joell:
 // export const environmentUrl = '10.0.0.184:3000';
+// joell waterloo:
+// 10.5.0.149

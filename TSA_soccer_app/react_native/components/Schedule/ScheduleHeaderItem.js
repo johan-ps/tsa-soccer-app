@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 const ScheduleHeaderItem = props => {
   const { onPress, current, date } = props;
   const theme = useSelector(state => state.theme.colors);
-
+  
   return (
     <TouchableOpacity
       onPress={onPress}
