@@ -4,6 +4,7 @@ import MoreScreen from '../screens/MoreScreen';
 import LoginScreen from '../screens/LoginScreen';
 import NotificationScreen from '../screens/NotificationScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -14,7 +15,7 @@ const SettingsNavigator = () => {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name="More" component={MoreScreen} />
+      <Stack.Screen name="More" component={ProfileScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Notifications" component={NotificationScreen} />
       <Stack.Screen name="Account" component={EditProfileScreen} />

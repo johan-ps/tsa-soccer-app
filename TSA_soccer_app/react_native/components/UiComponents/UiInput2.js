@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import Animated, {
   interpolate,
@@ -43,7 +43,6 @@ const UiInput = props => {
     placeholder,
     fontSize,
     icon,
-    iconLeft,
     openOnFocus,
     closeOnBlur,
     disabled,
@@ -146,30 +145,17 @@ const UiInput = props => {
   return (
     <Pressable
       onPress={onFocus}
-      style={[
-        styles.inputContainer,
-        props.style,
-        { backgroundColor: '#F3F4F6' },
-      ]}>
-      {iconLeft ? (
-        <Icon
-          style={styles.iconLeft}
-          color="#8A8FA9"
-          name={iconLeft}
-          size={26}
-        />
-      ) : null}
+      style={[styles.inputContainer, props.style, { backgroundColor: bg }]}>
       <TextInput
         selectionColor={cursor}
-        placeholderTextColor="#8A8FA9"
-        placeholder={placeholder}
+        placeholderTextColor={placeholderClr}
         value={inputState.value}
         onChangeText={inputHandler}
         editable={!disabled}
         selectTextOnFocus={false}
         style={[
           styles.input,
-          { fontSize: 15, fontFamily: theme.fontMedium, color: '#8A8FA9' },
+          { fontSize, fontFamily: theme.fontRegular, color },
           // eslint-disable-next-line react-native/no-inline-styles
           multiline ? { paddingTop: 40 } : {},
         ]}
@@ -181,12 +167,28 @@ const UiInput = props => {
         autoCompleteType={autoCompleteType()}
         secureTextEntry={contentType === 'password' && !showInput}
       />
+      <Animated.Text
+        style={[
+          styles.placeholderContainer,
+          placeholderAnim,
+          // eslint-disable-next-line react-native/no-inline-styles
+          multiline ? { top: 24 } : { alignSelf: 'center' },
+        ]}>
+        <Animated.Text
+          style={[
+            styles.placeholder,
+            { fontFamily: theme.fontRegular, color: placeholderClr },
+            !isValid ? { color: theme.error } : {},
+          ]}>
+          {placeholder}
+        </Animated.Text>
+      </Animated.Text>
       {icon ? (
         <TouchableOpacity
           onPress={toggleShowInput}
           style={styles.iconContainer}>
           <Icon
-            color="#8A8FA9"
+            color={placeholderClr}
             name={
               contentType === 'password' && !showInput
                 ? icon.name
@@ -207,8 +209,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: 'relative',
     width: '100%',
-    minHeight: 62,
-    height: 62,
+    minHeight: 68,
     borderRadius: 8,
   },
   input: {
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 30,
     paddingVertical: 10,
-    paddingLeft: 60,
+    paddingTop: 30,
   },
   iconContainer: {
     position: 'absolute',
@@ -232,10 +233,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 50,
   },
-  iconLeft: {
+  placeholderContainer: {
+    width: '100%',
+    height: 30,
     position: 'absolute',
-    left: 20,
-    alignSelf: 'center',
+    left: 30,
+    justifyContent: 'center',
+  },
+  placeholder: {
+    fontSize: 16,
   },
 });
 

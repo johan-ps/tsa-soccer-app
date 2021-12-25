@@ -89,15 +89,15 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: theme.secondaryBg }}>
+    <ScrollView style={{ backgroundColor: 'white' }}>
       <KeyboardAvoidingView
         behavior="position"
-        style={{ backgroundColor: theme.secondaryBg }}>
+        style={{ backgroundColor: 'white' }}>
         <Pressable
           onPress={() => {
             Keyboard.dismiss();
           }}
-          style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
+          style={[styles.container, { backgroundColor: 'white' }]}>
           <View style={styles.closeButton}>
             <UiIconButton
               icon="close-outline"
@@ -136,6 +136,7 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.body}>
             <UiInput
               id="username"
+              iconLeft="mail"
               initialValue={formState.inputValues.username}
               inputValidities={formState.inputValidities.username}
               contentType="username"
@@ -149,13 +150,14 @@ const LoginScreen = ({ navigation }) => {
             />
             <UiInput
               id="password"
+              iconLeft="lock"
               initialValue={formState.inputValues.password}
               inputValidities={formState.inputValidities.password}
               contentType="password"
               placeholder="Password"
               icon={{
-                name: 'eye-outline',
-                altName: 'eye-off-outline',
+                name: 'eye',
+                altName: 'eye-off',
                 size: 26,
               }}
               onInputChange={onChangeText}

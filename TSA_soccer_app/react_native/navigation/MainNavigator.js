@@ -1,9 +1,10 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { useColorScheme, Platform } from 'react-native';
+import { useColorScheme, Platform, NativeModules } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/AntDesign';
 import { Text, View, StyleSheet } from 'react-native';
+import { changeNavigationBarColor } from 'react-native-navigation-bar-color';
 
 import AnnouncementScreen from '../screens/AnnouncementScreen';
 import MessagesScreen from '../screens/MessagesScreen';
@@ -19,6 +20,7 @@ import AnnouncementNavigator from './AnnouncementNavigator';
 const MainNav = createBottomTabNavigator();
 
 const MainNavigator = () => {
+  const { NavigationBarColor } = NativeModules;
   const dispatch = useDispatch(); // use to dispatch an action
   const scheme = useColorScheme(); // get phone's native theme style
   const theme = useSelector(state => state.theme.colors);
@@ -29,7 +31,15 @@ const MainNavigator = () => {
     if (scheme === 'dark') {
       dispatch(ThemeActions.updateTheme(scheme));
     }
-  }, [dispatch, scheme]);
+
+    if (Platform.OS === 'android') {
+      NavigationBarColor.changeNavigationBarColor(
+        'white',
+        scheme === 'dark',
+        true,
+      );
+    }
+  }, [NavigationBarColor, dispatch, scheme]);
 
   return (
     <MainNav.Navigator
@@ -46,7 +56,7 @@ const MainNavigator = () => {
           } else if (route.name === 'Messages') {
             iconName = 'send';
           } else if (route.name === 'More') {
-            iconName = 'apps';
+            iconName = 'appstore-o';
           }
 
           return (
@@ -56,7 +66,7 @@ const MainNavigator = () => {
                 color={
                   focused ? theme.bottomNavIconSelect : theme.bottomNavIcon
                 }
-                size={focused ? 23 : 21}
+                size={25}
               />
             </View>
           );
@@ -68,7 +78,6 @@ const MainNavigator = () => {
         style: {
           ...styles.tabBar,
           backgroundColor: theme.bottomNavBg,
-          bottom: tabBarVisible && Platform.OS === 'android' ? 5 : 0,
         },
         keyboardHidesTabBar: true,
       }}>
@@ -92,17 +101,17 @@ const styles = StyleSheet.create({
     }),
   },
   tabBar: {
+    height: 60,
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
     backgroundColor: 'transparent',
     borderTopWidth: 0,
     position: 'absolute',
-    left: 7,
-    right: 7,
-    bottom: 5,
-    height: 70,
-    borderRadius: 15,
+    bottom: 0,
     ...Platform.select({
       ios: {
-        marginBottom: 10,
+        height: 90,
+        paddingBottom: 30,
       },
     }),
   },
