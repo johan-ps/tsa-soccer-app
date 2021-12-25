@@ -99,8 +99,8 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.closeButton}>
               <UiIconButton
                 icon="close"
-                color="#8A8FA9"
-                backgroundColor="#F3F4F6"
+                color={theme.secondaryText}
+                backgroundColor={theme.secondaryBg}
                 size={24}
                 darkBg={false}
                 onPress={() => {
@@ -119,14 +119,14 @@ const LoginScreen = ({ navigation }) => {
               <Text
                 style={[
                   styles.headingTitle,
-                  { color: theme.primaryText, fontFamily: 'Mark Pro Medium' },
+                  { color: theme.primaryText, fontFamily: theme.fontMedium },
                 ]}>
                 Welcome to CTSA!
               </Text>
               <Text
                 style={[
                   styles.headingSubtitle,
-                  { color: theme.secondaryText, fontFamily: 'Mark Pro' },
+                  { color: theme.tertiaryText, fontFamily: theme.fontRegular },
                 ]}>
                 Join our community of over 100 players in the GTA
               </Text>
@@ -141,10 +141,6 @@ const LoginScreen = ({ navigation }) => {
                 placeholder="Username"
                 style={styles.marginBottom}
                 onInputChange={onChangeText}
-                bg={theme.inputBg}
-                color={theme.inputText}
-                placeholderClr={theme.inputPlaceholder}
-                cursor={theme.cursor}
               />
               <UiInput
                 id="password"
@@ -159,10 +155,6 @@ const LoginScreen = ({ navigation }) => {
                   size: 26,
                 }}
                 onInputChange={onChangeText}
-                bg={theme.inputBg}
-                color={theme.inputText}
-                placeholderClr={theme.inputPlaceholder}
-                cursor={theme.cursor}
               />
             </View>
           </View>
@@ -175,7 +167,7 @@ const LoginScreen = ({ navigation }) => {
               borderRadius={16}
               style={styles.button}
               primaryClr={theme.buttonPrimaryBg}
-              secondaryClr="white"
+              secondaryClr={theme.buttonPrimaryText}
             />
           </View>
         </View>

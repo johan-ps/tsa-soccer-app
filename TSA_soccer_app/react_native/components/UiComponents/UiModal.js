@@ -114,27 +114,29 @@ const UiModal = props => {
           </View>
           <View style={styles.buttonContainer}>
             <UiButton
-              primaryClr={theme.button4Txt}
-              secondaryClr={theme.button4Bg}
               label={props.secondaryLabel}
               onPress={secondaryBtnHandler}
               type="secondary"
               size="medium"
-              borderRadius={10}
-              darkBg={true}
+              darkBg={false}
               width={130}
-              height={50}
+              height={58}
+              borderRadius={16}
+              style={styles.button}
+              primaryClr={theme.buttonSecondaryText}
+              secondaryClr={theme.buttonSecondaryBg}
             />
             <UiButton
-              primaryClr={theme.buttonPrimaryBg}
-              secondaryClr={theme.button4Txt}
               label={props.primaryLabel}
               onPress={primaryBtnHandler}
               size="medium"
-              borderRadius={10}
               darkBg={true}
               width={130}
-              height={50}
+              height={58}
+              borderRadius={16}
+              style={styles.button}
+              primaryClr={theme.buttonPrimaryBg}
+              secondaryClr={theme.buttonPrimaryText}
             />
           </View>
         </Animated.View>

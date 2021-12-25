@@ -18,7 +18,6 @@ import Animated, {
 import { UiInput } from '../_components';
 
 const NavHeader = forwardRef((props, ref) => {
-  const { iconListRight = [] } = props;
   const theme = useSelector(state => state.theme.colors);
 
   const scrollAnimation = useSharedValue(0);
@@ -58,17 +57,23 @@ const NavHeader = forwardRef((props, ref) => {
     <Animated.View
       style={[
         styles.container,
-        { backgroundColor: theme.searchBg },
+        { backgroundColor: theme.primaryBg },
         animStyle,
       ]}>
       <View style={styles.headingContainer}>
-        <Text style={styles.heading}>Announcements</Text>
+        <Text
+          style={[
+            styles.heading,
+            { fontFamily: theme.fontBold, color: theme.primaryText },
+          ]}>
+          Announcements
+        </Text>
         <TouchableOpacity
           onPress={() => {
             props.toggleFilter(true);
           }}
           style={styles.iconContainer}>
-          <Icon name="filter-outline" color="#3D3C4E" size={20} />
+          <Icon name="filter-outline" color={theme.primaryText} size={20} />
         </TouchableOpacity>
       </View>
       <UiInput
@@ -79,9 +84,9 @@ const NavHeader = forwardRef((props, ref) => {
         placeholder="Search"
         style={styles.marginBottom}
         onInputChange={() => {}}
-        bg={theme.inputBg}
-        color={theme.inputText}
-        placeholderClr={theme.inputPlaceholder}
+        bg={theme.secondaryBg}
+        color={theme.secondaryText}
+        placeholderClr={theme.secondaryText}
         cursor={theme.cursor}
       />
     </Animated.View>
@@ -90,9 +95,7 @@ const NavHeader = forwardRef((props, ref) => {
 
 const styles = StyleSheet.create({
   heading: {
-    fontFamily: 'Mark Pro Bold',
     fontSize: 24,
-    color: '#3D3C4E',
     marginBottom: 15,
   },
   headingContainer: {

@@ -9,6 +9,7 @@ import {
   TextInput,
   StyleSheet,
   Pressable,
+  View,
   TouchableOpacity,
   Text,
 } from 'react-native';
@@ -39,9 +40,10 @@ const inputReducer = (state, action) => {
 
 const UiInput = props => {
   const theme = useSelector(state => state.theme.colors);
+
   const {
     placeholder,
-    fontSize,
+    fontSize = 15,
     icon,
     iconLeft,
     openOnFocus,
@@ -49,10 +51,6 @@ const UiInput = props => {
     disabled,
     onChangeText,
     contentType = 'none',
-    bg = '#EAEAEA',
-    color = '#000000',
-    placeholderClr = '#C0C0CA',
-    cursor = theme.cursor,
     multiline = false,
     errCode,
     isValid = true,
@@ -128,24 +126,23 @@ const UiInput = props => {
   };
 
   return (
-    <Pressable
-      onPress={onFocus}
+    <View
       style={[
         styles.inputContainer,
         props.style,
-        { backgroundColor: '#F3F4F6' },
+        { backgroundColor: theme.secondaryBg },
       ]}>
       {iconLeft ? (
         <Icon
           style={styles.iconLeft}
-          color="#8A8FA9"
+          color={theme.secondaryText}
           name={iconLeft}
           size={26}
         />
       ) : null}
       <TextInput
-        selectionColor={cursor}
-        placeholderTextColor="#8A8FA9"
+        selectionColor={theme.cursor}
+        placeholderTextColor={theme.secondaryText}
         placeholder={placeholder}
         value={inputState.value}
         onChangeText={inputHandler}
@@ -153,7 +150,11 @@ const UiInput = props => {
         selectTextOnFocus={false}
         style={[
           styles.input,
-          { fontSize: 15, fontFamily: 'Mark Pro Medium', color: '#8A8FA9' },
+          {
+            fontSize,
+            fontFamily: theme.fontMedium,
+            color: theme.secondaryText,
+          },
           // eslint-disable-next-line react-native/no-inline-styles
           multiline ? { paddingTop: 40 } : {},
         ]}
@@ -170,7 +171,7 @@ const UiInput = props => {
           onPress={toggleShowInput}
           style={styles.iconContainer}>
           <Icon
-            color="#8A8FA9"
+            color={theme.secondaryText}
             name={
               contentType === 'password' && !showInput
                 ? icon.name
@@ -181,7 +182,7 @@ const UiInput = props => {
         </TouchableOpacity>
       ) : null}
       <ErrorMessage isValid={isValid} errCode={errCode} />
-    </Pressable>
+    </View>
   );
 };
 

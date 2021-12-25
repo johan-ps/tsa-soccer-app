@@ -30,7 +30,12 @@ const NavButton = props => {
   };
 
   return (
-    <View style={[styles.container, styles.marginBottom]}>
+    <View
+      style={[
+        styles.container,
+        styles.marginBottom,
+        { backgroundColor: theme.secondaryBg },
+      ]}>
       <TouchableNativeFeedback
         onPress={props.onPress}
         style={styles.touchable}
@@ -44,11 +49,17 @@ const NavButton = props => {
         }>
         <View style={[styles.container, styles.contentContainer]}>
           <View style={styles.textContainer}>
-            <Text style={styles.label}>{props.label}</Text>
+            <Text
+              style={[
+                styles.label,
+                { fontFamily: theme.fontMedium, color: theme.secondaryText },
+              ]}>
+              {props.label}
+            </Text>
           </View>
           <View style={styles.iconContainer}>
             {actionType === 'button' ? (
-              <Icon name={icon} color="#8A8FA9" size={26} />
+              <Icon name={icon} color={theme.secondaryText} size={26} />
             ) : (
               <UiSwitch
                 style={toggleScale()}
@@ -74,7 +85,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 62,
-    backgroundColor: '#F3F4F6',
     borderRadius: 16,
     overflow: 'hidden',
   },
@@ -89,8 +99,6 @@ const styles = StyleSheet.create({
   },
   textContainer: {},
   label: {
-    color: '#8A8FA9',
-    fontFamily: 'Mark Pro Medium',
     fontSize: 15,
   },
   iconContainer: {},

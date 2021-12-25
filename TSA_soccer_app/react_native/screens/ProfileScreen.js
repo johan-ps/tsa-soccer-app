@@ -30,9 +30,15 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <ScrollView
-      style={styles.pageContainer}
+      style={[styles.pageContainer, { backgroundColor: theme.primaryBg }]}
       contentContainerStyle={styles.innerPageContainer}>
-      <Text style={styles.heading}>Profile</Text>
+      <Text
+        style={[
+          styles.heading,
+          { fontFamily: theme.fontBold, color: theme.primaryText },
+        ]}>
+        Profile
+      </Text>
       <View style={styles.profileContainer}>
         <UiImage
           style={styles.profileImg}
@@ -42,7 +48,8 @@ const ProfileScreen = ({ navigation }) => {
           alt={
             <UiIcon
               icon="person"
-              color="#aaa6c3"
+              color={theme.secondaryText}
+              backgroundColor={theme.secondaryBg}
               size={34}
               type="round"
               darkBg={false}
@@ -50,13 +57,23 @@ const ProfileScreen = ({ navigation }) => {
           }
         />
         <View style={styles.profileInfoContainer}>
-          <Text style={styles.profileName}>
+          <Text
+            style={[
+              styles.profileName,
+              { fontFamily: theme.fontMedium, color: theme.primaryText },
+            ]}>
             {userData && userData.authenticated
               ? `${userData.firstName} ${userData.lastName}`
               : 'Not Logged In'}
           </Text>
           {userData && userData.authenticated ? (
-            <Text style={styles.profileEmail}>{userData.email}</Text>
+            <Text
+              style={[
+                styles.profileEmail,
+                { fontFamily: theme.fontRegular, color: theme.tertiaryText },
+              ]}>
+              {userData.email}
+            </Text>
           ) : null}
         </View>
       </View>
@@ -107,8 +124,6 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 24,
-    color: '#3D3C4E',
-    fontFamily: 'Mark Pro Bold',
   },
   profileContainer: {
     flexDirection: 'row',
@@ -121,13 +136,9 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: 17,
-    fontFamily: 'Mark Pro Medium',
-    color: '#3D3C4E',
   },
   profileEmail: {
     fontSize: 17,
-    fontFamily: 'Mark Pro',
-    color: '#b9b9c3',
     marginTop: 6,
   },
   profileImg: {
