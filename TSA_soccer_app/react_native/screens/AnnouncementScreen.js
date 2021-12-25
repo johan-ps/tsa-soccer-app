@@ -140,12 +140,7 @@ const AnnouncementScreen = ({ navigation }) => {
         />
       ) : null}
       <SafeAreaView style={announcements.length === 0 ? styles.container : {}}>
-        <NavHeader
-          ref={searchBarRef}
-          iconListRight={[{ name: 'filter-outline', id: 0 }]}
-          searchable={true}
-          toggleFilter={toggleFilter}
-        />
+        <NavHeader ref={searchBarRef} toggleFilter={toggleFilter} />
         {announcements.length === 0 ? (
           <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
         ) : (

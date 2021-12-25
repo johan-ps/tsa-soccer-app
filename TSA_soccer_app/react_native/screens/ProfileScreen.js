@@ -106,9 +106,9 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   heading: {
-    fontSize: 30,
+    fontSize: 24,
     color: '#3D3C4E',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Mark Pro Bold',
   },
   profileContainer: {
     flexDirection: 'row',
@@ -121,12 +121,12 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: 17,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Mark Pro Medium',
     color: '#3D3C4E',
   },
   profileEmail: {
     fontSize: 17,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Mark Pro',
     color: '#b9b9c3',
     marginTop: 6,
   },

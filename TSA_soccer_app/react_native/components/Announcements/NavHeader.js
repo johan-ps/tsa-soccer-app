@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Platform,
+  Text,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
@@ -14,9 +15,10 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
+import { UiInput } from '../_components';
 
 const NavHeader = forwardRef((props, ref) => {
-  const { iconListLeft = [], iconListRight = [], searchable = false } = props;
+  const { iconListRight = [] } = props;
   const theme = useSelector(state => state.theme.colors);
 
   const scrollAnimation = useSharedValue(0);
@@ -46,7 +48,7 @@ const NavHeader = forwardRef((props, ref) => {
     return {
       transform: [
         {
-          translateY: scrollAnimation.value * -70,
+          translateY: scrollAnimation.value * -150,
         },
       ],
     };
@@ -59,89 +61,56 @@ const NavHeader = forwardRef((props, ref) => {
         { backgroundColor: theme.searchBg },
         animStyle,
       ]}>
-      {/* <View style={styles.iconLeftContainer}>
-        {iconListLeft.map(icon => {
-          return (
-            <TouchableOpacity key={icon.id} style={styles.iconContainer}>
-              <Icon name={icon.name} color={theme.iconClr} size={20} />
-            </TouchableOpacity>
-          );
-        })}
-      </View> */}
-      <View style={styles.iconRightContainer}>
-        <Image
-          style={{ height: 30, width: 30 }}
-          source={require('../../assets/img/CTSA_Logo.png')}
-        />
+      <View style={styles.headingContainer}>
+        <Text style={styles.heading}>Announcements</Text>
+        <TouchableOpacity
+          onPress={() => {
+            props.toggleFilter(true);
+          }}
+          style={styles.iconContainer}>
+          <Icon name="filter-outline" color="#3D3C4E" size={20} />
+        </TouchableOpacity>
       </View>
-      <View style={styles.center}>
-        {searchable ? (
-          <TextInput
-            style={[
-              styles.searchbar,
-              {
-                borderColor: theme.searchText,
-                color: theme.searchText,
-                backgroundColor: theme.searchInputBg,
-                fontFamily: theme.fontRegular,
-              },
-            ]}
-            placeholder="Search..."
-            placeholderTextColor={theme.searchText}
-          />
-        ) : null}
-        {searchable ? (
-          <View style={styles.searchbarIcon}>
-            <Icon name="search-outline" color={theme.searchText} size={20} />
-          </View>
-        ) : null}
-      </View>
-      <View style={styles.iconRightContainer}>
-        {iconListRight.map(icon => {
-          return (
-            <TouchableOpacity
-              onPress={() => {
-                props.toggleFilter(true);
-              }}
-              key={icon.id}
-              style={styles.iconContainer}>
-              <Icon name={icon.name} color={theme.searchText} size={20} />
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+      <UiInput
+        id="search"
+        iconLeft="search"
+        initialValue=""
+        inputValidities={true}
+        placeholder="Search"
+        style={styles.marginBottom}
+        onInputChange={() => {}}
+        bg={theme.inputBg}
+        color={theme.inputText}
+        placeholderClr={theme.inputPlaceholder}
+        cursor={theme.cursor}
+      />
     </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
+  heading: {
+    fontFamily: 'Mark Pro Bold',
+    fontSize: 24,
+    color: '#3D3C4E',
+    marginBottom: 15,
+  },
+  headingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   container: {
     width: '100%',
-    height: 70,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    elevation: 15,
-    shadowRadius: 2,
-    shadowColor: '#000000',
-    shadowOpacity: 0.3,
-    shadowOffset: { height: 2 },
+    height: 150,
+    flexDirection: 'column',
+    // elevation: 15,
+    // shadowRadius: 2,
+    // shadowColor: '#000000',
+    // shadowOpacity: 0.3,
+    // shadowOffset: { height: 2 },
     zIndex: 100,
-  },
-  iconLeftContainer: {
-    height: '100%',
-    padding: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  iconRightContainer: {
-    height: '100%',
-    padding: 10,
-    marginRight: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
   },
   iconContainer: {
     borderRadius: 50,
@@ -150,34 +119,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  center: {
-    width: '70%',
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  searchbar: {
-    borderRadius: 60,
-    width: '100%',
-    borderWidth: 1,
-    borderStyle: 'solid',
-    paddingHorizontal: 20,
-    paddingLeft: 40,
-    ...Platform.select({
-      ios: {
-        paddingTop: 5,
-        paddingBottom: 5,
-        borderRadius: 15,
-        height: 40,
-      },
-    }),
-  },
-  searchbarIcon: {
-    position: 'absolute',
-    top: 9,
-    left: 10,
   },
 });
 

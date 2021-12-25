@@ -75,13 +75,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 62,
     backgroundColor: '#F3F4F6',
-    borderRadius: 18,
+    borderRadius: 16,
     overflow: 'hidden',
   },
   touchable: {
     width: '100%',
     height: '100%',
-    borderRadius: 18,
+    borderRadius: 16,
     overflow: 'hidden',
   },
   contentContainer: {
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   textContainer: {},
   label: {
     color: '#8A8FA9',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Mark Pro Medium',
     fontSize: 15,
   },
   iconContainer: {},

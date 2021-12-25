@@ -119,22 +119,6 @@ const UiInput = props => {
     setShowInput(!showInput);
   };
 
-  const placeholderAnim = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: interpolate(translateAnim.value, [0, 1], [0, -36]),
-        },
-        {
-          translateY: interpolate(translateAnim.value, [0, 1], [0, -12]),
-        },
-        {
-          scale: interpolate(translateAnim.value, [0, 1], [1, 0.8]),
-        },
-      ],
-    };
-  });
-
   const autoCompleteType = () => {
     if (contentType === 'none') {
       return 'off';
@@ -169,7 +153,7 @@ const UiInput = props => {
         selectTextOnFocus={false}
         style={[
           styles.input,
-          { fontSize: 15, fontFamily: theme.fontMedium, color: '#8A8FA9' },
+          { fontSize: 15, fontFamily: 'Mark Pro Medium', color: '#8A8FA9' },
           // eslint-disable-next-line react-native/no-inline-styles
           multiline ? { paddingTop: 40 } : {},
         ]}
@@ -209,7 +193,7 @@ const styles = StyleSheet.create({
     width: '100%',
     minHeight: 62,
     height: 62,
-    borderRadius: 8,
+    borderRadius: 16,
   },
   input: {
     width: '100%',
@@ -217,14 +201,14 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: 0,
     backgroundColor: 'transparent',
-    borderRadius: 8,
+    borderRadius: 16,
     paddingHorizontal: 30,
     paddingVertical: 10,
     paddingLeft: 60,
   },
   iconContainer: {
     position: 'absolute',
-    right: 30,
+    right: 20,
     alignSelf: 'center',
     width: 40,
     height: 40,
