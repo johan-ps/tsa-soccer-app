@@ -1,5 +1,12 @@
 import React, { useState, useReducer, useCallback, useEffect } from 'react';
-import { Text, View, StyleSheet, ScrollView, Platform } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  Platform,
+  TouchableOpacity,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 import {
@@ -14,6 +21,7 @@ import * as loaderActions from '../store/actions/LoaderActions';
 import * as teamActions from '../store/actions/TeamActions';
 import { formatTeams } from '../Util/utilities';
 import * as tabbarActions from '../store/actions/TabbarActions';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -37,6 +45,34 @@ const formInit = {
     teams: null,
   },
   formIsValid: true,
+};
+
+const getFormData = (isEdit, data) => {
+  if (isEdit) {
+    return {
+      inputValues: {
+        title: data.title || '',
+        imageUrl: data.image || null,
+        description: data.description || '',
+        teams: data.teams || [],
+      },
+      inputValidities: {
+        title: true,
+        imageUrl: true,
+        description: true,
+        teams: true,
+      },
+      errors: {
+        title: null,
+        imageUrl: null,
+        description: null,
+        teams: null,
+      },
+      formIsValid: true,
+    };
+  } else {
+    return formInit;
+  }
 };
 
 const formReducer = (state, action) => {
@@ -72,15 +108,22 @@ const formReducer = (state, action) => {
   }
 };
 
-const ModifyAnnouncementScreen = ({ navigation }) => {
+const ModifyAnnouncementScreen = props => {
+  const { navigation } = props;
   const theme = useSelector(state => state.theme.colors);
   const teams = useSelector(state => formatTeams(state.teams));
   const dispatch = useDispatch();
   const userData = useSelector(state => state.userData);
 
+  const { isEdit } = props.route.params;
+  const { announcementData } = props.route.params;
+
   const [imgPickerModalVisible, setImgPickerModalVisible] = useState(false);
 
-  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
+  const [formState, dispatchFormState] = useReducer(
+    formReducer,
+    getFormData(isEdit, announcementData),
+  );
 
   const imagePickerHandler = () => {
     if (Platform.OS === 'ios') {
@@ -288,28 +331,39 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
     navigation.goBack();
   };
 
+  const labelFont = {
+    fontFamily: theme.fontMedium,
+    color: theme.secondaryText,
+  };
+
   return (
     <View>
       <View
-        style={[styles.modalContainer, { backgroundColor: theme.secondaryBg }]}>
+        style={[styles.modalContainer, { backgroundColor: theme.primaryBg }]}>
         <View
           style={[
             styles.modalContentContainer,
-            { backgroundColor: theme.secondaryBg },
+            { backgroundColor: theme.primaryBg },
           ]}>
           <View style={styles.modalHeader}>
             <Text
               style={[
                 styles.formHeading,
-                { color: theme.primaryText, fontFamily: theme.fontRegular },
+                { color: theme.primaryText, fontFamily: theme.fontBold },
               ]}>
-              Create Announcement
+              New Announcement
             </Text>
+            <TouchableOpacity
+              onPress={onCloseHandler}
+              style={styles.iconContainer}>
+              <Icon name="close-outline" color={theme.primaryText} size={36} />
+            </TouchableOpacity>
           </View>
           <ScrollView
             style={styles.scrollviewContainer}
             decelerationRate="fast">
             <View style={styles.modalBody}>
+              <Text style={[styles.formLabels, labelFont]}>Description</Text>
               <UiInput
                 id="description"
                 initialValue={formState.inputValues.description}
@@ -318,12 +372,8 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
                 placeholder="Description"
                 multiline={true}
                 onInputChange={onChangeText}
-                bg={theme.inputBg}
-                color={theme.inputText}
-                placeholderClr={theme.inputPlaceholder}
-                cursor={theme.cursor}
               />
-              <Text style={styles.formLabels}>Team</Text>
+              <Text style={[styles.formLabels, labelFont]}>Team</Text>
               <UiDropdown
                 id="teams"
                 onSelect={onSelectHandler}
@@ -338,7 +388,7 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
                 isValid={formState.inputValidities.teams}
                 errCode={formState.errors.teams}
               />
-              <Text style={styles.formLabels}>Upload Image</Text>
+              <Text style={[styles.formLabels, labelFont]}>Upload Image</Text>
               <ImageUpload
                 imgUrl={formState.inputValues.imageUrl}
                 onPress={() => {
@@ -356,11 +406,11 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
                     setImgPickerModalVisible(true);
                   }}
                   darkBg={false}
+                  borderRadius={16}
                 />
                 {formState.inputValues.imageUrl ? (
                   <UiButton
                     icon="close"
-                    // label="Delete Image"
                     type="primary"
                     primaryClr={theme.buttonSecondaryBg}
                     secondaryClr={theme.buttonSecondaryText}
@@ -368,6 +418,7 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
                       clearImage();
                     }}
                     darkBg={false}
+                    borderRadius={16}
                   />
                 ) : null}
               </View>
@@ -376,22 +427,16 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
         </View>
         <View style={styles.modalFooter}>
           <UiButton
-            label="Cancel"
-            type="tertiary"
-            primaryClr={theme.buttonTertiaryText}
-            secondaryClr={theme.buttonTertiaryBg}
-            onPress={onCloseHandler}
-            darkBg={theme.name === 'dark'}
-          />
-          <UiButton
-            label="Create"
-            type="tertiary"
-            primaryClr={theme.buttonTertiaryText}
-            secondaryClr={theme.buttonTertiaryBg}
             onPress={() => {
               modifyAnnouncementScreenHandler();
             }}
-            darkBg={theme.name === 'dark'}
+            label="Create"
+            width="100%"
+            height={62}
+            borderRadius={16}
+            style={styles.button}
+            primaryClr={theme.buttonPrimaryBg}
+            secondaryClr={theme.buttonPrimaryText}
           />
         </View>
       </View>
@@ -418,7 +463,15 @@ const ModifyAnnouncementScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   scrollviewContainer: {
-    paddingTop: 30,
+    paddingTop: 0,
+  },
+  iconContainer: {
+    borderRadius: 50,
+    height: 40,
+    width: 40,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   uploadBtnContainer: {
     flexDirection: 'row',
@@ -428,6 +481,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     height: '100%',
     backgroundColor: '#F2F2F2',
+    paddingBottom: 55,
   },
   modalContentContainer: {
     width: '100%',
@@ -437,31 +491,34 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 25,
   },
   modalHeader: {
-    padding: 30,
-    marginTop: 20,
-    borderBottomColor: '#414141',
-    borderBottomWidth: 1,
-    borderStyle: 'solid',
+    padding: 15,
+    marginTop: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // borderBottomColor: '#414141',
+    // borderBottomWidth: 1,
+    // borderStyle: 'solid',
   },
   modalBody: {
-    padding: 30,
+    padding: 15,
     paddingTop: 0,
     marginBottom: 56,
   },
   modalFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-    padding: 3,
-    marginHorizontal: 10,
-    // marginBottom: 56,
+    padding: 15,
+    backgroundColor: '#00000000',
+    // flexDirection: 'row',
+    // justifyContent: 'space-evenly',
+    // backgroundColor: 'rgba(0, 0, 0, 0)',
+    // padding: 3,
+    // marginHorizontal: 10,
   },
   formHeading: {
-    fontSize: 20,
+    fontSize: 24,
   },
   formLabels: {
     color: '#A19EAE',
-    fontSize: 14,
+    fontSize: 15,
     marginTop: 30,
     marginBottom: 10,
   },

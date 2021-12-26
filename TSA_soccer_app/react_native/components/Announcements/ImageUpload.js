@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,12 +7,21 @@ import {
   Image,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ImageUpload = props => {
-  const { darkBg = true, imgUrl = null } = props;
+  const { imgUrl = null } = props;
   const theme = useSelector(state => state.theme.colors);
+
+  const [imgSrc, setImgSrc] = useState(null);
+
+  useEffect(() => {
+    if (typeof imgUrl === 'string') {
+      setImgSrc({ uri: imgUrl });
+    } else {
+      setImgSrc(imgUrl);
+    }
+  }, [setImgSrc, imgUrl]);
 
   return (
     <View style={styles.container}>
@@ -20,13 +29,24 @@ const ImageUpload = props => {
         onPress={props.onPress}
         style={styles.touchable}
         background={TouchableNativeFeedback.Ripple(
-          darkBg ? theme.touchableBgDark : theme.touchableBgLight,
+          theme.name === 'dark'
+            ? theme.touchableBgDark
+            : theme.touchableBgLight,
           false,
         )}>
-        <View style={[styles.container, styles.content]}>
+        <View
+          style={[
+            styles.container,
+            styles.content,
+            { backgroundColor: theme.secondaryBg },
+          ]}>
           {!imgUrl ? (
             <View style={styles.content}>
-              <Icon name="cloud-upload-outline" size={100} color="#C9C8C8" />
+              <Icon
+                name="cloud-upload-outline"
+                size={100}
+                color={theme.secondaryText}
+              />
               <Text
                 style={[
                   styles.text,
@@ -38,7 +58,7 @@ const ImageUpload = props => {
           ) : (
             <Image
               style={styles.imagePreview}
-              source={imgUrl}
+              source={imgSrc}
               resizeMode="cover"
             />
           )}
@@ -52,7 +72,6 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: 200,
-    backgroundColor: '#414141',
     borderRadius: 8,
     overflow: 'hidden',
   },

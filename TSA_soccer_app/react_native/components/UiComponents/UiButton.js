@@ -121,9 +121,8 @@ const UiButton = props => {
         width: 190,
       },
       text: {
-        fontWeight: 'bold',
         fontSize: 16,
-        fontFamily: theme.fontBold,
+        fontFamily: theme.fontMedium,
       },
     },
   };

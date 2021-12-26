@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
-import Base64 from 'base-64';
 
 const UiImage = props => {
   const {
-    resizeMode,
+    resizeMode = 'cover',
     imageViewStyle,
     style,
     source = null,

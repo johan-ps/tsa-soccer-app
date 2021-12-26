@@ -90,11 +90,11 @@ const LoginScreen = ({ navigation }) => {
   return (
     <ScrollView
       contentContainerStyle={styles.scrollContainer}
-      style={{ backgroundColor: 'white' }}>
+      style={{ backgroundColor: theme.primaryBg }}>
       <KeyboardAvoidingView
         behavior="position"
-        style={{ backgroundColor: 'white' }}>
-        <View style={[styles.container, { backgroundColor: 'white' }]}>
+        style={{ backgroundColor: theme.primaryBg }}>
+        <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
           <View style={styles.contentContainer}>
             <View style={styles.closeButton}>
               <UiIconButton

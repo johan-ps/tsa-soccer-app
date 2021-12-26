@@ -80,12 +80,21 @@ const AnnouncementScreen = ({ navigation }) => {
 
   useEffect(() => {
     setIsLoading(true);
-    loadAnnouncements().then(() => { setIsLoading(false); });
+    loadAnnouncements().then(() => {
+      setIsLoading(false);
+    });
   }, [dispatch, loadAnnouncements]);
 
   useFocusEffect(() => {
     dispatch(tabbarActions.updateVisibility(true));
   });
+
+  const onEditHandler = item => {
+    navigation.navigate('ModifyAnnouncement', {
+      isEdit: true,
+      announcementData: item,
+    });
+  };
 
   const onDeleteHandler = id => {
     setDeleteId(id);
@@ -159,6 +168,9 @@ const AnnouncementScreen = ({ navigation }) => {
               return (
                 <AnnouncementCard
                   key={item.id}
+                  onEdit={() => {
+                    onEditHandler(item);
+                  }}
                   onDelete={() => {
                     onDeleteHandler(item.id);
                   }}
@@ -176,7 +188,7 @@ const AnnouncementScreen = ({ navigation }) => {
           //   setScrollEnabled={outerScrollHandler}
           //   loadFail={loadFailHandler}
           //   load={loadAnnouncements}>
-            /* // <FlatList
+          /* // <FlatList
             //   onScroll={onScrollHandler}
             //   scrollEnabled={scrollEnabled}
             //   data={announcements}
@@ -193,7 +205,7 @@ const AnnouncementScreen = ({ navigation }) => {
             //     );
             //   }}
             // /> */
-            /* <View>
+          /* <View>
               {announcements.map(announcement => {
                 return (
                   <AnnouncementCard
@@ -237,7 +249,10 @@ const AnnouncementScreen = ({ navigation }) => {
         <AddButton
           ref={addBtnRef}
           onPress={() => {
-            navigation.navigate('ModifyAnnouncement');
+            navigation.navigate('ModifyAnnouncement', {
+              isEdit: false,
+              announcementData: null,
+            });
           }}
         />
       ) : null}
