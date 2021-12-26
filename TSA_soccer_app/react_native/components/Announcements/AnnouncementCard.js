@@ -22,7 +22,9 @@ const AnnouncementCard = props => {
   } = props.announcementData;
 
   const onSelectOption = option => {
-    if (option.id === 1) {
+    if (option.id === 0 && props.onEdit) {
+      props.onEdit();
+    } else if (option.id === 1 && props.onDelete) {
       props.onDelete();
     }
   };

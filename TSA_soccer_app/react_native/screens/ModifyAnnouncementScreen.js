@@ -47,6 +47,34 @@ const formInit = {
   formIsValid: true,
 };
 
+const getFormData = (isEdit, data) => {
+  if (isEdit) {
+    return {
+      inputValues: {
+        title: data.title || '',
+        imageUrl: data.image || null,
+        description: data.description || '',
+        teams: data.teams || [],
+      },
+      inputValidities: {
+        title: true,
+        imageUrl: true,
+        description: true,
+        teams: true,
+      },
+      errors: {
+        title: null,
+        imageUrl: null,
+        description: null,
+        teams: null,
+      },
+      formIsValid: true,
+    };
+  } else {
+    return formInit;
+  }
+};
+
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
     const updatedValues = { ...state.inputValues };
@@ -80,15 +108,22 @@ const formReducer = (state, action) => {
   }
 };
 
-const ModifyAnnouncementScreen = ({ navigation }) => {
+const ModifyAnnouncementScreen = props => {
+  const { navigation } = props;
   const theme = useSelector(state => state.theme.colors);
   const teams = useSelector(state => formatTeams(state.teams));
   const dispatch = useDispatch();
   const userData = useSelector(state => state.userData);
 
+  const { isEdit } = props.route.params;
+  const { announcementData } = props.route.params;
+
   const [imgPickerModalVisible, setImgPickerModalVisible] = useState(false);
 
-  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
+  const [formState, dispatchFormState] = useReducer(
+    formReducer,
+    getFormData(isEdit, announcementData),
+  );
 
   const imagePickerHandler = () => {
     if (Platform.OS === 'ios') {
@@ -483,7 +518,7 @@ const styles = StyleSheet.create({
   },
   formLabels: {
     color: '#A19EAE',
-    fontSize: 14,
+    fontSize: 15,
     marginTop: 30,
     marginBottom: 10,
   },

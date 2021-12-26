@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,12 +7,21 @@ import {
   Image,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const ImageUpload = props => {
   const { imgUrl = null } = props;
   const theme = useSelector(state => state.theme.colors);
+
+  const [imgSrc, setImgSrc] = useState(null);
+
+  useEffect(() => {
+    if (typeof imgUrl === 'string') {
+      setImgSrc({ uri: imgUrl });
+    } else {
+      setImgSrc(imgUrl);
+    }
+  }, [setImgSrc, imgUrl]);
 
   return (
     <View style={styles.container}>
@@ -49,7 +58,7 @@ const ImageUpload = props => {
           ) : (
             <Image
               style={styles.imagePreview}
-              source={imgUrl}
+              source={imgSrc}
               resizeMode="cover"
             />
           )}

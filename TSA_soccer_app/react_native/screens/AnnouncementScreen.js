@@ -89,6 +89,13 @@ const AnnouncementScreen = ({ navigation }) => {
     dispatch(tabbarActions.updateVisibility(true));
   });
 
+  const onEditHandler = item => {
+    navigation.navigate('ModifyAnnouncement', {
+      isEdit: true,
+      announcementData: item,
+    });
+  };
+
   const onDeleteHandler = id => {
     setDeleteId(id);
     setModalVisible(true);
@@ -161,6 +168,9 @@ const AnnouncementScreen = ({ navigation }) => {
               return (
                 <AnnouncementCard
                   key={item.id}
+                  onEdit={() => {
+                    onEditHandler(item);
+                  }}
                   onDelete={() => {
                     onDeleteHandler(item.id);
                   }}
@@ -239,7 +249,10 @@ const AnnouncementScreen = ({ navigation }) => {
         <AddButton
           ref={addBtnRef}
           onPress={() => {
-            navigation.navigate('ModifyAnnouncement');
+            navigation.navigate('ModifyAnnouncement', {
+              isEdit: false,
+              announcementData: null,
+            });
           }}
         />
       ) : null}
