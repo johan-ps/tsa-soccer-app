@@ -80,7 +80,7 @@ const UiDropdown = props => {
             selected: false,
             children: {},
           };
-          if(groupOpt.children){
+          if (groupOpt.children) {
             groupOpt.children.forEach(child => {
               newSelectedValues[groupOpt.id].children[child.id] =
                 !!selectedVals[child.id];
@@ -171,14 +171,13 @@ const UiDropdown = props => {
       setSelectedValues(newSelectedValues);
       return;
     }
-    if(child){
+    if (child) {
       setSelectedId(child.id);
       setSelectedLabel(child.label);
       if (onSelect) {
         onSelect(child.id);
       }
-    }
-    else{
+    } else {
       setSelectedId(option.id);
       setSelectedLabel(option.label);
     }
@@ -242,7 +241,7 @@ const UiDropdown = props => {
               style={[
                 styles.optionsContainer,
                 width,
-                { backgroundColor: theme.ddBgClr },
+                { backgroundColor: theme.secondaryBg },
                 positionStyle,
                 optionsAnimStyles,
                 optionSize === 'large' ? styles.maxHeight : {},
@@ -250,7 +249,7 @@ const UiDropdown = props => {
               <ScrollView
                 style={[
                   styles.optionsScrollContainer,
-                  { backgroundColor: theme.ddBgClr },
+                  { backgroundColor: theme.secondaryBg },
                   optionSize === 'large' ? styles.maxHeight : {},
                 ]}>
                 {options.map(option => {
@@ -266,14 +265,14 @@ const UiDropdown = props => {
                             selectedValues[option.id] &&
                             selectedValues[option.id].selected === true) ||
                           (!multiselect && option.id === selectedId)
-                            ? { backgroundColor: theme.ddOptSClr }
+                            ? { backgroundColor: theme.secondaryText }
                             : {},
                         ]}>
                         <Text
                           style={[
                             option.id === selectedId
-                              ? { color: theme.ddOptSTxtClr }
-                              : { color: theme.ddOptTxtClr },
+                              ? { color: theme.secondaryText }
+                              : { color: theme.primaryText },
                             group
                               ? { fontFamily: theme.fontBold }
                               : { fontFamily: theme.fontRegular },
@@ -318,8 +317,8 @@ const UiDropdown = props => {
                                     selectedValues[option.id].children[
                                       child.id
                                     ] === true
-                                      ? { color: theme.ddOptSTxtClr }
-                                      : { color: theme.ddOptTxtClr },
+                                      ? { color: theme.primaryText }
+                                      : { color: theme.primaryText },
                                     { fontFamily: theme.fontRegular },
                                   ]}>
                                   {child.label}
@@ -358,7 +357,7 @@ const UiDropdown = props => {
         style={[
           styles.dropdownContainer,
           widthStyle(),
-          { backgroundColor: theme.ddBgClr },
+          { backgroundColor: theme.secondaryBg },
           showOptions ? buttonBorder : {},
           scale,
           props.style,
@@ -371,7 +370,14 @@ const UiDropdown = props => {
           onPressOut={onFocusOut}
           style={[styles.dropdownBtn]}>
           {selectedLabels.length === 0 && (
-            <Text style={{ color: isValid ? theme.ddSClr : theme.error, fontSize: 16 }}>
+            <Text
+              style={[
+                styles.dropdownLabel,
+                {
+                  color: isValid ? theme.secondaryText : theme.error,
+                  fontFamily: theme.fontMedium,
+                },
+              ]}>
               {selectedLabel}
             </Text>
           )}
@@ -397,12 +403,12 @@ const UiDropdown = props => {
           <Animated.View
             style={[
               styles.iconContainer,
-              { backgroundColor: theme.ddBgClr },
+              { backgroundColor: theme.secondaryBg },
               iconAnimStyles,
             ]}>
             <Icon
               name="chevron-down-outline"
-              color={showOptions ? theme.ddBorderClr : theme.ddSClr}
+              color={showOptions ? theme.ddBorderClr : theme.secondaryText}
               size={24}
             />
           </Animated.View>
@@ -422,7 +428,7 @@ const styles = StyleSheet.create({
     maxHeight: 320,
   },
   selectLabels: {
-    borderRadius: 5,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 5,
@@ -435,19 +441,22 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     flexWrap: 'wrap',
   },
+  dropdownLabel: {
+    fontSize: 15,
+  },
   dropdownContainer: {
-    minHeight: 58,
-    borderRadius: 10,
+    minHeight: 62,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 2,
-    shadowRadius: 2,
-    shadowColor: '#000000',
-    shadowOpacity: 0.3,
-    shadowOffset: { height: 2 },
-    borderWidth: 1,
-    borderStyle: 'solid',
-    overflow: 'hidden',
+    // elevation: 2,
+    // shadowRadius: 2,
+    // shadowColor: '#000000',
+    // shadowOpacity: 0.3,
+    // shadowOffset: { height: 2 },
+    // borderWidth: 1,
+    // borderStyle: 'solid',
+    // overflow: 'hidden',
     position: 'relative',
   },
   dropdownBtn: {

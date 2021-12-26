@@ -80,7 +80,9 @@ const AnnouncementScreen = ({ navigation }) => {
 
   useEffect(() => {
     setIsLoading(true);
-    loadAnnouncements().then(() => { setIsLoading(false); });
+    loadAnnouncements().then(() => {
+      setIsLoading(false);
+    });
   }, [dispatch, loadAnnouncements]);
 
   useFocusEffect(() => {
@@ -176,7 +178,7 @@ const AnnouncementScreen = ({ navigation }) => {
           //   setScrollEnabled={outerScrollHandler}
           //   loadFail={loadFailHandler}
           //   load={loadAnnouncements}>
-            /* // <FlatList
+          /* // <FlatList
             //   onScroll={onScrollHandler}
             //   scrollEnabled={scrollEnabled}
             //   data={announcements}
@@ -193,7 +195,7 @@ const AnnouncementScreen = ({ navigation }) => {
             //     );
             //   }}
             // /> */
-            /* <View>
+          /* <View>
               {announcements.map(announcement => {
                 return (
                   <AnnouncementCard

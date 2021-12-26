@@ -142,7 +142,7 @@ const UiInput = props => {
       ) : null}
       <TextInput
         selectionColor={theme.cursor}
-        placeholderTextColor={theme.secondaryText}
+        placeholderTextColor={isValid ? theme.secondaryText : theme.error}
         placeholder={placeholder}
         value={inputState.value}
         onChangeText={inputHandler}
@@ -153,10 +153,10 @@ const UiInput = props => {
           {
             fontSize,
             fontFamily: theme.fontMedium,
-            color: theme.secondaryText,
+            color: isValid ? theme.secondaryText : theme.error,
           },
           // eslint-disable-next-line react-native/no-inline-styles
-          multiline ? { paddingTop: 40 } : {},
+          !multiline ? { paddingLeft: 60 } : {},
         ]}
         multiline={multiline}
         onFocus={onFocus}
@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     minHeight: 62,
-    height: 62,
     borderRadius: 16,
   },
   input: {
@@ -205,7 +204,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 30,
     paddingVertical: 10,
-    paddingLeft: 60,
   },
   iconContainer: {
     position: 'absolute',

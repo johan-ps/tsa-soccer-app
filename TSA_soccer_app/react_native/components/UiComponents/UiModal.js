@@ -86,16 +86,24 @@ const UiModal = props => {
         <Animated.View
           style={[
             styles.modalContainer,
-            { backgroundColor: theme.cardBg },
+            { backgroundColor: theme.primaryBg },
             animStyle,
           ]}>
-          {closeable && (
-            <TouchableOpacity style={styles.closeBtn} onPress={onCloseHandler}>
-              <Icon name="close-outline" color={theme.primaryText} size={40} />
-            </TouchableOpacity>
-          )}
           <View style={styles.textContainer}>
-            {icon && <Icon name={icon} color={theme.primaryText} size={40} />}
+            <View style={styles.iconContainer}>
+              {icon && <Icon name={icon} color={theme.primaryText} size={40} />}
+              {closeable && (
+                <TouchableOpacity
+                  style={styles.closeBtn}
+                  onPress={onCloseHandler}>
+                  <Icon
+                    name="close-outline"
+                    color={theme.primaryText}
+                    size={40}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
             <Text
               style={[
                 styles.title,
@@ -152,10 +160,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  closeBtn: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
+  closeBtn: {},
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   modalContainer: {
     borderRadius: 16,

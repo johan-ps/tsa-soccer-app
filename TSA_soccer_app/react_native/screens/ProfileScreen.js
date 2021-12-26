@@ -115,9 +115,9 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   pageContainer: {
     flex: 1,
-    paddingHorizontal: 30,
+    paddingHorizontal: 15,
     backgroundColor: 'white',
-    paddingTop: 30,
+    paddingTop: 15,
   },
   innerPageContainer: {
     paddingBottom: 100,
