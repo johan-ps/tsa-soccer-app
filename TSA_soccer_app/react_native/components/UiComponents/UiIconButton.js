@@ -144,7 +144,7 @@ const UiIconButton = props => {
 
 const styles = StyleSheet.create({
   chatboxContainer: {
-    backgroundColor: '#A9A9A9',
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 16,

@@ -50,7 +50,7 @@ const AnnouncementCard = props => {
 
   return (
     <SafeAreaView>
-      <View style={[styles.container, { backgroundColor: theme.cardBg }]}>
+      <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
         <View style={styles.header}>
           <View style={styles.headerContentWrapper}>
             <View style={styles.headerImgWrapper}>
@@ -62,7 +62,8 @@ const AnnouncementCard = props => {
                 alt={
                   <UiIcon
                     icon="person"
-                    color="#aaa6c3"
+                    color={theme.secondaryText}
+                    backgroundColor={theme.secondaryBg}
                     size={20}
                     darkBg={theme.name === 'dark'}
                   />
@@ -73,7 +74,7 @@ const AnnouncementCard = props => {
               <Text
                 style={[
                   styles.name,
-                  { color: theme.cardTextHeading, fontFamily: theme.fontBold },
+                  { color: theme.primaryText, fontFamily: theme.fontBold },
                 ]}>
                 {`${firstName} ${lastName}`}
               </Text>
@@ -81,8 +82,8 @@ const AnnouncementCard = props => {
                 style={[
                   styles.date,
                   {
-                    color: theme.cardTextSubHeading,
-                    fontFamily: theme.fontLight,
+                    color: theme.tertiaryText,
+                    fontFamily: theme.fontRegular,
                   },
                 ]}>
                 {Util.getTime(date)}
@@ -92,7 +93,7 @@ const AnnouncementCard = props => {
           <UiMenu
             onPress={onSelectOption}
             options={menuOptions}
-            color={theme.cardTextHeading}
+            color={theme.primaryText}
           />
         </View>
         <View style={styles.body}>
@@ -108,7 +109,7 @@ const AnnouncementCard = props => {
             <Text
               style={[
                 styles.bodyContent,
-                { color: theme.cardTextContent, fontFamily: theme.fontRegular },
+                { color: theme.secondaryText, fontFamily: theme.fontRegular },
               ]}>
               {description}
             </Text>

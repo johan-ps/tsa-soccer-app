@@ -9,11 +9,10 @@ import {
   TextInput,
   StyleSheet,
   Pressable,
-  View,
   TouchableOpacity,
   Text,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import Animated, {
   interpolate,
@@ -40,17 +39,19 @@ const inputReducer = (state, action) => {
 
 const UiInput = props => {
   const theme = useSelector(state => state.theme.colors);
-
   const {
     placeholder,
-    fontSize = 15,
+    fontSize,
     icon,
-    iconLeft,
     openOnFocus,
     closeOnBlur,
     disabled,
     onChangeText,
     contentType = 'none',
+    bg = '#EAEAEA',
+    color = '#000000',
+    placeholderClr = '#C0C0CA',
+    cursor = theme.cursor,
     multiline = false,
     errCode,
     isValid = true,
@@ -117,6 +118,22 @@ const UiInput = props => {
     setShowInput(!showInput);
   };
 
+  const placeholderAnim = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: interpolate(translateAnim.value, [0, 1], [0, -36]),
+        },
+        {
+          translateY: interpolate(translateAnim.value, [0, 1], [0, -12]),
+        },
+        {
+          scale: interpolate(translateAnim.value, [0, 1], [1, 0.8]),
+        },
+      ],
+    };
+  });
+
   const autoCompleteType = () => {
     if (contentType === 'none') {
       return 'off';
@@ -126,35 +143,19 @@ const UiInput = props => {
   };
 
   return (
-    <View
-      style={[
-        styles.inputContainer,
-        props.style,
-        { backgroundColor: theme.secondaryBg },
-      ]}>
-      {iconLeft ? (
-        <Icon
-          style={styles.iconLeft}
-          color={theme.secondaryText}
-          name={iconLeft}
-          size={26}
-        />
-      ) : null}
+    <Pressable
+      onPress={onFocus}
+      style={[styles.inputContainer, props.style, { backgroundColor: bg }]}>
       <TextInput
-        selectionColor={theme.cursor}
-        placeholderTextColor={theme.secondaryText}
-        placeholder={placeholder}
+        selectionColor={cursor}
+        placeholderTextColor={placeholderClr}
         value={inputState.value}
         onChangeText={inputHandler}
         editable={!disabled}
         selectTextOnFocus={false}
         style={[
           styles.input,
-          {
-            fontSize,
-            fontFamily: theme.fontMedium,
-            color: theme.secondaryText,
-          },
+          { fontSize, fontFamily: theme.fontRegular, color },
           // eslint-disable-next-line react-native/no-inline-styles
           multiline ? { paddingTop: 40 } : {},
         ]}
@@ -166,12 +167,28 @@ const UiInput = props => {
         autoCompleteType={autoCompleteType()}
         secureTextEntry={contentType === 'password' && !showInput}
       />
+      <Animated.Text
+        style={[
+          styles.placeholderContainer,
+          placeholderAnim,
+          // eslint-disable-next-line react-native/no-inline-styles
+          multiline ? { top: 24 } : { alignSelf: 'center' },
+        ]}>
+        <Animated.Text
+          style={[
+            styles.placeholder,
+            { fontFamily: theme.fontRegular, color: placeholderClr },
+            !isValid ? { color: theme.error } : {},
+          ]}>
+          {placeholder}
+        </Animated.Text>
+      </Animated.Text>
       {icon ? (
         <TouchableOpacity
           onPress={toggleShowInput}
           style={styles.iconContainer}>
           <Icon
-            color={theme.secondaryText}
+            color={placeholderClr}
             name={
               contentType === 'password' && !showInput
                 ? icon.name
@@ -182,7 +199,7 @@ const UiInput = props => {
         </TouchableOpacity>
       ) : null}
       <ErrorMessage isValid={isValid} errCode={errCode} />
-    </View>
+    </Pressable>
   );
 };
 
@@ -192,9 +209,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: 'relative',
     width: '100%',
-    minHeight: 62,
-    height: 62,
-    borderRadius: 16,
+    minHeight: 68,
+    borderRadius: 8,
   },
   input: {
     width: '100%',
@@ -202,14 +218,14 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: 0,
     backgroundColor: 'transparent',
-    borderRadius: 16,
+    borderRadius: 8,
     paddingHorizontal: 30,
     paddingVertical: 10,
-    paddingLeft: 60,
+    paddingTop: 30,
   },
   iconContainer: {
     position: 'absolute',
-    right: 20,
+    right: 30,
     alignSelf: 'center',
     width: 40,
     height: 40,
@@ -217,10 +233,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 50,
   },
-  iconLeft: {
+  placeholderContainer: {
+    width: '100%',
+    height: 30,
     position: 'absolute',
-    left: 20,
-    alignSelf: 'center',
+    left: 30,
+    justifyContent: 'center',
+  },
+  placeholder: {
+    fontSize: 16,
   },
 });
 

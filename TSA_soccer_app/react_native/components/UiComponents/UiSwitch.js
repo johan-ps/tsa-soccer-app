@@ -16,7 +16,7 @@ const UiSwitch = props => {
     return {
       transform: [
         {
-          translateX: interpolate(anim.value, [0, 1], [0, 26]),
+          translateX: interpolate(anim.value, [0, 1], [5, 26]),
         },
       ],
     };
@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   toggle: {
-    width: 35,
-    height: 35,
+    width: 28,
+    height: 28,
     backgroundColor: 'white',
     borderRadius: 50,
     elevation: 3,

@@ -41,6 +41,9 @@ const AnnouncementScreen = ({ navigation }) => {
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [refreshEnabled, setRefreshEnabled] = useState(true);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const onScrollHandler = ({ nativeEvent }) => {
     if (nativeEvent.contentOffset.y <= 0) {
       if (!refreshEnabled) {
@@ -54,6 +57,7 @@ const AnnouncementScreen = ({ navigation }) => {
   };
 
   const loadAnnouncements = useCallback(async () => {
+    setIsRefreshing(true);
     try {
       if (!loaded) {
         dispatch(loaderActions.updateLoader(true));
@@ -71,10 +75,12 @@ const AnnouncementScreen = ({ navigation }) => {
       }
       setLoaded(true);
     }
+    setIsRefreshing(false);
   }, [dispatch, filters, loaded]);
 
   useEffect(() => {
-    loadAnnouncements();
+    setIsLoading(true);
+    loadAnnouncements().then(() => { setIsLoading(false); });
   }, [dispatch, loadAnnouncements]);
 
   useFocusEffect(() => {
@@ -127,7 +133,7 @@ const AnnouncementScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.searchBg }]}>
+    <View style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
       <StatusBar
         barStyle={activeTheme === 'default' ? 'dark-content' : 'light-content'}
       />
@@ -135,47 +141,59 @@ const AnnouncementScreen = ({ navigation }) => {
         <View
           style={[
             styles.notchOffsetContainer,
-            { backgroundColor: theme.searchBg },
+            { backgroundColor: theme.primaryBg },
           ]}
         />
       ) : null}
       <SafeAreaView style={announcements.length === 0 ? styles.container : {}}>
-        <NavHeader
-          ref={searchBarRef}
-          iconListRight={[{ name: 'filter-outline', id: 0 }]}
-          searchable={true}
-          toggleFilter={toggleFilter}
-        />
+        <NavHeader ref={searchBarRef} toggleFilter={toggleFilter} />
         {announcements.length === 0 ? (
           <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
         ) : (
-          <AnimScrollView
-            backgroundColor={theme.primaryBg}
-            onScrollUp={onScrollUp}
-            // enabled={refreshEnabled}
-            // onlyPullToRefresh={true}
-            onScrollDown={onScrollDown}
-            setScrollEnabled={outerScrollHandler}
-            loadFail={loadFailHandler}
-            load={loadAnnouncements}>
-            {/* <FlatList
-              onScroll={onScrollHandler}
-              scrollEnabled={scrollEnabled}
-              data={announcements}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => {
-                return (
-                  <AnnouncementCard
-                    key={item.id}
-                    onDelete={() => {
-                      onDeleteHandler(item.id);
-                    }}
-                    announcementData={item}
-                  />
-                );
-              }}
-            /> */}
-            <View>
+          <FlatList
+            onRefresh={loadAnnouncements}
+            refreshing={isRefreshing}
+            data={announcements}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => {
+              return (
+                <AnnouncementCard
+                  key={item.id}
+                  onDelete={() => {
+                    onDeleteHandler(item.id);
+                  }}
+                  announcementData={item}
+                />
+              );
+            }}
+          />
+          // <AnimScrollView
+          //   backgroundColor={theme.secondaryBg}
+          //   onScrollUp={onScrollUp}
+          //   // enabled={refreshEnabled}
+          //   // onlyPullToRefresh={true}
+          //   onScrollDown={onScrollDown}
+          //   setScrollEnabled={outerScrollHandler}
+          //   loadFail={loadFailHandler}
+          //   load={loadAnnouncements}>
+            /* // <FlatList
+            //   onScroll={onScrollHandler}
+            //   scrollEnabled={scrollEnabled}
+            //   data={announcements}
+            //   keyExtractor={item => item.id}
+            //   renderItem={({ item }) => {
+            //     return (
+            //       <AnnouncementCard
+            //         key={item.id}
+            //         onDelete={() => {
+            //           onDeleteHandler(item.id);
+            //         }}
+            //         announcementData={item}
+            //       />
+            //     );
+            //   }}
+            // /> */
+            /* <View>
               {announcements.map(announcement => {
                 return (
                   <AnnouncementCard
@@ -188,8 +206,8 @@ const AnnouncementScreen = ({ navigation }) => {
                   />
                 );
               })}
-            </View>
-          </AnimScrollView>
+            </View> */
+          /* </AnimScrollView> */
         )}
         {userData && userData.accessLevel > 0 ? (
           <UiModal
