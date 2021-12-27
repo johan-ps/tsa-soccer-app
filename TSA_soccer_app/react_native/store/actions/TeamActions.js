@@ -29,10 +29,12 @@ export const getTeams = () => {
   };
 };
 
-export const getAllUsersFromTeam = (teamId) => {
+export const getAllUsersFromTeam = teamId => {
   return async dispatch => {
     try {
-      const response = await fetch(`http://${environmentUrl}/api/teams/${teamId}/users`);
+      const response = await fetch(
+        `http://${environmentUrl}/api/teams/${teamId}/users`,
+      );
 
       if (!response.ok) {
         throw new Error('Something went wrong get announcements!');
@@ -49,7 +51,7 @@ export const getAllUsersFromTeam = (teamId) => {
       console.log(err);
     }
   };
-}
+};
 
 export const addTeam = teamData => {
   return async dispatch => {

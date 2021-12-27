@@ -125,6 +125,12 @@ const ModifyAnnouncementScreen = props => {
     getFormData(isEdit, announcementData),
   );
 
+  // useEffect(() => {
+  //   if (isEdit) {
+
+  //   }
+  // }, [isEdit]);
+
   const imagePickerHandler = () => {
     if (Platform.OS === 'ios') {
       setTimeout(() => {
@@ -351,7 +357,7 @@ const ModifyAnnouncementScreen = props => {
                 styles.formHeading,
                 { color: theme.primaryText, fontFamily: theme.fontBold },
               ]}>
-              New Announcement
+              {isEdit ? 'Update Announcement' : 'Create Announcement'}
             </Text>
             <TouchableOpacity
               onPress={onCloseHandler}
@@ -430,7 +436,7 @@ const ModifyAnnouncementScreen = props => {
             onPress={() => {
               modifyAnnouncementScreenHandler();
             }}
-            label="Create"
+            label={isEdit ? 'Update' : 'Create'}
             width="100%"
             height={62}
             borderRadius={16}
