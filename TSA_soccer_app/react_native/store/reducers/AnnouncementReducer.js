@@ -2,6 +2,7 @@ import {
   GET_ANNOUNCEMENTS,
   ADD_ANNOUNCEMENT,
   DELETE_ANNOUNCEMENT,
+  UPDATE_ANNOUNCEMENT,
 } from '../actions/AnnouncementActions';
 // import { sortByDate } from '../../Util/utilities';
 
@@ -15,6 +16,18 @@ const announcementReducer = (state = INITIAL_STATE, action) => {
       return [action.announcement, ...state];
     case DELETE_ANNOUNCEMENT:
       return state.filter(item => item.id !== action.announcementId);
+    case UPDATE_ANNOUNCEMENT:
+      const newState = [...state];
+
+      const id = newState
+        .map(announcement => {
+          return announcement.id;
+        })
+        .indexOf(action.announcementId);
+
+      newState[id] = action.announcement;
+
+      return newState;
     default:
       return state;
   }

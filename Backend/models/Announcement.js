@@ -65,6 +65,24 @@ class Announcement {
         return db.execute(sql);
     }
 
+    update (id) {
+        const dateTimeStr = dateFormat.dateTime(new Date());
+
+        let imageUpdate = '';
+
+        if (this.image !== null) {
+            imageUpdate = `, image = '${ this.image }'`
+        }
+
+        const sql = `
+            UPDATE ANNOUNCEMENTS
+            SET date = '${ dateTimeStr }', description = '${ this.description }'${imageUpdate}
+            WHERE id = ${ id };
+        `;
+        
+        return db.execute(sql);
+    }
+
     static findAll() {
         const sql = `
             SELECT
@@ -163,16 +181,11 @@ class Announcement {
     static findTeams (id) {
         const sql = `
             SELECT teamId
-            FROM ANNOUNCEMENTS as a
-            INNER JOIN ANNOUNCEMENTS_TEAMS as at
-                ON a.id = at.announcementid
+            FROM ANNOUNCEMENTS_TEAMS as at
+            WHERE at.announcementid = ${id};
         `;
 
         return db.execute(sql);
-    }
-
-    static findOneByIdAndUpdate() {
-        const sql = '';
     }
 
 

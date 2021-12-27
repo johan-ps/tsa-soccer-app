@@ -22,6 +22,7 @@ import * as teamActions from '../store/actions/TeamActions';
 import { formatTeams } from '../Util/utilities';
 import * as tabbarActions from '../store/actions/TabbarActions';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { getTeamsFromAnnouncement } from '../api/announcements';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -119,17 +120,43 @@ const ModifyAnnouncementScreen = props => {
   const { announcementData } = props.route.params;
 
   const [imgPickerModalVisible, setImgPickerModalVisible] = useState(false);
+  const [initTeams, setInitTeams] = useState([]);
 
   const [formState, dispatchFormState] = useReducer(
     formReducer,
     getFormData(isEdit, announcementData),
   );
 
-  // useEffect(() => {
-  //   if (isEdit) {
+  const loadTeamsFromAnnouncements = useCallback(async () => {
+    return await getTeamsFromAnnouncement(announcementData.id);
+  }, [announcementData]);
 
-  //   }
-  // }, [isEdit]);
+  useEffect(() => {
+    if (isEdit) {
+      dispatch(loaderActions.updateLoader(true));
+      loadTeamsFromAnnouncements()
+        .then(res => {
+          if (res && res.length > 0) {
+            const teamsArr = [];
+
+            res.forEach(({ teamId }) => {
+              teamsArr.push(teamId.toString());
+            });
+
+            setInitTeams(teamsArr);
+
+            dispatchFormState({
+              type: FORM_INPUT_UPDATE,
+              value: teamsArr,
+              input: 'teams',
+            });
+          }
+        })
+        .finally(() => {
+          dispatch(loaderActions.updateLoader(false));
+        });
+    }
+  }, [loadTeamsFromAnnouncements, isEdit, dispatch]);
 
   const imagePickerHandler = () => {
     if (Platform.OS === 'ios') {
@@ -268,14 +295,22 @@ const ModifyAnnouncementScreen = props => {
   const modifyAnnouncementScreenHandler = async () => {
     dispatch(loaderActions.updateLoader(true));
     try {
+      const updateData = {
+        title: '',
+        description: formState.inputValues.description,
+        image: formState.inputValues.imageUrl,
+        teams: JSON.stringify(formState.inputValues.teams),
+        authorId: userData.id,
+      };
+
+      if (isEdit) {
+        updateData.id = announcementData.id;
+      }
+
       await dispatch(
-        announcementActions.addAnnouncement({
-          title: '',
-          description: formState.inputValues.description,
-          image: formState.inputValues.imageUrl,
-          teams: JSON.stringify(formState.inputValues.teams),
-          authorId: userData.id,
-        }),
+        isEdit
+          ? announcementActions.updateAnnouncement(updateData)
+          : announcementActions.addAnnouncement(updateData),
       );
       await dispatch(announcementActions.getAnnouncements());
       navigation.goBack();
@@ -382,6 +417,7 @@ const ModifyAnnouncementScreen = props => {
               <Text style={[styles.formLabels, labelFont]}>Team</Text>
               <UiDropdown
                 id="teams"
+                initialValue={initTeams}
                 onSelect={onSelectHandler}
                 modalOffsetY={110}
                 modalOffsetX={0}
