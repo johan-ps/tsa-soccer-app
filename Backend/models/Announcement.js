@@ -140,6 +140,26 @@ class Announcement {
         return db.execute(sql);
     }
 
+    static deleteAnnouncements (id) {
+        const sql = `
+            DELETE
+            FROM ANNOUNCEMENTS
+            WHERE id = ${id};
+        `;
+
+        return db.execute(sql);
+    }
+
+    static deleteAnnouncementsTeams (id) {
+        const sql = `
+            DELETE
+            FROM ANNOUNCEMENTS_TEAMS
+            WHERE announcementId = ${id};
+        `;
+
+        return db.execute(sql);
+    }
+
     static findTeams (id) {
         const sql = `
             SELECT teamId

@@ -86,7 +86,8 @@ exports.addAnnouncement = async (req, res, next) => {
 
 exports.getTeamsFromAnnouncements = async (req, res, next) => {
     try {
-        let { id } = req.body;
+        console.log(req.params)
+        let { id } = req.params;
 
         const [teams, _] = await Announcement.findTeams(id);
         console.log(teams);
@@ -103,5 +104,12 @@ exports.updateById = async (req, res, next) => {
 }
 
 exports.deleteById = async (req, res, next) => {
-    return null
+    try {
+        const { id } = req.params;
+        await Announcement.deleteAnnouncementsTeams(id);
+        await Announcement.deleteAnnouncements(id);
+        res.status(200).json({ success: true, announcementId: id })
+    } catch (error) {
+        next(error);
+    }
 }
