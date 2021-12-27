@@ -140,6 +140,17 @@ class Announcement {
         return db.execute(sql);
     }
 
+    static findTeams (id) {
+        const sql = `
+            SELECT teamId
+            FROM ANNOUNCEMENTS as a
+            INNER JOIN ANNOUNCEMENTS_TEAMS as at
+                ON a.id = at.announcementid
+        `;
+
+        return db.execute(sql);
+    }
+
     static findOneByIdAndUpdate() {
         const sql = '';
     }

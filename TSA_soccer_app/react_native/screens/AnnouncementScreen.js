@@ -44,16 +44,32 @@ const AnnouncementScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const [offsetY, setOffsetY] = useState(0);
+
   const onScrollHandler = ({ nativeEvent }) => {
-    if (nativeEvent.contentOffset.y <= 0) {
-      if (!refreshEnabled) {
-        setRefreshEnabled(true);
-      }
-    } else {
-      if (refreshEnabled) {
-        setRefreshEnabled(false);
+    // console.log(nativeEvent)
+    let y = nativeEvent.contentOffset.y;
+    console.log(offsetY, y);
+    if (Math.abs(y - offsetY) > 50) {
+      if (y > offsetY) {
+        onScrollDown();
+      } else {
+        onScrollUp();
       }
     }
+    // if (nativeEvent.contentOffset.y) {
+
+    // }
+    // if (nativeEvent.contentOffset.y <= 0) {
+    //   if (!refreshEnabled) {
+    //     setRefreshEnabled(true);
+    //   }
+    // } else {
+    //   if (refreshEnabled) {
+    //     setRefreshEnabled(false);
+    //   }
+    // }
+    setOffsetY(nativeEvent.contentOffset.y);
   };
 
   const loadAnnouncements = useCallback(async () => {

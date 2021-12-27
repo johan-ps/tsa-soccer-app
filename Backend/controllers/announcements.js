@@ -84,6 +84,20 @@ exports.addAnnouncement = async (req, res, next) => {
     }
 }
 
+exports.getTeamsFromAnnouncements = async (req, res, next) => {
+    try {
+        let { id } = req.body;
+
+        const [teams, _] = await Announcement.findTeams(id);
+        console.log(teams);
+        res.status(200).json({
+            teamIds: teams,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 exports.updateById = async (req, res, next) => {
     return null
 }

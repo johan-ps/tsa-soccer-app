@@ -29,4 +29,6 @@ router.put('/:id/update', announcementsController.updateById)
 
 router.delete('/:id/delete', announcementsController.deleteById)
 
+router.get('/:id/teams', announcementsController.getTeamsFromAnnouncements)
+
 module.exports = router;
