@@ -124,8 +124,44 @@ export const addAnnouncement = announcementData => {
 };
 
 export const deleteAnnouncement = id => {
-  return {
-    type: DELETE_ANNOUNCEMENT,
-    announcementId: id,
+  return async dispatch => {
+    try {
+      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
+
+      if (!authToken) {
+        throw new Error('No token set');
+      }
+
+      const response = await fetch(
+        `http://${environmentUrl}/api/announcements/${id}/delete`,
+        {
+          method: 'DELETE',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'x-auth-token': `Bearer ${authToken}`,
+          },
+          body: null,
+        },
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw error;
+      }
+
+      const resData = await response.json();
+
+      dispatch({
+        type: DELETE_ANNOUNCEMENT,
+        announcementId: id,
+      });
+    } catch (err) {
+      console.log('err<>', err);
+
+      if (err && err.errors && err.errors.length > 0) {
+        throw err.errors;
+      }
+    }
   };
 };

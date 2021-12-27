@@ -27,7 +27,7 @@ router.post('/add', isAuth, uploads.single('image'), announcementsController.add
 
 router.put('/:id/update', announcementsController.updateById)
 
-router.delete('/:id/delete', announcementsController.deleteById)
+router.delete('/:id/delete', isAuth, announcementsController.deleteById)
 
 router.get('/:id/teams', announcementsController.getTeamsFromAnnouncements)
 
