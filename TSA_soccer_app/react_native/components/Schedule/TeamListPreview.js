@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,11 +9,11 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const TeamListPreview = props => {
-  const { players, onPlusPress, size = 43, max } = props;
+  const { players, onPlusPress, size = 43, max = 1 } = props;
 
   return (
     <View style={styles.container}>
-      {players.slice(0, max || players.length).map((player, index) => (
+      {players && players.slice(0, max || players.length).map((player, index) => (
         <View
           style={[
             styles.innerContainer,
@@ -22,20 +22,25 @@ const TeamListPreview = props => {
           key={player.id}>
           <Image
             style={[styles.logo, size ? { width: size, height: size } : {}]}
-            source={{ uri: player.image }}
+            source={{ uri: player.profileImg }}
           />
         </View>
       ))}
+      {players.length > 0 ?
       <TouchableHighlight
         style={{
           position: 'absolute',
           left: players.slice(0, max || players.length).length * size * 0.7,
+          borderRadius: 50
         }}
-        onPress={() => onPlusPress()}>
+        onPress={() => onPlusPress ? onPlusPress() : null}>
         <View style={[styles.more, size ? { width: size, height: size } : {}]}>
-          <Text style={styles.moreText}>{players.length - max}+</Text>
+          <Text style={styles.moreText}>{players.length - max > 0 ? players.length - max : ""}+</Text>
         </View>
       </TouchableHighlight>
+      : 
+      null
+      }
     </View>
   );
 };

@@ -39,6 +39,9 @@
 	<string></string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>fonts/Mark Pro Medium.ttf</string>
+		<string>fonts/Mark Pro Bold.ttf</string>
+		<string>fonts/Mark Pro.otf</string>
 		<string>fonts/AntDesign.ttf</string>
 		<string>fonts/Entypo.ttf</string>
 		<string>fonts/EvilIcons.ttf</string>

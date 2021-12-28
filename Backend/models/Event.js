@@ -112,7 +112,7 @@ static findAll() {
 }
 
 static findById(id) {
-  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.jersey, e.status, e.opponent, e.notes, e.teamId, l.name, l.street, l.city, l.province, l.postalCode, l.latitude, l.longitude FROM EVENTS e, LOCATIONS l WHERE e.ID = ${id} AND l.id = e.locationId`;
+  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.jersey, e.status, e.opponent, e.notes, e.teamId, e.locationId, l.name, l.street, l.city, l.province, l.postalCode, l.latitude, l.longitude, t.name AS teamName FROM EVENTS e, LOCATIONS l, TEAMS t WHERE e.ID = ${id} AND l.id = e.locationId AND t.id = e.teamId`;
   return db.execute(sql)
 }
 
@@ -126,14 +126,12 @@ static findByTeam(teamId) {
 
 static findByDate(date, userId) {
   let sql = '';
-  console.log("Joell userId", userId);
   if(userId !== 'undefined' && userId !== undefined){
     sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name, a.status FROM EVENTS e, LOCATIONS l, AVAILABILITY a WHERE e.date = '${date}' AND l.id = e.locationId AND a.playerId = ${userId} AND a.eventId = e.id ORDER BY startTime ASC`;
   }
   else{
     sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name FROM EVENTS e, LOCATIONS l WHERE e.date = '${date}' AND l.id = e.locationId ORDER BY startTime ASC`;
   }
-  console.log("Joell sql", sql);
 
   return db.execute(sql);
 }
@@ -152,13 +150,17 @@ static findFromDate(date, userId){
 // TODO: fix query
 static findAllEventDatesForMonth(startOfMonth, endOfMonth){
   const sql = `SELECT date from EVENTS WHERE date >= '${startOfMonth}' AND date <= '${endOfMonth}';`; 
-  console.log("Joell sql", sql);
   return db.execute(sql);
 }
 
 static deleteById(id){
   const sql = `DELETE FROM EVENTS WHERE id = '${id}';`;
 
+  return db.execute(sql);
+}
+
+static findPlayerAvailabilities(id){
+  const sql = `SELECT u.firstName, u.lastName, u.profileImg, a.status FROM AVAILABILITY a, USERS u WHERE a.eventId = ${id} AND u.id = a.playerId`;
   return db.execute(sql);
 }
 

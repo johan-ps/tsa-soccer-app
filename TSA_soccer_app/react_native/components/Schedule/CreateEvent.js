@@ -48,7 +48,7 @@ const formInit = {
     opponent: '',
     jersey: '',
     arriveEarly: false,
-    teamId: null, //TODO: change to null
+    teamId: null, 
   },
   inputValidities: {
     type: true,
@@ -123,14 +123,14 @@ const formReducer = (state, action) => {
 // TODO: Add repeating event functionality
 // TODO: Add dropdown functionality for teams and repeating
 // TODO: Add error handling
-// TODO: fix relod of new event availability?
+// TODO: fix reload of new event availability?
 // TODO: fix update immiedietly for create event
 // TODO: reload bug when scroll down and back up
 
 const CreateEvent = props => {
   const { REPEATS } = constants;
   const { visible, route } = props;
-  const { type, selectedDate } = route.params;
+  const { type, selectedDate, event } = route.params;
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const userId = userData && userData.id;
@@ -144,12 +144,27 @@ const CreateEvent = props => {
   });
 
   useEffect(() => {
+    console.log("Joell event", event);
     onChange('authorId', userId, true);
     setStartTime(new Date());
     onChange('startTime', moment(new Date(), 'hh:mm A').format('HH:mm'), true);
     setEndTime(new Date(moment().add(2, 'hours')));
     onChange('endTime', moment().add(2, 'hours').format('HH:mm'), true);
-    if(type === 'Game'){
+    if(event != null){
+      let keys = Object.keys(event);
+      for(let key of keys){
+        if(event[key]){
+          onChange(key, event[key], true);
+        }
+      }
+      if(event.locationId != null){
+        setLocationValue(event.name);
+      }
+      if(event.startTime != null && event.endTime != null){
+        setStartTime(new Date(moment(moment(event.date).format('YYYY-MM-DD') + " " + (event.startTime.length != 8 ? "0" : "") + event.startTime)));
+        setEndTime(new Date(moment(moment(event.date).format('YYYY-MM-DD') + " " + (event.endTime.length != 8 ? "0" : "") + event.endTime)));
+      }
+    }else if(type === 'Game'){
       onChange('type', 'Game', true);
     } else if (type === 'Practice') {
       onChange('type', 'Practice', true);
@@ -158,7 +173,6 @@ const CreateEvent = props => {
 
   const onChange = useCallback(
     (inputId, inputValue, inputValidity) => {
-      console.log('Joell input:', inputId, inputValue, inputValidity);
       dispatchFormState({
         type: FORM_INPUT_UPDATE,
         value: inputValue,
@@ -267,7 +281,7 @@ const CreateEvent = props => {
                 styles.formHeading,
                 { color: theme.primaryText, fontFamily: theme.fontRegular },
               ]}>
-              Create a{type === 'Other' ? `n ${type}` : ` ${type}`} Event
+              {event ? 'Edit' : 'Create a'}{type === 'Other' ? `n ${type}` : ` ${type}`} Event
             </Text>
           </View>
           <ScrollView
@@ -598,7 +612,7 @@ const CreateEvent = props => {
             onPress={() => props.navigation.goBack()}
           />
           <UiButton
-            label="Create"
+            label={event ? "Save" : "Create"}
             type="tertiary"
             primaryClr={theme.buttonTertiaryText}
             secondaryClr={theme.buttonTertiaryBg}

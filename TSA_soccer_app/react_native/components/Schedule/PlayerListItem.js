@@ -25,8 +25,8 @@ const PlayerListItem = props => {
       <View
         style={[styles.container, player.last ? { borderBottomWidth: 0 } : {}, {backgroundColor: theme.schBg}]}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image style={styles.logo} source={{ uri: player.image }} />
-          <Text style={[styles.text, {color: theme.primaryText}]}>{player.name}</Text>
+          <Image style={styles.logo} source={{ uri: player.profileImg }} />
+          <Text style={[styles.text, {color: theme.primaryText}]}>{player.firstName + ' ' + player.lastName}</Text>
         </View>
         <Icon color="#A9A9A9" size={20} name="chevron-forward-outline" />
       </View>

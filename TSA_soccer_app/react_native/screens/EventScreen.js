@@ -17,7 +17,7 @@ import TeamListPreview from '../components/Schedule/TeamListPreview';
 import TeamAvailabilityPopup from '../components/Schedule/TeamAvailabilityPopUp';
 import AvailabilityMenu from '../components/Schedule/AvailabilityMenu';
 import LottieView from 'lottie-react-native';
-import { getEventById } from '../store/actions/EventActions';
+import { editEvent, getEventById } from '../store/actions/EventActions';
 import moment from 'moment';
 import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
@@ -28,6 +28,8 @@ import Animated, {
   runOnJS,
   interpolate,
 } from 'react-native-reanimated';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { UiModal } from '../components/_components';
 const windowHeight = Dimensions.get('window').height;
 
 const EventScreen = ({ navigation, route }) => {
@@ -69,9 +71,12 @@ const EventScreen = ({ navigation, route }) => {
   const [event, setEvent] = useState({});
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme.colors);
+  const userData = useSelector(state => state.userData);
+  const [availability, setAvailability] = useState([]);
   const [openAvailability, setOpenAvailability] = useState(false);
   const [outerScrollEnabled, setOuterScrollEnabled] = useState(true);
   const [innerScrollEnabled, setInnerScrollEnabled] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const scrollAnim = useSharedValue(0);
   const [blurRadius, setBlurRadius] = useState(0);
 
@@ -79,8 +84,8 @@ const EventScreen = ({ navigation, route }) => {
     async id => {
       try {
         const event = await dispatch(getEventById(id));
-        setEvent(event[0]);
-        console.log(event[0]);
+        setEvent(event.event[0]);
+        setAvailability(event.availabilities);
       } catch (err) {
         console.log(err);
       }
@@ -142,6 +147,27 @@ const EventScreen = ({ navigation, route }) => {
     };
   });
 
+  const onDeleteHandler = id => {
+    setModalVisible(true);
+  };
+
+  const onModalCloseHandler = () => {
+    setModalVisible(false);
+  };
+
+  const editEvent = () => {
+    navigation.navigate('CreateEvent', {
+      type: event.type,
+      event: event
+    });
+  }
+
+  const deleteEvent = (id) => {
+    dispatch(announcementActions.deleteAnnouncement(deleteId));
+    setModalVisible(false);
+    navigation.navigate('Daily');
+  }
+
   return (
     <View style={{ backgroundColor: theme.secondaryBg }}>
       {event ? (
@@ -158,13 +184,38 @@ const EventScreen = ({ navigation, route }) => {
               colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.8)']}
               style={styles.contentContainer}>
               <View style={styles.iconContainer}>
-                <Icon
+                {/* <Icon
                   name="chevron-back-outline"
                   size={35}
                   onPress={() => navigation.goBack()}
                   color="white"
                 />
-                <AvailabilityMenu />
+                <AvailabilityMenu /> */}
+                {userData && userData.accessLevel > 0 ? (
+                  <View style={{flexDirection: 'row'}}>
+                    <TouchableOpacity 
+                      style={{marginTop:50, marginRight: 20, alignItems:'flex-end'}}
+                      onPress={() => editEvent()}
+                    >
+                      <Icon
+                      name="create"
+                      size={35}
+                      color="white"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={{marginTop:50, marginRight: 20, alignItems:'flex-end'}}
+                      onPress={onDeleteHandler}
+                    >
+                      <Icon
+                      name="trash"
+                      size={35}
+                      color="white"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )
+                :null}
               </View>
               <View style={styles.headerContainer}>
                 <View style={styles.dateContainer}>
@@ -317,139 +368,40 @@ const EventScreen = ({ navigation, route }) => {
                   </Marker>
                 </MapView> */}
               </View>
-              <View style={{ paddingLeft: 40, paddingRight: 40 }}>
-                <TeamListPreview
-                  players={playersList}
-                  onPlusPress={() => setOpenAvailability(true)}
-                />
-              </View>
-              <TeamAvailabilityPopup
-                players={playersList}
-                visible={openAvailability}
-                onClose={() => {
-                  setOpenAvailability(false);
-                }}
-              />
-            </View>
-            <View style={styles.eventDetailsContainer}>
-              <Text
-                style={[
-                  styles.eventDetailsHeading,
-                  { fontFamily: theme.fontMedium, color: theme.primaryText },
-                ]}>
-                Event Details
-              </Text>
-              <Text
-                style={[
-                  styles.eventDetails,
-                  { fontFamily: theme.fontThin, color: theme.secondaryText },
-                ]}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-              </Text>
-              <View style={styles.mapContainer}>
-                {/* <MapView
-                  style={styles.map}
-                  region={{
-                    latitude: parseInt(event.latitude, 10),
-                    longitude: parseInt(event.longitude, 10),
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005,
-                  }}
-                  loadingEnabled={true}
-                  loadingBackgroundColor="black"
-                  userInterfaceStyle="dark"
-                  mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
-                  <Marker
-                    key={1}
-                    coordinate={{
-                      latitude: parseInt(event.latitude, 10),
-                      longitude: parseInt(event.longitude, 10),
-                    }}
-                    title={event && event.name}>
-                    <Image
-                      source={{
-                        uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
-                      }}
-                      style={{ height: 35, width: 35 }}
+              {availability ? 
+                <View>
+                  <View style={{ paddingLeft: 40, paddingRight: 40 }}>
+                    <TeamListPreview
+                      players={availability}
+                      onPlusPress={() => setOpenAvailability(true)}
                     />
-                  </Marker>
-                </MapView> */}
-              </View>
-              <View style={{ paddingLeft: 40, paddingRight: 40 }}>
-                <TeamListPreview
-                  players={playersList}
-                  onPlusPress={() => setOpenAvailability(true)}
-                />
-              </View>
-              <TeamAvailabilityPopup
-                players={playersList}
-                visible={openAvailability}
-                onClose={() => {
-                  setOpenAvailability(false);
-                }}
-              />
-            </View>
-            <View style={styles.eventDetailsContainer}>
-              <Text
-                style={[
-                  styles.eventDetailsHeading,
-                  { fontFamily: theme.fontMedium, color: theme.primaryText },
-                ]}>
-                Event Details
-              </Text>
-              <Text
-                style={[
-                  styles.eventDetails,
-                  { fontFamily: theme.fontThin, color: theme.secondaryText },
-                ]}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-              </Text>
-              <View style={styles.mapContainer}>
-                {/* <MapView
-                  style={styles.map}
-                  region={{
-                    latitude: parseInt(event.latitude, 10),
-                    longitude: parseInt(event.longitude, 10),
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005,
-                  }}
-                  loadingEnabled={true}
-                  loadingBackgroundColor="black"
-                  userInterfaceStyle="dark"
-                  mapPadding={{ top: 10, right: 40, bottom: 10, left: 40 }}>
-                  <Marker
-                    key={1}
-                    coordinate={{
-                      latitude: parseInt(event.latitude, 10),
-                      longitude: parseInt(event.longitude, 10),
+                  </View>
+                  <TeamAvailabilityPopup
+                    players={availability}
+                    visible={openAvailability}
+                    onClose={() => {
+                      setOpenAvailability(false);
                     }}
-                    title={event && event.name}>
-                    <Image
-                      source={{
-                        uri: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
-                      }}
-                      style={{ height: 35, width: 35 }}
-                    />
-                  </Marker>
-                </MapView> */}
-              </View>
-              <View style={{ paddingLeft: 40, paddingRight: 40 }}>
-                <TeamListPreview
-                  players={playersList}
-                  onPlusPress={() => setOpenAvailability(true)}
+                  />
+                </View>
+                : 
+                null
+              }
+              {userData && userData.accessLevel > 0 ? (
+                <UiModal
+                  primaryLabel="Confirm"
+                  secondaryLabel="Cancel"
+                  visible={modalVisible}
+                  title="Are you sure?"
+                  content={
+                    'Are you sure you want to delete this post? You can access this file for 7 days in your trash.'
+                  }
+                  onCloseHandler={ onModalCloseHandler}
+                  primaryBtnHandler={() => deleteEvent(eventId)}
+                  icon="file-tray-full-outline"
                 />
-              </View>
-              <TeamAvailabilityPopup
-                players={playersList}
-                visible={openAvailability}
-                onClose={() => {
-                  setOpenAvailability(false);
-                }}
-              />
+              ) : null}
+              
             </View>
           </ScrollView>
         </Animated.ScrollView>
@@ -579,16 +531,10 @@ const styles = StyleSheet.create({
   availabilityIconContainer: {
     borderRadius: 5,
   },
-
-  // iconContainer: {
-  //   marginVertical: 10,
-  //   paddingHorizontal: 35,
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   alignItems: 'center',
-  //   width: '100%',
-  //   paddingTop: 40,
-  // },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end'
+  },
   // listHeading: {
   //   fontSize: 14,
   //   width: '100%',

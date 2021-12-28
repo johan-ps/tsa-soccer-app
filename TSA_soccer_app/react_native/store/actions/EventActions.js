@@ -48,8 +48,7 @@ export const getEventById = id => {
       }
 
       const resData = await response.json();
-      const event = resData.event;
-
+      const event = {event: resData.event, availabilities: resData.availabilities};
       return event;
 
     } catch (err) {
@@ -61,7 +60,6 @@ export const getEventById = id => {
 export const getEventsOnDate = (date, userId) => {
   return async dispatch => {
     try {
-      console.log("Joell userId", userId);
       const response = await fetch(
         `http://${environmentUrl}/api/events/date?date=${date}&userId=${userId}`,
         {
@@ -90,7 +88,6 @@ export const getEventsOnDate = (date, userId) => {
 export const getEventsFromDate = (date, userId) => {
   return async dispatch => {
     try {
-      console.log("Joell userId", userId);
       const response = await fetch(
         `http://${environmentUrl}/api/events/startingFrom/?date=${date}&userId=${userId}`,
         {
@@ -105,6 +102,7 @@ export const getEventsFromDate = (date, userId) => {
 
       const resData = await response.json();
       const events = resData.events;
+      console.log("Joell events", events);
       dispatch({
         type: GET_EVENTS,
         events,
@@ -119,8 +117,6 @@ export const getEventsFromDate = (date, userId) => {
 export const getEventDatesByMonth = (startOfMonth, endOfMonth) => {
   return async dispatch => {
     try {
-      console.log("Joell startOfMonth", startOfMonth);
-      console.log("Joell endOfMonth", endOfMonth);
       const response = await fetch(
         `http://${environmentUrl}/api/events/month/?startOfMonth=${startOfMonth}&endOfMonth=${endOfMonth}`,
         {
@@ -135,7 +131,6 @@ export const getEventDatesByMonth = (startOfMonth, endOfMonth) => {
 
       const resData = await response.json();
       const dates = resData.dates;
-      console.log('joell dates', dates);
       dispatch({
         type: GET_EVENT_DATES,
         dates,
@@ -230,10 +225,35 @@ export const createEvent = eventData => {
 };
 
 export const deleteEvent = id => {
-  return {
-    type: DELETE_EVENT,
-    eventId: id,
-  };
+  return async dispatch => {
+    try {
+      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
+
+      const response = await fetch(
+        `http://${environmentUrl}/api/events/${id}/delete`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': `Bearer ${authToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.log(response);
+        throw new Error('Something went wrong getEventsonDate!');
+      }
+
+      dispatch({
+        type: DELETE_EVENT,
+        eventId: id,
+      })
+
+    } catch (err) {
+      console.log(err);
+    }
+  }
 };
 
 export const editEvent = eventData => {

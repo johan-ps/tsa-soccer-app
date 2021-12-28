@@ -74,7 +74,6 @@ const EventLocation = props => {
 
   const onChange = useCallback(
     (inputId, inputValue, inputValidity) => {
-      console.log("Joell location input:", inputId, inputValue, inputValidity);
       dispatchFormState({
         type: FORM_INPUT_UPDATE,
         value: inputValue,
@@ -210,7 +209,6 @@ const EventLocation = props => {
 
   const createLocationHandler = async (selectedLocation) => {
     try {
-      console.log("Joell selectedLocation", selectedLocation);
       const location = await dispatch(
         locationActions.createLocation(selectedLocation)
       );

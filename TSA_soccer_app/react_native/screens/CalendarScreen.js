@@ -22,7 +22,6 @@ const CalendarScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
   const [createEvent, setCreateEvent] = useState(false);
   const CURRENT_DATE = new Date(moment());
-  console.log("Joell date", CURRENT_DATE);
   const [selectedDate, setSelectedDate] = useState(CURRENT_DATE);
   const [markedDates, setMarkedDates] = useState({});
   const theme = useSelector(state => state.theme.colors);
@@ -31,7 +30,6 @@ const CalendarScreen = ({ navigation }) => {
   const userId = userData && userData.id;
   const events = useSelector(state => state.events);
   const eventsToday = events && events.today;
-  console.log("Joell eventstoday", eventsToday);
   const eventDates = events && events.dates;
   const options = useMemo(() => {
     return [
@@ -70,8 +68,6 @@ const CalendarScreen = ({ navigation }) => {
         let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         const startOfMonth = moment(firstDay).format('YYYY-MM-DD');
         const endOfMonth = moment(lastDay).format('YYYY-MM-DD');
-        console.log("Joell startofmonth", startOfMonth);
-        console.log("Joell endOfMonth", endOfMonth);
         await dispatch(eventActions.getEventDatesByMonth(startOfMonth, endOfMonth));
       } 
       catch (err) {
@@ -113,9 +109,7 @@ const CalendarScreen = ({ navigation }) => {
   // }, [eventDates])
 
   const getSelectedDayEvents = date => {
-    console.log("Joell date", date);
     let newMarkedDates = { ...markedDates };
-    console.log("Joell eventDates", eventDates);
     let hasEvents = false;
     if(eventDates){
       eventDates.forEach(newDate => {
@@ -125,7 +119,6 @@ const CalendarScreen = ({ navigation }) => {
         }
       })
     }
-    console.log("Joell hasEvents", hasEvents);
     if(hasEvents){
       newMarkedDates[selectedDate] = {
         marked: true,
@@ -143,7 +136,6 @@ const CalendarScreen = ({ navigation }) => {
       startingDay: true,
       endingDay: true,
     };
-    console.log("Joell newMarkedDates", newMarkedDates);
     setSelectedDate(date);
     setMarkedDates(newMarkedDates);
     loadEventsOnDate(new Date(date), false);
@@ -151,7 +143,6 @@ const CalendarScreen = ({ navigation }) => {
 
   const setMonthDots = (dates) => {
     let newMarkedDates = { ...markedDates };
-    console.log("Joell before newMarkedDates", newMarkedDates);
 
     dates.forEach(date => {
       newMarkedDates[moment.utc(date.date).format('YYYY-MM-DD')] = {
@@ -160,7 +151,6 @@ const CalendarScreen = ({ navigation }) => {
         dotColor: 'red',
       }
     });
-    console.log("Joell newMarkedDates", newMarkedDates);
     setMarkedDates(newMarkedDates);
   }
 

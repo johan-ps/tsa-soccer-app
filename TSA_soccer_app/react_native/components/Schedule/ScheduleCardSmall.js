@@ -53,6 +53,7 @@ const ScheduleCardSmall = props => {
     { id: 2, label: 'Unavailable', icon: 'close', color: '#e84343' },
   ];
   const [availability, setAvailability] = useState(defaultOption);
+  const [playerList, setPlayerList] = useState([]);
 
   useEffect(() => {
     if(event.status === null){
@@ -65,7 +66,24 @@ const ScheduleCardSmall = props => {
         }
       }
     }
+    console.log("Joell event.ava", event);
+    if(event.availabilities){
+      setPlayerList(event.availabilities);
+    }
   }, [props.event]);
+
+  const editEvents = (event) => {
+  //   navigation.navigate('CreateEvent', {
+  //     type: event.type,
+  //     selectedDate: selectedDate,
+  //     event: event
+  //   });
+  // } else if (buttonIndex === 2) {
+  //   // DELETE EVENT
+  // }
+    
+    
+  }
 
   return (
     <TouchableOpacity
@@ -132,7 +150,7 @@ const ScheduleCardSmall = props => {
               {moment('May 15, 2021 ' + event.startTime).format('hh:mm A')} - {moment('May 15, 2021 ' + event.endTime).format('hh:mm A')}
           </Text>
         </View>
-        <TeamListPreview players={playersList} size={35} max={3} />
+        <TeamListPreview players={playerList} size={35} max={3} />
       </View>
     </TouchableOpacity>
   );
