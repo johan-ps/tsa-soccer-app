@@ -31,4 +31,6 @@ router.delete('/:id/delete', isAuth, announcementsController.deleteById)
 
 router.get('/:id/teams', announcementsController.getTeamsFromAnnouncements)
 
+router.get('/:id/downloadImage', announcementsController.downloadImage)
+
 module.exports = router;

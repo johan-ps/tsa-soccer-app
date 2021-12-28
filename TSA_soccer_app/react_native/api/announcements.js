@@ -21,3 +21,7 @@ export const getTeamsFromAnnouncement = async id => {
     }
   }
 };
+
+export const getImageUrl = id => {
+  return `http://${environmentUrl}/api/announcements/${id}/downloadImage`;
+};

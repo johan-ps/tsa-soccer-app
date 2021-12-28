@@ -26,6 +26,8 @@ const AnnouncementCard = props => {
       props.onEdit();
     } else if (option.id === 1 && props.onDelete) {
       props.onDelete();
+    } else if (props.onDownload) {
+      props.onDownload();
     }
   };
 
