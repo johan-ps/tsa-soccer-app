@@ -232,18 +232,22 @@ export const deleteEvent = id => {
       const response = await fetch(
         `http://${environmentUrl}/api/events/${id}/delete`,
         {
-          method: 'POST',
+          method: 'DELETE',
           headers: {
+            Accept: 'application/json',
             'Content-Type': 'application/json',
             'x-auth-token': `Bearer ${authToken}`,
           },
-        }
+          body: null,
+        },
       );
 
       if (!response.ok) {
         console.log(response);
         throw new Error('Something went wrong getEventsonDate!');
       }
+
+      const resData = await response.json();
 
       dispatch({
         type: DELETE_EVENT,

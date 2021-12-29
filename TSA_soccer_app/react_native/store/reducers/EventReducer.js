@@ -31,7 +31,14 @@ const eventReducer = (state = INITIAL_STATE, action) => {
       }
       return updatedState;
     case DELETE_EVENT:
-      return state.filter(item => item.id !== action.eventId);
+      let todayEvents = state.today.filter(event =>
+        event.id !== action.eventId
+      );
+      let upcomingEvents = state.upcoming.filter(event => 
+        event.id !== action.eventId
+      );
+      let updateState = {today: todayEvents, upcoming: upcomingEvents}
+      return updateState;
     case EDIT_EVENT:
       return [action.event, ...state];
     case UPDATE_AVAILABILITY:

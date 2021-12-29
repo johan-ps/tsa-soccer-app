@@ -21,6 +21,7 @@ import { editEvent, getEventById } from '../store/actions/EventActions';
 import moment from 'moment';
 import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
+import * as eventActions from '../store/actions/EventActions'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -163,7 +164,7 @@ const EventScreen = ({ navigation, route }) => {
   }
 
   const deleteEvent = (id) => {
-    dispatch(announcementActions.deleteAnnouncement(deleteId));
+    dispatch(eventActions.deleteEvent(id));
     setModalVisible(false);
     navigation.navigate('Daily');
   }
@@ -396,7 +397,7 @@ const EventScreen = ({ navigation, route }) => {
                   content={
                     'Are you sure you want to delete this post? You can access this file for 7 days in your trash.'
                   }
-                  onCloseHandler={ onModalCloseHandler}
+                  onCloseHandler={onModalCloseHandler}
                   primaryBtnHandler={() => deleteEvent(eventId)}
                   icon="file-tray-full-outline"
                 />

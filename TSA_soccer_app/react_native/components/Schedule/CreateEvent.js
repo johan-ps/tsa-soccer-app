@@ -138,6 +138,7 @@ const CreateEvent = props => {
   const teams = unformattedTeams && formatTeams(unformattedTeams);
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
+  const [initTeam, setInitTeam] = useState([]);
 
   useFocusEffect(() => {
     dispatch(updateVisibility(false));
@@ -163,6 +164,9 @@ const CreateEvent = props => {
       if(event.startTime != null && event.endTime != null){
         setStartTime(new Date(moment(moment(event.date).format('YYYY-MM-DD') + " " + (event.startTime.length != 8 ? "0" : "") + event.startTime)));
         setEndTime(new Date(moment(moment(event.date).format('YYYY-MM-DD') + " " + (event.endTime.length != 8 ? "0" : "") + event.endTime)));
+      }
+      if(event.teamId != null){
+        setInitTeam([event.teamId]);
       }
     }else if(type === 'Game'){
       onChange('type', 'Game', true);
@@ -433,6 +437,7 @@ const CreateEvent = props => {
                 options={teams}
                 multiselect={false}
                 group={true}
+                initialValue={initTeam.length !== 0 ? initTeam : null}
                 placeholder="Choose teams"
                 size="large"
                 optionSize="large"
@@ -590,7 +595,7 @@ const CreateEvent = props => {
                   id="notes"
                   initialValue={formState.inputValues.notes}
                   isValid={formState.inputValidities.notes}
-                  // errCode={formState.errors.description}
+                  errCode={formState.errors.description}
                   placeholder="Notes (Ex: Make sure to study playbook)"
                   multiline={true}
                   onInputChange={onChange}

@@ -94,6 +94,26 @@ saveAvailability(id, players) {
   }
 }
 
+static deleteEvents (id) {
+  const sql = `
+      DELETE
+      FROM EVENTS
+      WHERE id = ${id};
+  `;
+
+  return db.execute(sql);
+}
+
+static deleteAvailabilities (id) {
+  const sql = `
+      DELETE
+      FROM AVAILABILITY
+      WHERE eventId = ${id};
+  `;
+
+  return db.execute(sql);
+}
+
 static updateUserAvailability(eventId, userId, status) {
   const sql = `
     UPDATE AVAILABILITY
@@ -112,7 +132,7 @@ static findAll() {
 }
 
 static findById(id) {
-  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.jersey, e.status, e.opponent, e.notes, e.teamId, e.locationId, l.name, l.street, l.city, l.province, l.postalCode, l.latitude, l.longitude, t.name AS teamName FROM EVENTS e, LOCATIONS l, TEAMS t WHERE e.ID = ${id} AND l.id = e.locationId AND t.id = e.teamId`;
+  const sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.jersey, e.status, e.arriveEarly, e.opponent, e.notes, e.notifyTeam, e.teamId, e.locationId, l.name, l.street, l.city, l.province, l.postalCode, l.latitude, l.longitude, e.locationDetails, t.name AS teamName FROM EVENTS e, LOCATIONS l, TEAMS t WHERE e.ID = ${id} AND l.id = e.locationId AND t.id = e.teamId`;
   return db.execute(sql)
 }
 

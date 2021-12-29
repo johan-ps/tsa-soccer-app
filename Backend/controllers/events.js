@@ -187,11 +187,10 @@ exports.updateById = async (req, res, next) => {
 
 exports.deleteById = async (req, res, next) => {
   try {
-    let { id } = req.body;
-    const event = Event.findById(id);
-
-    event.delete();
-    res.status(200).json({ event: event, id: event.insertId})
+    let { id } = req.params;
+    await Event.deleteAvailabilities(id);
+    await Event.deleteEvents(id);
+    res.status(200).json({ success: true, id: id})
   }
   catch(error){
     next(error);

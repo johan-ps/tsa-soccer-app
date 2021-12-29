@@ -66,7 +66,6 @@ const ScheduleCardSmall = props => {
         }
       }
     }
-    console.log("Joell event.ava", event);
     if(event.availabilities){
       setPlayerList(event.availabilities);
     }
