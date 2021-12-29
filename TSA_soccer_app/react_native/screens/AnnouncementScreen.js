@@ -274,6 +274,7 @@ const AnnouncementScreen = ({ navigation }) => {
           <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
         ) : (
           <FlatList
+            contentContainerStyle={styles.scrollable}
             ref={flatlistRef}
             onScroll={onScrollHandler}
             onRefresh={loadAnnouncements}
@@ -409,6 +410,9 @@ const styles = StyleSheet.create({
     top: 5,
     left: 0,
     right: 0,
+  },
+  scrollable: {
+    paddingBottom: 200,
   },
 });
 
