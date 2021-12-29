@@ -82,7 +82,7 @@ const UiDropdown = props => {
   }, []);
 
   useEffect(() => {
-    if (onSelect) {
+    if (onSelect && multiselect) {
       onSelect(selectedValues);
     }
   }, [selectedValues, onSelect, multiselect]);

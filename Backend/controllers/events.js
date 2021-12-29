@@ -155,6 +155,18 @@ exports.createEvent = async (req, res, next) => {
         });
       }
 
+      if(arriveEarly){
+        arriveEarly = 1;
+      }
+
+      if(timeTBD){
+        timeTBD = 1;
+      }
+
+      if(notifyTeam){
+        notifyTeam = 1;
+      }
+      
       if (isValid) {
         const newEvent = new Event(type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
         const [event, _] = await newEvent.save();
@@ -173,12 +185,94 @@ exports.createEvent = async (req, res, next) => {
 
 exports.updateById = async (req, res, next) => {
   try {
-    let { id, type, title, eventDate, timeTdb, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats } = req.body;
-    
-    const event = Event.findById(id);
+    const { id } = req.params;
+    let { type, date, timeTBD, startTime, endTime, locationId, locationDetails = null, authorId, notes, status, notifyTeam, opponent = null, jersey, arriveEarly = null, teamId } = req.body;
+    let isValid = true, errors = [];
 
-    event.update(type, title, eventDate, timeTdb, startTime, endTime, locationId, authorId, teams, extraNotes, cancelled, notifyTeam, opponent, locationDetails, jersey, homeOrAway, arriveEarly, repeats);
-    res.status(200).json({ event: event, id: event.insertId})
+    if (!type || type.length === 0) {
+        isValid = false;
+        errors.push({
+            errCode: '0001',
+            field: 'type',
+        });
+    }
+    if (!date || date.length === 0) {
+        isValid = false;
+        errors.push({
+            errCode: '0002',
+            field: 'date',
+        });
+    }
+
+    if (!startTime || startTime.length === 0) {
+      isValid = false;
+      errors.push({
+          errCode: '0002',
+          field: 'startTime',
+      });
+    }
+
+    if (!endTime || endTime.length === 0) {
+      isValid = false;
+      errors.push({
+          errCode: '0002',
+          field: 'startTime',
+      });
+    }
+
+    const startTimeDate = new Date('2021-05-15T' + startTime);
+    const endTimeDate = new Date('2021-05-15T' + endTime);
+    if(startTimeDate.getTime() > endTimeDate.getTime()){
+      isValid = false;
+      errors.push({
+          errCode: '0004',
+          field: 'startTime',
+      });
+    }
+
+    if (!locationId) {
+      isValid = false;
+      errors.push({
+          errCode: '0002',
+          field: 'locationId',
+      });
+    }
+
+    if (!authorId) {
+      isValid = false;
+      errors.push({
+          errCode: '0002',
+          field: 'authorId',
+      });
+    }
+    if (!teamId) {
+      isValid = false;
+      errors.push({
+          errCode: '0002',
+          field: 'teamId',
+      });
+    }
+
+    if(arriveEarly){
+      arriveEarly = 1;
+    }
+
+    if(timeTBD){
+      timeTBD = 1;
+    }
+
+    if(notifyTeam){
+      notifyTeam = 1;
+    }
+
+    if (isValid) {
+      await Event.update(id, type, dateFormat.dateTime(date), timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId);
+      const [newEvent, _] = await Event.findById(id);
+      res.status(200).json({event: {...newEvent[0], id: id} })
+    }
+    else{
+      res.status(400).json({ errors: errors });
+    }
   }
   catch(error){
     next(error);

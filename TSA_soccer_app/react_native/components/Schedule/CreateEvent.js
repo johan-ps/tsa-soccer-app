@@ -87,6 +87,68 @@ const formInit = {
   formIsValid: true,
 };
 
+const getFormData = (isEdit, data) => {
+  if (isEdit) {
+    return {
+      inputValues: {
+        type: data.type || '',
+        date: data.date ? moment(data.date).add(1, 'day') : null,
+        timeTBD: data.timeTbd ? true : false,
+        startTime: data.startTime || null,
+        endTime: data.endTime || null,
+        locationId: data.locationId || null,
+        locationDetails: data.locationDetails || '',
+        authorId: data.authorId || null,
+        notes: data.notes || '',
+        status: data.status || 'approved',
+        notifyTeam: data.notifyTeam ? true : false,
+        opponent: data.opponent || '',
+        jersey: data.jersey || '',
+        arriveEarly: data.arriveEarly ? true : false,
+        teamId: data.teamId || null, 
+      },
+      inputValidities: {
+        type: true,
+        date: true,
+        timeTBD: true,
+        startTime: true,
+        endTime: true,
+        locationId: true,
+        locationDetails: true,
+        authorId: true,
+        notes: true,
+        status: true,
+        notifyTeam: true,
+        opponent: true,
+        jersey: true,
+        arriveEarly: true,
+        teamId: true,
+      },
+      errors: {
+        type: null,
+        date: null,
+        timeTBD: null,
+        startTime: null,
+        endTime: null,
+        locationId: null,
+        locationDetails: null,
+        authorId: null,
+        notes: null,
+        status: null,
+        notifyTeam: null,
+        opponent: null,
+        jersey: null,
+        arriveEarly: null,
+        teamId: null,
+      },
+      formIsValid: true,
+    };
+  } else {
+    return formInit;
+  }
+};
+
+
 const formReducer = (state, action) => {
   if (action.type === FORM_INPUT_UPDATE) {
     const updatedValues = { ...state.inputValues };
@@ -129,15 +191,15 @@ const formReducer = (state, action) => {
 
 const CreateEvent = props => {
   const { REPEATS } = constants;
-  const { visible, route } = props;
-  const { type, selectedDate, event } = route.params;
+  const { route } = props;
+  const { type, event, reloadEvent } = route.params;
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const userId = userData && userData.id;
   const unformattedTeams = useSelector(state => state.teams);
   const teams = unformattedTeams && formatTeams(unformattedTeams);
   const dispatch = useDispatch();
-  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
+  const [formState, dispatchFormState] = useReducer(formReducer, getFormData(event ? true : false, event));
   const [initTeam, setInitTeam] = useState([]);
 
   useFocusEffect(() => {
@@ -145,19 +207,12 @@ const CreateEvent = props => {
   });
 
   useEffect(() => {
-    console.log("Joell event", event);
-    onChange('authorId', userId, true);
+    onChange('authorId', userId);
     setStartTime(new Date());
-    onChange('startTime', moment(new Date(), 'hh:mm A').format('HH:mm'), true);
+    onChange('startTime', moment(new Date(), 'hh:mm A').format('HH:mm'));
     setEndTime(new Date(moment().add(2, 'hours')));
-    onChange('endTime', moment().add(2, 'hours').format('HH:mm'), true);
+    onChange('endTime', moment().add(2, 'hours').format('HH:mm'));
     if(event != null){
-      let keys = Object.keys(event);
-      for(let key of keys){
-        if(event[key]){
-          onChange(key, event[key], true);
-        }
-      }
       if(event.locationId != null){
         setLocationValue(event.name);
       }
@@ -169,18 +224,18 @@ const CreateEvent = props => {
         setInitTeam([event.teamId]);
       }
     }else if(type === 'Game'){
-      onChange('type', 'Game', true);
+      onChange('type', 'Game');
     } else if (type === 'Practice') {
-      onChange('type', 'Practice', true);
+      onChange('type', 'Practice');
     }
   }, []);
 
   const onChange = useCallback(
-    (inputId, inputValue, inputValidity) => {
+    (inputId, inputValue) => {
       dispatchFormState({
         type: FORM_INPUT_UPDATE,
         value: inputValue,
-        isValid: inputValidity,
+        isValid: true,
         input: inputId,
       });
     },
@@ -214,55 +269,83 @@ const CreateEvent = props => {
 
   const onReturnLocation = location => {
     setLocationValue(location.name);
-    onChange('locationId', location.id, true);
+    onChange('locationId', location.id);
   };
 
   const createEventHandler = async () => {
-    dispatch(loaderActions.updateLoader(true));
-    try{
-      await dispatch(
-        eventActions.createEvent({
-          ...formState.inputValues,
-          date: formState.inputValues.date ? moment(formState.inputValues.date).format('YYYY-MM-DD') : null,
-          teamId: Number.isInteger(formState.inputValues.teamId) ? formState.inputValues.teamId : null
-        }),
-      );
-      // loadEventsFromDate(selectedDate);
-      props.navigation.goBack();
-      dispatchFormState({ type: 'reset' });
-    }
-    catch (error) {
-      if (error) {
-        error.forEach(err => {
-          dispatchFormState({
-            type: FORM_INPUT_UPDATE,
-            isValid: false,
-            error: err.errCode,
-            input: err.field,
-          });
-        });
+    if(event){
+      updateEventHandler();
+    }else{
+      dispatch(loaderActions.updateLoader(true));
+      try{
+        await dispatch(
+          eventActions.createEvent({
+            ...formState.inputValues,
+            date: formState.inputValues.date ? moment(formState.inputValues.date).format('YYYY-MM-DD') : null,
+            teamId: Number.isInteger(formState.inputValues.teamId) ? formState.inputValues.teamId : null
+          }),
+        );
+        // loadEventsFromDate(selectedDate);
+        props.navigation.goBack();
+        dispatchFormState({ type: 'reset' });
       }
-    } finally {
-      dispatch(loaderActions.updateLoader(false));
+      catch (error) {
+        if (error) {
+          error.forEach(err => {
+            dispatchFormState({
+              type: FORM_INPUT_UPDATE,
+              isValid: false,
+              error: err.errCode,
+              input: err.field,
+            });
+          });
+        }
+      } finally {
+        dispatch(loaderActions.updateLoader(false));
+      }
     }
   };
 
-  const loadEventsFromDate = useCallback(
-    async date => {
-      try {
+  const updateEventHandler = async () => {
+    dispatch(loaderActions.updateLoader(true));
+      try{
+        let data = {...formState.inputValues};
+        if (event) {
+          data.id = event.id;
+        }
+        console.log("Joel teamId", data.teamId);
         await dispatch(
-          eventsActions.getEventsFromDate(moment(date).format('YYYY-MM-DD'), userId),
+          eventActions.updateEvent({
+            ...data,
+            date: data.date ? moment(data.date).format('YYYY-MM-DD') : null,
+            teamId: Number.isInteger(data.teamId) ? data.teamId : null
+          }),
         );
-      } catch (err) {
-        console.log(err);
+        props.navigation.goBack();
+        dispatchFormState({ type: 'reset' });
+        reloadEvent();
       }
-    },
-    [dispatch],
-  );
+      catch (error) {
+        if (error) {
+          error.forEach(err => {
+            dispatchFormState({
+              type: FORM_INPUT_UPDATE,
+              isValid: false,
+              error: err.errCode,
+              input: err.field,
+            });
+          });
+        }
+      } finally {
+        dispatch(loaderActions.updateLoader(false));
+      }
+  }
+
+
 
   const onSelectHandler = useCallback(inputValue => {
     if (inputValue) {
-      onChange('teamId', inputValue, true);
+      onChange('teamId', inputValue);
     }
   }, []);
 
@@ -285,7 +368,7 @@ const CreateEvent = props => {
                 styles.formHeading,
                 { color: theme.primaryText, fontFamily: theme.fontRegular },
               ]}>
-              {event ? 'Edit' : 'Create a'}{type === 'Other' ? `n ${type}` : ` ${type}`} Event
+              {event ? 'Edit' : 'Create a'}{type === 'Other' && !event ? `n ${type}` : ` ${type}`} Event
             </Text>
           </View>
           <ScrollView
@@ -301,8 +384,9 @@ const CreateEvent = props => {
                     style={{marginTop: 20}}
                     color={theme.inputText}
                     placeholderClr={theme.inputPlaceholder}
-                    onInputChange={onChange}
+                    initialValue={formState.inputValues.type}
                     isValid={formState.inputValidities.type}
+                    onInputChange={onChange}
                     errCode={formState.errors.type}
                   />
                 </View>
@@ -318,8 +402,9 @@ const CreateEvent = props => {
                         )
                       : 'Choose Date'
                   }
-                  onChange={(id, date) => onChange(id, date, true)}
+                  onChange={(id, date) => onChange(id, date)}
                   height={300}
+                  existingDate={new Date(moment(formState.inputValues.date))}
                   isValid={formState.inputValidities.date}
                   errCode={formState.errors.date}
                 />
@@ -340,7 +425,7 @@ const CreateEvent = props => {
                   }}>
                   <Switch
                     value={formState.inputValues.timeTbd}
-                    onValueChange={value => onChange('timeTbd', value, true)}
+                    onValueChange={value => onChange('timeTbd', value)}
                   />
                 </View>
               </View>
@@ -357,7 +442,7 @@ const CreateEvent = props => {
                         display={'default'}
                         onChange={(event, date) => {
                           setStartTime(date);
-                          onChange('startTime', moment(date, 'hh:mm A').format('HH:mm'), true);
+                          onChange('startTime', moment(date, 'hh:mm A').format('HH:mm'));
                         }}
                         value={startTime || new Date()}
                       />
@@ -371,7 +456,7 @@ const CreateEvent = props => {
                         display={'default'}
                         onChange={(event, date) => {
                           setEndTime(date);
-                          onChange('endTime', moment(date, 'hh:mm A').format('HH:mm'), true);
+                          onChange('endTime', moment(date, 'hh:mm A').format('HH:mm'));
                         }}
                         value={endTime || new Date()}
                       />
@@ -424,13 +509,10 @@ const CreateEvent = props => {
                 id="locationDetails"
                 initialValue={formState.inputValues.locationDetails}
                 isValid={formState.inputValidities.locationDetails}
+                errCode={formState.errors.locationDetails}
                 placeholder="Location Details (Ex: Field #11)"
                 multiline={true}
                 onInputChange={onChange}
-                bg={theme.inputBg}
-                color={theme.inputText}
-                placeholderClr={theme.inputPlaceholder}
-                cursor={theme.cursor}
               />
               <Text style={styles.formLabels}>Team</Text>
               <UiDropdown
@@ -462,7 +544,7 @@ const CreateEvent = props => {
                   }}>
                   <Switch
                     value={formState.inputValues.notifyTeam}
-                    onValueChange={value => onChange('notifyTeam', value, true)}
+                    onValueChange={value => onChange('notifyTeam', value)}
                   />
                 </View>
               </View>
@@ -483,7 +565,7 @@ const CreateEvent = props => {
                   <Switch
                     value={formState.inputValues.arriveEarly}
                     onValueChange={value =>
-                      onChange('arriveEarly', value, true)
+                      onChange('arriveEarly', value)
                     }
                   />
                 </View>
@@ -505,7 +587,7 @@ const CreateEvent = props => {
                   <Switch
                     value={formState.inputValues.status === 'approved' ? false : true}
                     onValueChange={value =>
-                      onChange('status', value ? 'cancelled' : 'approved' , true)
+                      onChange('status', value ? 'cancelled' : 'approved')
                     }
                   />
                 </View>
@@ -518,6 +600,8 @@ const CreateEvent = props => {
                     bg={theme.inputBg}
                     color={theme.inputText}
                     placeholderClr={theme.inputPlaceholder}
+                    initialValue={formState.inputValues.opponent}
+                    isValid={formState.inputValidities.opponent}
                     onInputChange={onChange}
                   />
                 </View>
@@ -530,7 +614,7 @@ const CreateEvent = props => {
                       labelLeft={'Home'}
                       labelRight={'Away'}
                       value={formState.inputValues.jersey.charAt(0).toUpperCase() + formState.inputValues.jersey.slice(1)}
-                      onInputChange={(aValue) => onChange('jersey', aValue.toLowerCase(), true)}
+                      onInputChange={(aValue) => onChange('jersey', aValue.toLowerCase())}
                     />
                   </View>
                 </View>
@@ -583,6 +667,8 @@ const CreateEvent = props => {
                       }
                       onChange={(id, date) => setRepeatEndDate(date)}
                       height={300}
+                      // isValid={formState.inputValidities.date}
+                      // errCode={formState.errors.date}
                     />
                   </View>
                 </View>
@@ -617,7 +703,7 @@ const CreateEvent = props => {
             onPress={() => props.navigation.goBack()}
           />
           <UiButton
-            label={event ? "Save" : "Create"}
+            label={event ? "Update" : "Create"}
             type="tertiary"
             primaryClr={theme.buttonTertiaryText}
             secondaryClr={theme.buttonTertiaryBg}

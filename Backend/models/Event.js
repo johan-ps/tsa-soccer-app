@@ -94,6 +94,30 @@ saveAvailability(id, players) {
   }
 }
 
+static update(id, type, date, timeTBD, startTime, endTime, locationId, locationDetails, authorId, notes, status, notifyTeam, opponent, jersey, arriveEarly, teamId){
+  const sql = `
+  UPDATE EVENTS 
+  SET 
+    type = '${ type }',
+    date = '${ date }',
+    timeTBD = '${ timeTBD }',
+    startTime = '${ startTime }',
+    endTime = '${ endTime }',
+    locationId = '${ locationId }',
+    locationDetails = '${ locationDetails }',
+    authorId = '${ authorId }',
+    notes = '${ notes }',
+    status = '${ status }',
+    notifyTeam = '${ notifyTeam }',
+    opponent = '${ opponent }',
+    jersey = '${ jersey }',
+    arriveEarly = '${ arriveEarly }',
+    teamId =  '${ teamId }'
+  WHERE id = ${ id }
+  `;
+  return db.execute(sql);
+}
+
 static deleteEvents (id) {
   const sql = `
       DELETE

@@ -102,7 +102,6 @@ export const getEventsFromDate = (date, userId) => {
 
       const resData = await response.json();
       const events = resData.events;
-      console.log("Joell events", events);
       dispatch({
         type: GET_EVENTS,
         events,
@@ -185,7 +184,6 @@ export const createEvent = eventData => {
   return async dispatch => {
     try {
       let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
-      console.log()
 
       if (!authToken) {
         throw new Error('No token set');
@@ -260,7 +258,7 @@ export const deleteEvent = id => {
   }
 };
 
-export const editEvent = eventData => {
+export const updateEvent = eventData => {
   return async dispatch => {
     try {
       let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
@@ -268,32 +266,37 @@ export const editEvent = eventData => {
       if (!authToken) {
         throw new Error('No token set');
       }
-
-
       const response = await fetch(
-        `http://${environmentUrl}/api/events/edit`,
+        `http://${environmentUrl}/api/events/${eventData.id}/update`,
         {
-          method: 'POST',
+          method: 'PUT',
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
             'x-auth-token': `Bearer ${authToken}`,
           },
-          body: eventData,
+          body: JSON.stringify(eventData),
         },
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong add announcement!');
+        const error = await response.json();
+        throw error;
       }
 
       const resData = await response.json();
-
+      const event = resData.event;
+      console.log("Joell newEvent", event);
       dispatch({
         type: EDIT_EVENT,
-        events: resData.events,
+        eventId: eventData.id,
+        event: event,
       });
     } catch (err) {
-      console.log(err);
+      console.log('err<>', err);
+
+      if (err && err.errors && err.errors.length > 0) {
+        throw err.errors;
+      }
     }
   };
 }

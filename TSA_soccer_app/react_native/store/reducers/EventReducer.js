@@ -40,7 +40,23 @@ const eventReducer = (state = INITIAL_STATE, action) => {
       let updateState = {today: todayEvents, upcoming: upcomingEvents}
       return updateState;
     case EDIT_EVENT:
-      return [action.event, ...state];
+      const eventsToday = state.today.map(event => {
+        if(event.id === action.eventId){
+          return action.event;
+        }else{
+          return event;
+        }
+      })
+
+      const eventsUpcoming = state.upcoming.map(event => {
+        if(event.id === action.eventId){
+          return action.event;
+        }else{
+          return event;
+        }
+      })
+
+      return {today: eventsToday, upcoming: eventsUpcoming};
     case UPDATE_AVAILABILITY:
       let newState = {
         today: state.today.map(event => {

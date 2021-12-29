@@ -157,9 +157,14 @@ const EventScreen = ({ navigation, route }) => {
   };
 
   const editEvent = () => {
+    let type = event.type;
+    if(event.type !== 'Game' && event.type !== 'Practice'){
+      type = 'Other';
+    }
     navigation.navigate('CreateEvent', {
-      type: event.type,
-      event: event
+      type: type,
+      event: event,
+      reloadEvent: () => loadEventById(eventId)
     });
   }
 
@@ -169,6 +174,7 @@ const EventScreen = ({ navigation, route }) => {
     navigation.navigate('Daily');
   }
 
+  
   return (
     <View style={{ backgroundColor: theme.secondaryBg }}>
       {event ? (

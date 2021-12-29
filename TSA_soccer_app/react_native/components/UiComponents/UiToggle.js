@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,12 @@ const UiToggle = props => {
   const [focused, setFocused] = useState(false);
   const toggleAnimation = useRef(new Animated.Value(0)).current;
   const focusAnimation = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if(selectedLabel === labelRight){
+      toggleHandler();
+    }
+  }, []);
 
   const onFocusIn = () => {
     setFocused(true);

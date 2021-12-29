@@ -58,7 +58,7 @@ const UiInput = props => {
   const translateAnim = useSharedValue(0);
   const scaleAnim = useSharedValue(0);
   const [inputState, dispatch] = useReducer(inputReducer, {
-    value: props.initialValue ? props.initialValue : '',
+    value: props.initialValue ? props.initialValue : ''
   });
   const inputRef = useRef();
   const [showInput, setShowInput] = useState(false);
