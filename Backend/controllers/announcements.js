@@ -157,3 +157,23 @@ exports.deleteById = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.downloadImage = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const [image, _] = await Announcement.getImage(id);
+
+        let base64Str = image[0].image;
+        const type = base64Str.substring("data:image/".length, base64Str.indexOf(";base64"))
+        base64Str = base64Str.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+        const img = Buffer.from(base64Str, "base64");
+
+        res.writeHead(200, {
+            'Content-Type': `image/${type}`,
+            'Content-Length': img.length,
+        });
+        res.end(img);
+    } catch (error) {
+        next(error);
+    }
+};

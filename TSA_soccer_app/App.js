@@ -5,6 +5,8 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import RNBootSplash from 'react-native-bootsplash';
+import PushNotification from 'react-native-push-notification';
+import { LogBox } from 'react-native';
 
 import MainNavigator from './react_native/navigation/MainNavigator';
 import ThemeReducer from './react_native/store/reducers/ThemeReducer';
@@ -33,6 +35,8 @@ const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const App = () => {
   useEffect(() => {
+    LogBox.ignoreLogs(['Require cycle:']);
+
     const init = async () => {
       await store.dispatch(userActions.checkAuthToken());
     };
@@ -41,6 +45,17 @@ const App = () => {
       await RNBootSplash.hide({ fade: true });
     });
   }, []);
+
+  useEffect(() => {
+    createChannel();
+  }, []);
+
+  const createChannel = () => {
+    PushNotification.createChannel({
+      channelId: 'test-channel',
+      channelName: 'Test Channel',
+    });
+  };
 
   return (
     <Provider store={store}>
