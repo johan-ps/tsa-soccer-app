@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 import {
   View,
   Text,
@@ -36,6 +42,7 @@ const UiDropdown = props => {
     isValid = true,
     errCode,
     existingValues = [],
+    initialValue = [],
   } = props;
   const [selectedId, setSelectedId] = useState(defaultValue || -1);
   const [selectedLabel, setSelectedLabel] = useState(placeholder);
@@ -65,36 +72,12 @@ const UiDropdown = props => {
   };
 
   useEffect(() => {
-    let selectedVals = {};
-    let newSelectedValues = {};
-    let newSelectedLabels = [];
+    updateSelectedValues(initialValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValue]);
 
-    if (existingValues) {
-      existingValues.forEach(val => {
-        selectedVals[val] = true;
-      });
-
-      if (options && options.length > 0) {
-        options.forEach(groupOpt => {
-          newSelectedValues[groupOpt.id] = {
-            selected: false,
-            children: {},
-          };
-          if (groupOpt.children) {
-            groupOpt.children.forEach(child => {
-              newSelectedValues[groupOpt.id].children[child.id] =
-                !!selectedVals[child.id];
-              if (selectedVals[child.id]) {
-                newSelectedLabels.push(child.label);
-              }
-            });
-          }
-        });
-      }
-    }
-
-    setSelectedValues(newSelectedValues);
-    setSelectedLabels(newSelectedLabels);
+  useEffect(() => {
+    updateSelectedValues(existingValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -103,6 +86,42 @@ const UiDropdown = props => {
       onSelect(selectedValues);
     }
   }, [selectedValues, onSelect, multiselect]);
+
+  const updateSelectedValues = useCallback(
+    initValue => {
+      let selectedVals = {};
+      let newSelectedValues = {};
+      let newSelectedLabels = [];
+
+      if (initValue) {
+        initValue.forEach(val => {
+          selectedVals[val] = true;
+        });
+
+        if (options && options.length > 0) {
+          options.forEach(groupOpt => {
+            newSelectedValues[groupOpt.id] = {
+              selected: false,
+              children: {},
+            };
+            if (groupOpt.children) {
+              groupOpt.children.forEach(child => {
+                newSelectedValues[groupOpt.id].children[child.id] =
+                  !!selectedVals[child.id];
+                if (selectedVals[child.id]) {
+                  newSelectedLabels.push(child.label);
+                }
+              });
+            }
+          });
+        }
+      }
+
+      setSelectedValues(newSelectedValues);
+      setSelectedLabels(newSelectedLabels);
+    },
+    [options],
+  );
 
   const getDropdownXY = event => {
     const layout = event.nativeEvent.layout;
