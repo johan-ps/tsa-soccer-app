@@ -188,6 +188,16 @@ class Announcement {
         return db.execute(sql);
     }
 
+    static getImage (id) {
+        const sql = `
+            SELECT image
+            FROM ANNOUNCEMENTS as a
+            WHERE a.id = ${id};
+        `;
+
+        return db.execute(sql);
+    }
+
 
 }
 

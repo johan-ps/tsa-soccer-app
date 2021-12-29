@@ -26,6 +26,8 @@ const AnnouncementCard = props => {
       props.onEdit();
     } else if (option.id === 1 && props.onDelete) {
       props.onDelete();
+    } else if (props.onDownload) {
+      props.onDownload();
     }
   };
 
@@ -93,9 +95,14 @@ const AnnouncementCard = props => {
             </View>
           </View>
           <UiMenu
+            disabled={!menuOptions || menuOptions.length === 0}
             onPress={onSelectOption}
             options={menuOptions}
-            color={theme.primaryText}
+            color={
+              !menuOptions || menuOptions.length === 0
+                ? theme.tertiaryText
+                : theme.primaryText
+            }
           />
         </View>
         <View style={styles.body}>

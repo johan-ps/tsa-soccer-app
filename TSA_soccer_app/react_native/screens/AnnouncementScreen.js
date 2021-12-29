@@ -6,10 +6,12 @@ import {
   StatusBar,
   Platform,
   FlatList,
+  PermissionsAndroid,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import AnimScrollView from '../components/AnimScrollView';
-
+import fetch_blob from 'rn-fetch-blob';
+import PushNotification from 'react-native-push-notification';
 import {
   AnnouncementCard,
   NavHeader,
@@ -23,6 +25,7 @@ import UiBadge from '../components/UiComponents/UiBadge';
 import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
 import * as loaderActions from '../store/actions/LoaderActions';
+import { getImageUrl } from '../api/announcements';
 
 const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();
@@ -117,6 +120,85 @@ const AnnouncementScreen = ({ navigation }) => {
     setModalVisible(true);
   };
 
+  const onDownloadHandler = ({ id, image }) => {
+    checkPermision(id, image)
+      .then(() => {
+        'done';
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  const checkPermision = async (id, image) => {
+    if (Platform.OS === 'ios') {
+      downloadImage(id, image);
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission Required',
+            message: 'App needs access to your storage to download photos',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Storage permission Granted');
+          downloadImage(id, image);
+        } else {
+          console.log('Storage permission not Granted');
+        }
+      } catch (error) {
+        console.log('errro', error);
+      }
+    }
+  };
+
+  const downloadImage = (id, image) => {
+    const date = new Date();
+    const { fs } = fetch_blob;
+    const dirs = fetch_blob.fs.dirs;
+    const PictureDir = fs.dirs.PictureDir + '/CTSA';
+    const type = image.substring(
+      'data:image/'.length,
+      image.indexOf(';base64'),
+    );
+
+    const fileName = `image_${Math.floor(
+      date.getTime() + date.getSeconds() / 2,
+    )}.${type}`;
+
+    const path = PictureDir + '/' + fileName;
+    const options = {
+      fileCache: true,
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        path: path,
+        description: 'Download Complete',
+        mime: `image/${type}`,
+      },
+    };
+
+    fetch_blob
+      .config(options)
+      .fetch('GET', getImageUrl(id))
+      .then(res => {
+        console.log('download successfully');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  const handleNotification = () => {
+    PushNotification.localNotification({
+      channelId: 'test-channel',
+      title: 'Download Image',
+      message: 'The image has been downloaded',
+    });
+  };
+
   const onModalCloseHandler = () => {
     setModalVisible(false);
   };
@@ -189,6 +271,9 @@ const AnnouncementScreen = ({ navigation }) => {
                   }}
                   onDelete={() => {
                     onDeleteHandler(item.id);
+                  }}
+                  onDownload={() => {
+                    onDownloadHandler(item);
                   }}
                   announcementData={item}
                 />
