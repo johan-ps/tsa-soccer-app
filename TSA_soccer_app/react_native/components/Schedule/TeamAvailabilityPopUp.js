@@ -112,6 +112,23 @@ const TeamAvailabilityPopup = props => {
               }
             </View>
           </View>
+          {playersNoAnswer.length != 0 &&
+            <View>
+              <View style={[styles.availabilityHeader, {backgroundColor: 'grey'}]}>
+                <Icon name="checkmark" size={20} color='#1E2630' style={{padding: 5}}/>
+                <Text style={styles.availabilityHeaderText}>No Response</Text>
+              </View>
+              <View style={styles.subContainer}>
+                {playersNoAnswer.map((player, index) => (
+                  <PlayerListItem
+                    key={player.id + index + 1}
+                    player={player}
+                    navigation={props.navigation}
+                  />
+                ))}
+              </View>
+            </View>
+          }
           {/* <View style={{flexDirection: 'row', width: '100%', marginLeft: 20}}>
             <View style={{alignItems: 'center', justifyContent: 'center'}}>
               <Text style={{fontSize: 20, color: 'white'}}>Availability</Text>
