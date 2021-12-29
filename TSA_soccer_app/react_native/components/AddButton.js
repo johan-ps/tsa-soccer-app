@@ -98,7 +98,7 @@ const AddButton = forwardRef((props, ref) => {
         <Ripple
           style={[styles.ripple]}
           onPress={() => {
-            if (visible) {
+            if (visible.value) {
               props.onPress();
             }
           }}

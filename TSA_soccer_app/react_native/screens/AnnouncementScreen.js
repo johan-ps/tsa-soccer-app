@@ -56,15 +56,15 @@ const AnnouncementScreen = ({ navigation }) => {
     // console.log(nativeEvent)
     const prevOffsetY = offsetY;
     const curOffsetY = event.nativeEvent.contentOffset.y;
-    if (Math.abs(curOffsetY - prevOffsetY) > 8) {
-      if (curOffsetY < prevOffsetY) {
-        addBtnRef.current.onShow();
-      } else {
-        addBtnRef.current.onHide();
-      }
-    } else if (curOffsetY === 0) {
-      addBtnRef.current.onShow();
-    }
+    // if (Math.abs(curOffsetY - prevOffsetY) > 8) {
+    //   if (curOffsetY < prevOffsetY) {
+    //     addBtnRef.current.onShow();
+    //   } else {
+    //     addBtnRef.current.onHide();
+    //   }
+    // } else if (curOffsetY === 0) {
+    //   addBtnRef.current.onShow();
+    // }
 
     if (curOffsetY > 200) {
       scrollTopRef.current.onShow();
@@ -89,6 +89,14 @@ const AnnouncementScreen = ({ navigation }) => {
 
   const onScrollToTop = () => {
     flatlistRef.current.scrollToOffset({ animated: true, y: 0 });
+  };
+
+  const onScrollStartHandler = () => {
+    scrollTopRef.current.cancelAnim();
+  };
+
+  const onScrollEndHandler = () => {
+    scrollTopRef.current.hideWithDelay();
   };
 
   const loadAnnouncements = useCallback(async () => {
@@ -276,7 +284,10 @@ const AnnouncementScreen = ({ navigation }) => {
           <FlatList
             contentContainerStyle={styles.scrollable}
             ref={flatlistRef}
+            onMomentumScrollEnd={onScrollEndHandler}
             onScroll={onScrollHandler}
+            onScrollBeginDrag={onScrollStartHandler}
+            // onScrollEndDrag={onScrollEndHandler}
             onRefresh={loadAnnouncements}
             refreshing={isRefreshing}
             data={announcements}

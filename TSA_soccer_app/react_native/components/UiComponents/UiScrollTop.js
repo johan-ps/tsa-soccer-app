@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,6 +7,10 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  withDelay,
+  cancelAnimation,
+  useDerivedValue,
+  runOnJS,
 } from 'react-native-reanimated';
 
 // forwardRef allows functional components to have refs
@@ -14,9 +18,9 @@ const ScrollTop = forwardRef((props, ref) => {
   const focusAnimation = useSharedValue(1);
   const scrollAnimation = useSharedValue(0);
 
-  const isScroll = useSharedValue(false); // does scroll animation have priority over focus animation
+  // const isScroll = useSharedValue(false); // does scroll animation have priority over focus animation
   const visible = useSharedValue(false);
-  const scrollDownAnimInit = useSharedValue(false); // has scroll down animation started
+  // const scrollDownAnimInit = useSharedValue(false); // has scroll down animation started
 
   // get current theme colors from state
   const theme = useSelector(state => state.theme.colors);
@@ -25,26 +29,33 @@ const ScrollTop = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     onShow,
     onHide,
+    cancelAnim,
+    hideWithDelay,
   }));
 
   const onShow = () => {
-    if (scrollDownAnimInit.value) {
+    scrollAnimation.value = withTiming(1, {}, () => {
       visible.value = true;
-      scrollDownAnimInit.value = false;
-      scrollAnimation.value = withTiming(1, {}, () => {
-        isScroll.value = false;
-      });
-    }
+    });
   };
 
   const onHide = () => {
-    if (!scrollDownAnimInit.value) {
-      isScroll.value = true;
-      scrollDownAnimInit.value = true;
-      scrollAnimation.value = withTiming(0, {}, () => {
+    scrollAnimation.value = withTiming(0, {}, () => {
+      visible.value = false;
+    });
+  };
+
+  const cancelAnim = () => {
+    cancelAnimation(scrollAnimation);
+  };
+
+  const hideWithDelay = () => {
+    scrollAnimation.value = withDelay(
+      3000,
+      withTiming(0, {}, () => {
         visible.value = false;
-      });
-    }
+      }),
+    );
   };
 
   const onFocusIn = () => {
@@ -61,28 +72,13 @@ const ScrollTop = forwardRef((props, ref) => {
 
   const containerAnimStyle = useAnimatedStyle(() => {
     let styles = {};
-    if (visible.value) {
-      styles.opacity = scrollAnimation.value;
-      if (isScroll.value) {
-        styles.transform = [
-          {
-            scale: scrollAnimation.value,
-          },
-        ];
-      } else {
-        styles.transform = [
-          {
-            scale: focusAnimation.value,
-          },
-        ];
-      }
-    } else {
-      styles = {
-        opacity: 0,
-        width: 0,
-        height: 0,
-      };
-    }
+    // if (visible.value) {
+    styles.opacity = scrollAnimation.value;
+    styles.transform = [
+      {
+        scale: scrollAnimation.value,
+      },
+    ];
     return styles;
   });
 
@@ -92,11 +88,7 @@ const ScrollTop = forwardRef((props, ref) => {
       <View style={styles.addBtn}>
         <Ripple
           style={[styles.ripple]}
-          onPress={() => {
-            if (visible) {
-              props.onPress();
-            }
-          }}
+          onPress={props.onPress}
           onPressIn={onFocusIn}
           onPressOut={onFocusOut}>
           <Icon name="arrow-collapse-up" color={theme.addBtnBg} size={18} />
