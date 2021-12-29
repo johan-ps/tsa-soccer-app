@@ -50,11 +50,11 @@ const AnnouncementScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const [offsetY, setOffsetY] = useState(0);
+  // const [offsetY, setOffsetY] = useState(0);
 
-  const onScrollHandler = event => {
+  const onScrollHandler = useCallback(event => {
     // console.log(nativeEvent)
-    const prevOffsetY = offsetY;
+    // const prevOffsetY = offsetY;
     const curOffsetY = event.nativeEvent.contentOffset.y;
     // if (Math.abs(curOffsetY - prevOffsetY) > 8) {
     //   if (curOffsetY < prevOffsetY) {
@@ -72,7 +72,7 @@ const AnnouncementScreen = ({ navigation }) => {
       scrollTopRef.current.onHide();
     }
 
-    setOffsetY(curOffsetY);
+    // setOffsetY(curOffsetY);
     // if (nativeEvent.contentOffset.y) {
 
     // }
@@ -85,19 +85,19 @@ const AnnouncementScreen = ({ navigation }) => {
     //     setRefreshEnabled(false);
     //   }
     // }
-  };
+  }, []);
 
-  const onScrollToTop = () => {
+  const onScrollToTop = useCallback(() => {
     flatlistRef.current.scrollToOffset({ animated: true, y: 0 });
-  };
+  }, []);
 
-  const onScrollStartHandler = () => {
+  const onScrollStartHandler = useCallback(() => {
     scrollTopRef.current.cancelAnim();
-  };
+  }, []);
 
-  const onScrollEndHandler = () => {
+  const onScrollEndHandler = useCallback(() => {
     scrollTopRef.current.hideWithDelay();
-  };
+  }, []);
 
   const loadAnnouncements = useCallback(async () => {
     setIsRefreshing(true);
@@ -132,53 +132,62 @@ const AnnouncementScreen = ({ navigation }) => {
     dispatch(tabbarActions.updateVisibility(true));
   });
 
-  const onEditHandler = item => {
-    navigation.navigate('ModifyAnnouncement', {
-      isEdit: true,
-      announcementData: item,
-    });
-  };
+  const onEditHandler = useCallback(
+    item => {
+      navigation.navigate('ModifyAnnouncement', {
+        isEdit: true,
+        announcementData: item,
+      });
+    },
+    [navigation],
+  );
 
-  const onDeleteHandler = id => {
+  const onDeleteHandler = useCallback(id => {
     setDeleteId(id);
     setModalVisible(true);
-  };
+  }, []);
 
-  const onDownloadHandler = ({ id, image }) => {
-    checkPermision(id, image)
-      .then(() => {
-        'done';
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
+  const onDownloadHandler = useCallback(
+    ({ id, image }) => {
+      checkPermision(id, image)
+        .then(() => {
+          'done';
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    [checkPermision],
+  );
 
-  const checkPermision = async (id, image) => {
-    if (Platform.OS === 'ios') {
-      downloadImage(id, image);
-    } else {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'Storage Permission Required',
-            message: 'App needs access to your storage to download photos',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Storage permission Granted');
-          downloadImage(id, image);
-        } else {
-          console.log('Storage permission not Granted');
+  const checkPermision = useCallback(
+    async (id, image) => {
+      if (Platform.OS === 'ios') {
+        downloadImage(id, image);
+      } else {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+              title: 'Storage Permission Required',
+              message: 'App needs access to your storage to download photos',
+            },
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('Storage permission Granted');
+            downloadImage(id, image);
+          } else {
+            console.log('Storage permission not Granted');
+          }
+        } catch (error) {
+          console.log('errro', error);
         }
-      } catch (error) {
-        console.log('errro', error);
       }
-    }
-  };
+    },
+    [downloadImage],
+  );
 
-  const downloadImage = (id, image) => {
+  const downloadImage = useCallback((id, image) => {
     const date = new Date();
     const { fs } = fetch_blob;
     const dirs = fetch_blob.fs.dirs;
@@ -213,7 +222,7 @@ const AnnouncementScreen = ({ navigation }) => {
       .catch(err => {
         console.log(err);
       });
-  };
+  }, []);
 
   const handleNotification = () => {
     PushNotification.localNotification({

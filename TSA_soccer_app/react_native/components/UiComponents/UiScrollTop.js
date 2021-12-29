@@ -9,8 +9,6 @@ import Animated, {
   withTiming,
   withDelay,
   cancelAnimation,
-  useDerivedValue,
-  runOnJS,
 } from 'react-native-reanimated';
 
 // forwardRef allows functional components to have refs

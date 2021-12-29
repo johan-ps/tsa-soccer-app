@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
 const UiImage = props => {
@@ -19,7 +19,7 @@ const UiImage = props => {
     } else {
       setImgSrc(source);
     }
-  }, [setImgSrc, source]);
+  }, [source]);
 
   return (
     <View>
@@ -45,4 +45,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UiImage;
+export default memo(UiImage, (prevState, newState) => {
+  return prevState.source === newState.source;
+});
