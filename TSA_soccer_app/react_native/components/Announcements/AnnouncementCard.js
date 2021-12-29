@@ -95,9 +95,14 @@ const AnnouncementCard = props => {
             </View>
           </View>
           <UiMenu
+            disabled={!menuOptions || menuOptions.length === 0}
             onPress={onSelectOption}
             options={menuOptions}
-            color={theme.primaryText}
+            color={
+              !menuOptions || menuOptions.length === 0
+                ? theme.tertiaryText
+                : theme.primaryText
+            }
           />
         </View>
         <View style={styles.body}>

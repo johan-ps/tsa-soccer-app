@@ -20,6 +20,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const UiMenu = props => {
+  const { disabled } = props;
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const theme = useSelector(state => state.theme.colors);
@@ -110,7 +111,7 @@ const UiMenu = props => {
         <Animated.View
           style={[
             styles.optionsContainer,
-            { backgroundColor: theme.menuBg },
+            { backgroundColor: theme.primaryBg },
             optionPosition,
             opacityAnim,
             menuSize,
@@ -122,13 +123,23 @@ const UiMenu = props => {
                   onPress={() => {
                     onSelectOptionHandler(option);
                   }}
-                  style={[styles.touchable, { backgroundColor: theme.menuBg }]}>
+                  style={[
+                    styles.touchable,
+                    { backgroundColor: theme.primaryBg },
+                  ]}>
                   <Animated.View
                     style={[
                       styles.textWrapper,
                       { backgroundColor: theme.menuBg },
                     ]}>
-                    <Text style={[styles.label, { color: theme.menuText }]}>
+                    <Text
+                      style={[
+                        styles.label,
+                        {
+                          color: theme.primaryText,
+                          fontFamily: theme.fontRegular,
+                        },
+                      ]}>
                       {option.label}
                     </Text>
                   </Animated.View>
@@ -155,7 +166,10 @@ const UiMenu = props => {
                   onPress={() => {
                     onSelectOptionHandler(option);
                   }}
-                  style={[styles.touchable, { backgroundColor: theme.menuBg }]}
+                  style={[
+                    styles.touchable,
+                    { backgroundColor: theme.primaryBg },
+                  ]}
                   background={TouchableNativeFeedback.Ripple(
                     theme.name === 'dark'
                       ? theme.touchableBgDark
@@ -165,9 +179,16 @@ const UiMenu = props => {
                   <Animated.View
                     style={[
                       styles.textWrapper,
-                      { backgroundColor: theme.menuBg },
+                      { backgroundColor: theme.primaryBg },
                     ]}>
-                    <Text style={[styles.label, { color: theme.menuText }]}>
+                    <Text
+                      style={[
+                        styles.label,
+                        {
+                          color: theme.primaryText,
+                          fontFamily: theme.fontRegular,
+                        },
+                      ]}>
                       {option.label}
                     </Text>
                   </Animated.View>
@@ -182,7 +203,10 @@ const UiMenu = props => {
 
   return (
     <View style={styles.menuContainer} ref={menuIcon} onLayout={event => {}}>
-      <TouchableOpacity style={styles.iconContainer} onPress={onOpenHandler}>
+      <TouchableOpacity
+        disabled={disabled}
+        style={styles.iconContainer}
+        onPress={onOpenHandler}>
         <Icon name="ellipsis-vertical" size={20} color={props.color} />
       </TouchableOpacity>
       <Modal animationType="none" transparent={true} visible={showOptions}>
