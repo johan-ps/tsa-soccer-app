@@ -26,10 +26,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
 import * as loaderActions from '../store/actions/LoaderActions';
 import { getImageUrl } from '../api/announcements';
+import ScrollTop from '../components/UiComponents/UiScrollTop';
 
 const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();
   const searchBarRef = useRef();
+  const scrollTopRef = useRef();
+  const flatlistRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -47,19 +50,29 @@ const AnnouncementScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const [offsetY, setOffsetY] = useState(0);
+  // const [offsetY, setOffsetY] = useState(0);
 
-  const onScrollHandler = ({ nativeEvent }) => {
+  const onScrollHandler = useCallback(event => {
     // console.log(nativeEvent)
-    let y = nativeEvent.contentOffset.y;
-    console.log(offsetY, y);
-    if (Math.abs(y - offsetY) > 50) {
-      if (y > offsetY) {
-        onScrollDown();
-      } else {
-        onScrollUp();
-      }
+    // const prevOffsetY = offsetY;
+    const curOffsetY = event.nativeEvent.contentOffset.y;
+    // if (Math.abs(curOffsetY - prevOffsetY) > 8) {
+    //   if (curOffsetY < prevOffsetY) {
+    //     addBtnRef.current.onShow();
+    //   } else {
+    //     addBtnRef.current.onHide();
+    //   }
+    // } else if (curOffsetY === 0) {
+    //   addBtnRef.current.onShow();
+    // }
+
+    if (curOffsetY > 200) {
+      scrollTopRef.current.onShow();
+    } else {
+      scrollTopRef.current.onHide();
     }
+
+    // setOffsetY(curOffsetY);
     // if (nativeEvent.contentOffset.y) {
 
     // }
@@ -72,8 +85,19 @@ const AnnouncementScreen = ({ navigation }) => {
     //     setRefreshEnabled(false);
     //   }
     // }
-    setOffsetY(nativeEvent.contentOffset.y);
-  };
+  }, []);
+
+  const onScrollToTop = useCallback(() => {
+    flatlistRef.current.scrollToOffset({ animated: true, y: 0 });
+  }, []);
+
+  const onScrollStartHandler = useCallback(() => {
+    scrollTopRef.current.cancelAnim();
+  }, []);
+
+  const onScrollEndHandler = useCallback(() => {
+    scrollTopRef.current.hideWithDelay();
+  }, []);
 
   const loadAnnouncements = useCallback(async () => {
     setIsRefreshing(true);
@@ -108,53 +132,62 @@ const AnnouncementScreen = ({ navigation }) => {
     dispatch(tabbarActions.updateVisibility(true));
   });
 
-  const onEditHandler = item => {
-    navigation.navigate('ModifyAnnouncement', {
-      isEdit: true,
-      announcementData: item,
-    });
-  };
+  const onEditHandler = useCallback(
+    item => {
+      navigation.navigate('ModifyAnnouncement', {
+        isEdit: true,
+        announcementData: item,
+      });
+    },
+    [navigation],
+  );
 
-  const onDeleteHandler = id => {
+  const onDeleteHandler = useCallback(id => {
     setDeleteId(id);
     setModalVisible(true);
-  };
+  }, []);
 
-  const onDownloadHandler = ({ id, image }) => {
-    checkPermision(id, image)
-      .then(() => {
-        'done';
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
+  const onDownloadHandler = useCallback(
+    ({ id, image }) => {
+      checkPermision(id, image)
+        .then(() => {
+          'done';
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    [checkPermision],
+  );
 
-  const checkPermision = async (id, image) => {
-    if (Platform.OS === 'ios') {
-      downloadImage(id, image);
-    } else {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'Storage Permission Required',
-            message: 'App needs access to your storage to download photos',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Storage permission Granted');
-          downloadImage(id, image);
-        } else {
-          console.log('Storage permission not Granted');
+  const checkPermision = useCallback(
+    async (id, image) => {
+      if (Platform.OS === 'ios') {
+        downloadImage(id, image);
+      } else {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+              title: 'Storage Permission Required',
+              message: 'App needs access to your storage to download photos',
+            },
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('Storage permission Granted');
+            downloadImage(id, image);
+          } else {
+            console.log('Storage permission not Granted');
+          }
+        } catch (error) {
+          console.log('errro', error);
         }
-      } catch (error) {
-        console.log('errro', error);
       }
-    }
-  };
+    },
+    [downloadImage],
+  );
 
-  const downloadImage = (id, image) => {
+  const downloadImage = useCallback((id, image) => {
     const date = new Date();
     const { fs } = fetch_blob;
     const dirs = fetch_blob.fs.dirs;
@@ -189,7 +222,7 @@ const AnnouncementScreen = ({ navigation }) => {
       .catch(err => {
         console.log(err);
       });
-  };
+  }, []);
 
   const handleNotification = () => {
     PushNotification.localNotification({
@@ -216,18 +249,18 @@ const AnnouncementScreen = ({ navigation }) => {
     if (addBtnRef && addBtnRef.current) {
       addBtnRef.current.onScrollUp();
     }
-    if (searchBarRef && searchBarRef.current) {
-      searchBarRef.current.onScrollUp();
-    }
+    // if (searchBarRef && searchBarRef.current) {
+    //   searchBarRef.current.onScrollUp();
+    // }
   };
 
   const onScrollDown = () => {
     if (addBtnRef && addBtnRef.current) {
       addBtnRef.current.onScrollDown();
     }
-    if (searchBarRef && searchBarRef.current) {
-      searchBarRef.current.onScrollDown();
-    }
+    // if (searchBarRef && searchBarRef.current) {
+    //   searchBarRef.current.onScrollDown();
+    // }
   };
 
   const loadFailHandler = () => {
@@ -258,6 +291,12 @@ const AnnouncementScreen = ({ navigation }) => {
           <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
         ) : (
           <FlatList
+            contentContainerStyle={styles.scrollable}
+            ref={flatlistRef}
+            onMomentumScrollEnd={onScrollEndHandler}
+            onScroll={onScrollHandler}
+            onScrollBeginDrag={onScrollStartHandler}
+            // onScrollEndDrag={onScrollEndHandler}
             onRefresh={loadAnnouncements}
             refreshing={isRefreshing}
             data={announcements}
@@ -346,6 +385,7 @@ const AnnouncementScreen = ({ navigation }) => {
           onUpdateFilter={setFilters}
         />
       </SafeAreaView>
+      <ScrollTop ref={scrollTopRef} onPress={onScrollToTop} />
       {userData && userData.accessLevel > 0 ? (
         <AddButton
           ref={addBtnRef}
@@ -390,6 +430,9 @@ const styles = StyleSheet.create({
     top: 5,
     left: 0,
     right: 0,
+  },
+  scrollable: {
+    paddingBottom: 200,
   },
 });
 
