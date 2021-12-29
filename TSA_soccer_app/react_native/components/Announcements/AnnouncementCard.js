@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback, memo } from 'react';
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { useSelector } from 'react-redux';
 
@@ -21,7 +21,7 @@ const AnnouncementCard = props => {
     authorId = 0,
   } = props.announcementData;
 
-  const onSelectOption = option => {
+  const onSelectOption = useCallback(option => {
     if (option.id === 0 && props.onEdit) {
       props.onEdit();
     } else if (option.id === 1 && props.onDelete) {
@@ -29,7 +29,8 @@ const AnnouncementCard = props => {
     } else if (props.onDownload) {
       props.onDownload();
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const menuOptions = useMemo(() => {
     const edit = { id: 0, label: 'Edit' };
@@ -191,4 +192,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AnnouncementCard;
+export default memo(AnnouncementCard, (prevState, newState) => {
+  return (
+    prevState.id === newState.id &&
+    prevState.date === newState.date &&
+    prevState.description === newState.description &&
+    prevState.firstName === newState.firstName &&
+    prevState.lastName === newState.lastName &&
+    prevState.image === newState.image &&
+    prevState.profileImg === newState.profileImg
+  );
+});

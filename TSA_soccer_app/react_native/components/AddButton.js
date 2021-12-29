@@ -23,11 +23,11 @@ const AddButton = forwardRef((props, ref) => {
 
   // useImperativeHandle customizes the instance value that is exposed to parent components when using refs
   useImperativeHandle(ref, () => ({
-    onScrollUp,
-    onScrollDown,
+    onShow,
+    onHide,
   }));
 
-  const onScrollUp = () => {
+  const onShow = () => {
     if (scrollDownAnimInit.value) {
       visible.value = true;
       scrollDownAnimInit.value = false;
@@ -37,7 +37,7 @@ const AddButton = forwardRef((props, ref) => {
     }
   };
 
-  const onScrollDown = () => {
+  const onHide = () => {
     if (!scrollDownAnimInit.value) {
       isScroll.value = true;
       scrollDownAnimInit.value = true;
@@ -97,7 +97,11 @@ const AddButton = forwardRef((props, ref) => {
       <View style={styles.addBtn}>
         <Ripple
           style={[styles.ripple]}
-          onPress={props.onPress}
+          onPress={() => {
+            if (visible.value) {
+              props.onPress();
+            }
+          }}
           onPressIn={onFocusIn}
           onPressOut={onFocusOut}>
           <Icon name="add-outline" color={theme.addBtnIcon} size={28} />
@@ -136,7 +140,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 50,
-    justifyContent: 'space-around',
     overflow: 'hidden',
   },
 });
