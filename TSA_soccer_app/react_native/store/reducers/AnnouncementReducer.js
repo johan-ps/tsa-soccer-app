@@ -11,7 +11,8 @@ const INITIAL_STATE = [];
 const announcementReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case GET_ANNOUNCEMENTS:
-      return action.announcements;
+      const a = action.announcements;
+      return [a[0], a[1], a[2], a[3], a[4], a[5]];
     case ADD_ANNOUNCEMENT:
       return [action.announcement, ...state];
     case DELETE_ANNOUNCEMENT:

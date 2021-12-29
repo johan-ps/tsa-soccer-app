@@ -26,10 +26,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
 import * as loaderActions from '../store/actions/LoaderActions';
 import { getImageUrl } from '../api/announcements';
+import ScrollTop from '../components/UiComponents/UiScrollTop';
 
 const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();
   const searchBarRef = useRef();
+  const scrollTopRef = useRef();
+  const flatlistRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -49,17 +52,27 @@ const AnnouncementScreen = ({ navigation }) => {
 
   const [offsetY, setOffsetY] = useState(0);
 
-  const onScrollHandler = ({ nativeEvent }) => {
+  const onScrollHandler = event => {
     // console.log(nativeEvent)
-    let y = nativeEvent.contentOffset.y;
-    console.log(offsetY, y);
-    if (Math.abs(y - offsetY) > 50) {
-      if (y > offsetY) {
-        onScrollDown();
+    const prevOffsetY = offsetY;
+    const curOffsetY = event.nativeEvent.contentOffset.y;
+    if (Math.abs(curOffsetY - prevOffsetY) > 8) {
+      if (curOffsetY < prevOffsetY) {
+        addBtnRef.current.onShow();
       } else {
-        onScrollUp();
+        addBtnRef.current.onHide();
       }
+    } else if (curOffsetY === 0) {
+      addBtnRef.current.onShow();
     }
+
+    if (curOffsetY > 200) {
+      scrollTopRef.current.onShow();
+    } else {
+      scrollTopRef.current.onHide();
+    }
+
+    setOffsetY(curOffsetY);
     // if (nativeEvent.contentOffset.y) {
 
     // }
@@ -72,7 +85,10 @@ const AnnouncementScreen = ({ navigation }) => {
     //     setRefreshEnabled(false);
     //   }
     // }
-    setOffsetY(nativeEvent.contentOffset.y);
+  };
+
+  const onScrollToTop = () => {
+    flatlistRef.current.scrollToOffset({ animated: true, y: 0 });
   };
 
   const loadAnnouncements = useCallback(async () => {
@@ -216,18 +232,18 @@ const AnnouncementScreen = ({ navigation }) => {
     if (addBtnRef && addBtnRef.current) {
       addBtnRef.current.onScrollUp();
     }
-    if (searchBarRef && searchBarRef.current) {
-      searchBarRef.current.onScrollUp();
-    }
+    // if (searchBarRef && searchBarRef.current) {
+    //   searchBarRef.current.onScrollUp();
+    // }
   };
 
   const onScrollDown = () => {
     if (addBtnRef && addBtnRef.current) {
       addBtnRef.current.onScrollDown();
     }
-    if (searchBarRef && searchBarRef.current) {
-      searchBarRef.current.onScrollDown();
-    }
+    // if (searchBarRef && searchBarRef.current) {
+    //   searchBarRef.current.onScrollDown();
+    // }
   };
 
   const loadFailHandler = () => {
@@ -258,6 +274,8 @@ const AnnouncementScreen = ({ navigation }) => {
           <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
         ) : (
           <FlatList
+            ref={flatlistRef}
+            onScroll={onScrollHandler}
             onRefresh={loadAnnouncements}
             refreshing={isRefreshing}
             data={announcements}
@@ -346,6 +364,7 @@ const AnnouncementScreen = ({ navigation }) => {
           onUpdateFilter={setFilters}
         />
       </SafeAreaView>
+      <ScrollTop ref={scrollTopRef} onPress={onScrollToTop} />
       {userData && userData.accessLevel > 0 ? (
         <AddButton
           ref={addBtnRef}

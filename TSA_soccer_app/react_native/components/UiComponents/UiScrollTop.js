@@ -1,7 +1,7 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import Ripple from 'react-native-material-ripple';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector } from 'react-redux';
 import Animated, {
   useSharedValue,
@@ -10,12 +10,12 @@ import Animated, {
 } from 'react-native-reanimated';
 
 // forwardRef allows functional components to have refs
-const AddButton = forwardRef((props, ref) => {
+const ScrollTop = forwardRef((props, ref) => {
   const focusAnimation = useSharedValue(1);
-  const scrollAnimation = useSharedValue(1);
+  const scrollAnimation = useSharedValue(0);
 
   const isScroll = useSharedValue(false); // does scroll animation have priority over focus animation
-  const visible = useSharedValue(true);
+  const visible = useSharedValue(false);
   const scrollDownAnimInit = useSharedValue(false); // has scroll down animation started
 
   // get current theme colors from state
@@ -56,7 +56,7 @@ const AddButton = forwardRef((props, ref) => {
   };
 
   const themeBgClr = {
-    backgroundColor: theme.addBtnBg,
+    backgroundColor: theme.primaryBg,
   };
 
   const containerAnimStyle = useAnimatedStyle(() => {
@@ -88,12 +88,7 @@ const AddButton = forwardRef((props, ref) => {
 
   return (
     <Animated.View
-      style={[
-        styles.addBtnContainer,
-        themeBgClr,
-        containerAnimStyle,
-        { shadowColor: theme.addBtnBg },
-      ]}>
+      style={[styles.addBtnContainer, themeBgClr, containerAnimStyle]}>
       <View style={styles.addBtn}>
         <Ripple
           style={[styles.ripple]}
@@ -104,42 +99,44 @@ const AddButton = forwardRef((props, ref) => {
           }}
           onPressIn={onFocusIn}
           onPressOut={onFocusOut}>
-          <Icon name="add-outline" color={theme.addBtnIcon} size={28} />
+          <Icon name="arrow-collapse-up" color={theme.addBtnBg} size={18} />
         </Ripple>
       </View>
     </Animated.View>
   );
 });
 
-export default AddButton;
+export default ScrollTop;
 
 const styles = StyleSheet.create({
   ripple: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 30,
     overflow: 'hidden',
   },
   addBtnContainer: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     borderRadius: 50,
     overflow: 'hidden',
     position: 'absolute',
-    bottom: 95,
-    right: 25,
-    elevation: 10,
-    shadowRadius: 10,
+    bottom: 90,
+    alignSelf: 'center',
+    elevation: 5,
+    shadowRadius: 5,
     shadowOpacity: 0.3,
-    shadowOffset: { height: 10 },
+    shadowOffset: { height: 5 },
     zIndex: 200,
   },
   addBtn: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
     overflow: 'hidden',
   },
 });
