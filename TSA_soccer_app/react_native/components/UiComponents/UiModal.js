@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { View, Text, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import Animated, {
@@ -203,4 +203,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UiModal;
+export default memo(UiModal);

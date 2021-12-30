@@ -19,23 +19,17 @@ const AnnouncementCard = props => {
     image,
     profileImg,
     authorId = 0,
-    onEdit,
-    onDelete,
-    onDownload,
   } = props.announcementData;
 
-  const onSelectOption = useCallback(
-    option => {
-      if (option.id === 0 && onEdit) {
-        onEdit();
-      } else if (option.id === 1 && onDelete) {
-        onDelete();
-      } else if (onDownload) {
-        onDownload();
-      }
-    },
-    [onDelete, onDownload, onEdit],
-  );
+  const onSelectOption = option => {
+    if (option.id === 0 && props.onEdit) {
+      props.onEdit();
+    } else if (option.id === 1 && props.onDelete) {
+      props.onDelete();
+    } else if (props.onDownload) {
+      props.onDownload();
+    }
+  };
 
   const menuOptions = useMemo(() => {
     const edit = { id: 0, label: 'Edit' };

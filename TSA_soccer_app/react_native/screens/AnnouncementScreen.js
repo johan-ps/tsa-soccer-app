@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState, memo } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,12 +7,9 @@ import {
   Platform,
   FlatList,
   PermissionsAndroid,
-  Text,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import AnimScrollView from '../components/AnimScrollView';
 import fetch_blob from 'rn-fetch-blob';
-import PushNotification from 'react-native-push-notification';
 import {
   AnnouncementCard,
   NavHeader,
@@ -28,13 +25,11 @@ import * as tabbarActions from '../store/actions/TabbarActions';
 import * as loaderActions from '../store/actions/LoaderActions';
 import { getImageUrl } from '../api/announcements';
 import ScrollTop from '../components/UiComponents/UiScrollTop';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { BlurView } from '@react-native-community/blur';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const downloadImage = (id, image) => {
   const date = new Date();
   const { fs } = fetch_blob;
-  const dirs = fetch_blob.fs.dirs;
   const PictureDir = fs.dirs.PictureDir + '/CTSA';
   const type = image.substring('data:image/'.length, image.indexOf(';base64'));
 
@@ -65,6 +60,11 @@ const downloadImage = (id, image) => {
     });
 };
 
+const options = {
+  enableVibrateFallback: true,
+  ignoreAndroidSystemSettings: true,
+};
+
 const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();
   const searchBarRef = useRef();
@@ -72,7 +72,6 @@ const AnnouncementScreen = ({ navigation }) => {
   const flatlistRef = useRef();
   const filterRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
-  const [filterVisible, setFilterVisible] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const theme = useSelector(state => state.theme.colors);
   const activeTheme = useSelector(state => state.theme.activeTheme);
@@ -80,12 +79,7 @@ const AnnouncementScreen = ({ navigation }) => {
   const userData = useSelector(state => state.userData);
   const dispatch = useDispatch();
   const [showBadge, setShowBadge] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const [filters, setFilters] = useState(null);
-  const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [refreshEnabled, setRefreshEnabled] = useState(true);
-  const [showBlur, setShowBlur] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // const [offsetY, setOffsetY] = useState(0);
@@ -112,48 +106,58 @@ const AnnouncementScreen = ({ navigation }) => {
     scrollTopRef.current.hideWithDelay();
   };
 
-  const loadAnnouncements = useCallback(async () => {
-    setIsRefreshing(true);
-    try {
-      if (!loaded) {
-        dispatch(loaderActions.updateLoader(true));
+  const loadAnnouncements = useCallback(
+    async (loading = false) => {
+      if (!loading) {
+        setIsRefreshing(true);
       }
-      if (filters) {
-        await dispatch(announcementActions.getFilteredAnnouncements(filters));
-      } else {
-        await dispatch(announcementActions.getAnnouncements());
+      try {
+        ReactNativeHapticFeedback.trigger(
+          Platform.OS === 'ios' ? 'impactLight' : 'clockTick',
+          options,
+        );
+        filterRef.current.reset();
+        const timeout = setTimeout(() => {
+          loadFailHandler();
+        }, 5000);
+        if (loading) {
+          dispatch(loaderActions.updateLoader(true));
+        }
+        if (filters) {
+          await dispatch(announcementActions.getFilteredAnnouncements(filters));
+        } else {
+          await dispatch(announcementActions.getAnnouncements());
+        }
+        clearTimeout(timeout);
+      } catch (err) {
+        console.log('error<1>', err);
+        loadFailHandler();
+      } finally {
+        if (loading) {
+          dispatch(loaderActions.updateLoader(false));
+        }
       }
-    } catch (err) {
-      console.log('error<1>', err);
-    } finally {
-      if (!loaded) {
-        dispatch(loaderActions.updateLoader(false));
+      if (!loading) {
+        setIsRefreshing(false);
       }
-      setLoaded(true);
-    }
-    setIsRefreshing(false);
-  }, [dispatch, filters, loaded]);
+    },
+    [dispatch, filters],
+  );
 
   useEffect(() => {
-    setIsLoading(true);
-    loadAnnouncements().then(() => {
-      setIsLoading(false);
-    });
+    loadAnnouncements(true);
   }, [dispatch, loadAnnouncements]);
 
   useFocusEffect(() => {
     dispatch(tabbarActions.updateVisibility(true));
   });
 
-  const onEditHandler = useCallback(
-    item => {
-      navigation.navigate('ModifyAnnouncement', {
-        isEdit: true,
-        announcementData: item,
-      });
-    },
-    [navigation],
-  );
+  const onEditHandler = item => {
+    navigation.navigate('ModifyAnnouncement', {
+      isEdit: true,
+      announcementData: item,
+    });
+  };
 
   const onDeleteHandler = id => {
     setDeleteId(id);
@@ -295,7 +299,6 @@ const AnnouncementScreen = ({ navigation }) => {
           ref={filterRef}
           primaryLabel="Apply"
           secondaryLabel="Reset"
-          visible={filterVisible}
           title="Filter Announcements"
           onCloseHandler={hideFilter}
           onUpdateFilter={setFilters}
@@ -342,4 +345,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(AnnouncementScreen);
+export default AnnouncementScreen;
