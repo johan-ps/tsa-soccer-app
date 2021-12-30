@@ -37,6 +37,40 @@ import ScrollTop from '../components/UiComponents/UiScrollTop';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { BlurView } from '@react-native-community/blur';
 
+const downloadImage = (id, image) => {
+  const date = new Date();
+  const { fs } = fetch_blob;
+  const dirs = fetch_blob.fs.dirs;
+  const PictureDir = fs.dirs.PictureDir + '/CTSA';
+  const type = image.substring('data:image/'.length, image.indexOf(';base64'));
+
+  const fileName = `image_${Math.floor(
+    date.getTime() + date.getSeconds() / 2,
+  )}.${type}`;
+
+  const path = PictureDir + '/' + fileName;
+  const options = {
+    fileCache: true,
+    addAndroidDownloads: {
+      useDownloadManager: true,
+      notification: true,
+      path: path,
+      description: 'Download Complete',
+      mime: `image/${type}`,
+    },
+  };
+
+  fetch_blob
+    .config(options)
+    .fetch('GET', getImageUrl(id))
+    .then(res => {
+      console.log('download successfully');
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
 const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();
   const searchBarRef = useRef();
@@ -62,52 +96,27 @@ const AnnouncementScreen = ({ navigation }) => {
 
   // const [offsetY, setOffsetY] = useState(0);
 
-  const onScrollHandler = useCallback(event => {
-    // console.log(nativeEvent)
-    // const prevOffsetY = offsetY;
+  const onScrollHandler = event => {
     const curOffsetY = event.nativeEvent.contentOffset.y;
-    // if (Math.abs(curOffsetY - prevOffsetY) > 8) {
-    //   if (curOffsetY < prevOffsetY) {
-    //     addBtnRef.current.onShow();
-    //   } else {
-    //     addBtnRef.current.onHide();
-    //   }
-    // } else if (curOffsetY === 0) {
-    //   addBtnRef.current.onShow();
-    // }
 
     if (curOffsetY > 200) {
       scrollTopRef.current.onShow();
     } else {
       scrollTopRef.current.onHide();
     }
+  };
 
-    // setOffsetY(curOffsetY);
-    // if (nativeEvent.contentOffset.y) {
-
-    // }
-    // if (nativeEvent.contentOffset.y <= 0) {
-    //   if (!refreshEnabled) {
-    //     setRefreshEnabled(true);
-    //   }
-    // } else {
-    //   if (refreshEnabled) {
-    //     setRefreshEnabled(false);
-    //   }
-    // }
-  }, []);
-
-  const onScrollToTop = useCallback(() => {
+  const onScrollToTop = () => {
     flatlistRef.current.scrollToOffset({ animated: true, y: 0 });
-  }, []);
+  };
 
-  const onScrollStartHandler = useCallback(() => {
+  const onScrollStartHandler = () => {
     scrollTopRef.current.cancelAnim();
-  }, []);
+  };
 
-  const onScrollEndHandler = useCallback(() => {
+  const onScrollEndHandler = () => {
     scrollTopRef.current.hideWithDelay();
-  }, []);
+  };
 
   const loadAnnouncements = useCallback(async () => {
     setIsRefreshing(true);
@@ -152,106 +161,55 @@ const AnnouncementScreen = ({ navigation }) => {
     [navigation],
   );
 
-  const onDeleteHandler = useCallback(id => {
+  const onDeleteHandler = id => {
     setDeleteId(id);
     setModalVisible(true);
-  }, []);
+  };
 
-  const onDownloadHandler = useCallback(
-    ({ id, image }) => {
-      checkPermision(id, image)
-        .then(() => {
-          'done';
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    [checkPermision],
-  );
-
-  const checkPermision = useCallback(
-    async (id, image) => {
-      if (Platform.OS === 'ios') {
-        downloadImage(id, image);
-      } else {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-              title: 'Storage Permission Required',
-              message: 'App needs access to your storage to download photos',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Storage permission Granted');
-            downloadImage(id, image);
-          } else {
-            console.log('Storage permission not Granted');
-          }
-        } catch (error) {
-          console.log('errro', error);
-        }
-      }
-    },
-    [downloadImage],
-  );
-
-  const downloadImage = useCallback((id, image) => {
-    const date = new Date();
-    const { fs } = fetch_blob;
-    const dirs = fetch_blob.fs.dirs;
-    const PictureDir = fs.dirs.PictureDir + '/CTSA';
-    const type = image.substring(
-      'data:image/'.length,
-      image.indexOf(';base64'),
-    );
-
-    const fileName = `image_${Math.floor(
-      date.getTime() + date.getSeconds() / 2,
-    )}.${type}`;
-
-    const path = PictureDir + '/' + fileName;
-    const options = {
-      fileCache: true,
-      addAndroidDownloads: {
-        useDownloadManager: true,
-        notification: true,
-        path: path,
-        description: 'Download Complete',
-        mime: `image/${type}`,
-      },
-    };
-
-    fetch_blob
-      .config(options)
-      .fetch('GET', getImageUrl(id))
-      .then(res => {
-        console.log('download successfully');
+  const onDownloadHandler = ({ id, image }) => {
+    checkPermision(id, image)
+      .then(() => {
+        'done';
       })
       .catch(err => {
         console.log(err);
       });
-  }, []);
+  };
 
-  const handleNotification = () => {
-    PushNotification.localNotification({
-      channelId: 'test-channel',
-      title: 'Download Image',
-      message: 'The image has been downloaded',
-    });
+  const checkPermision = async (id, image) => {
+    if (Platform.OS === 'ios') {
+      downloadImage(id, image);
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission Required',
+            message: 'App needs access to your storage to download photos',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Storage permission Granted');
+          downloadImage(id, image);
+        } else {
+          console.log('Storage permission not Granted');
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    }
   };
 
   const onModalCloseHandler = () => {
     setModalVisible(false);
   };
 
-  const showFilter = () => {
+  const showFilter = useCallback(() => {
     dispatch(tabbarActions.updateVisibility(false));
     addBtnRef.current.onHide(false);
     scrollTopRef.current.onHide();
     filterRef.current.snapToIndex(0);
-  };
+  }, [addBtnRef, scrollTopRef, filterRef, dispatch]);
 
   const hideFilter = () => {
     dispatch(tabbarActions.updateVisibility(true));
@@ -263,32 +221,24 @@ const AnnouncementScreen = ({ navigation }) => {
     setDeleteId(null);
   };
 
-  const onScrollUp = () => {
-    if (addBtnRef && addBtnRef.current) {
-      addBtnRef.current.onScrollUp();
-    }
-    // if (searchBarRef && searchBarRef.current) {
-    //   searchBarRef.current.onScrollUp();
-    // }
-  };
-
-  const onScrollDown = () => {
-    if (addBtnRef && addBtnRef.current) {
-      addBtnRef.current.onScrollDown();
-    }
-    // if (searchBarRef && searchBarRef.current) {
-    //   searchBarRef.current.onScrollDown();
-    // }
-  };
-
   const loadFailHandler = () => {
     setShowBadge(true);
   };
 
-  const outerScrollHandler = disabled => {
-    // console.log('outer disabled', disabled)
-    // setScrollEnabled(disabled);
+  const onCloseFailBadgeHandler = () => {
+    setShowBadge(false);
   };
+
+  const onAddAnnouncementHandler = useCallback(() => {
+    navigation.navigate('ModifyAnnouncement', {
+      isEdit: false,
+      announcementData: null,
+    });
+  }, [navigation]);
+
+  useEffect(() => {
+    console.log('Component redered');
+  });
 
   return (
     <View style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
@@ -314,7 +264,6 @@ const AnnouncementScreen = ({ navigation }) => {
             onMomentumScrollEnd={onScrollEndHandler}
             onScroll={onScrollHandler}
             onScrollBeginDrag={onScrollStartHandler}
-            // onScrollEndDrag={onScrollEndHandler}
             onRefresh={loadAnnouncements}
             refreshing={isRefreshing}
             data={announcements}
@@ -336,55 +285,6 @@ const AnnouncementScreen = ({ navigation }) => {
                 />
               );
             }}
-          />
-          // <AnimScrollView
-          //   backgroundColor={theme.secondaryBg}
-          //   onScrollUp={onScrollUp}
-          //   // enabled={refreshEnabled}
-          //   // onlyPullToRefresh={true}
-          //   onScrollDown={onScrollDown}
-          //   setScrollEnabled={outerScrollHandler}
-          //   loadFail={loadFailHandler}
-          //   load={loadAnnouncements}>
-          /* // <FlatList
-            //   onScroll={onScrollHandler}
-            //   scrollEnabled={scrollEnabled}
-            //   data={announcements}
-            //   keyExtractor={item => item.id}
-            //   renderItem={({ item }) => {
-            //     return (
-            //       <AnnouncementCard
-            //         key={item.id}
-            //         onDelete={() => {
-            //           onDeleteHandler(item.id);
-            //         }}
-            //         announcementData={item}
-            //       />
-            //     );
-            //   }}
-            // /> */
-          /* <View>
-              {announcements.map(announcement => {
-                return (
-                  <AnnouncementCard
-                    key={announcement.id}
-                    onDelete={() => {
-                      onDeleteHandler(announcement.id);
-                    }}
-                    image={announcement.imageUrl}
-                    announcementData={announcement}
-                  />
-                );
-              })}
-            </View> */
-          /* </AnimScrollView> */
-        )}
-        {showBlur && (
-          <BlurView
-            style={styles.absolute}
-            blurType="light"
-            blurAmount={1}
-            reducedTransparencyFallbackColor="white"
           />
         )}
         {userData && userData.accessLevel > 0 ? (
@@ -413,22 +313,12 @@ const AnnouncementScreen = ({ navigation }) => {
       </SafeAreaView>
       <ScrollTop ref={scrollTopRef} onPress={onScrollToTop} />
       {userData && userData.accessLevel > 0 ? (
-        <AddButton
-          ref={addBtnRef}
-          onPress={() => {
-            navigation.navigate('ModifyAnnouncement', {
-              isEdit: false,
-              announcementData: null,
-            });
-          }}
-        />
+        <AddButton ref={addBtnRef} onPress={onAddAnnouncementHandler} />
       ) : null}
       {showBadge && (
         <UiBadge
           msg="Failed to load announcements"
-          onHide={() => {
-            setShowBadge(false);
-          }}
+          onHide={onCloseFailBadgeHandler}
           time={1000}
         />
       )}
@@ -459,13 +349,6 @@ const styles = StyleSheet.create({
   },
   scrollable: {
     paddingBottom: 200,
-  },
-  absolute: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
   },
 });
 

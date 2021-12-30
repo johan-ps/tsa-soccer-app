@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal } from 'react-native';
+import { View, StyleSheet, Modal } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { useSelector } from 'react-redux';
 
@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingContainer: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
   },
 });
 
