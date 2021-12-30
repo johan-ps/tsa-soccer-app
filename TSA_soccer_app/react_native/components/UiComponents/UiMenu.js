@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, memo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -36,7 +36,7 @@ const UiMenu = props => {
   const optionHeight = 45;
   const bottomNavHeight = 70;
 
-  const onOpenHandler = () => {
+  const onOpenHandler = useCallback(() => {
     menuIcon.current.measure((fx, fy, width, height, px, py) => {
       setOffsetX(windowWidth - px - width);
       // Flip by Y axis if menu hits bottom screen border
@@ -58,7 +58,14 @@ const UiMenu = props => {
     menuAnimY.value = withTiming(optionHeight * props.options.length, {
       duration: 250,
     });
-  };
+  }, [
+    menuAnimX,
+    menuAnimY,
+    opacityAnimation,
+    props.options.length,
+    windowHeight,
+    windowWidth,
+  ]);
 
   const optionPosition = useMemo(() => {
     if (flipY) {
@@ -258,4 +265,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UiMenu;
+export default memo(UiMenu);

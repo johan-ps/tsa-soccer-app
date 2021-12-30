@@ -1,4 +1,4 @@
-import React, {useEffect, memo, useMemo} from 'react';
+import React, { memo, useMemo } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { useSelector } from 'react-redux';
 
