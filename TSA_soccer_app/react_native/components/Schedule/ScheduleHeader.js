@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import ScheduleHeaderItem from './ScheduleHeaderItem';
 import DropdownSwitch from './DropdownSwitch';
+import TeamSelect from './TeamSelect';
 
 const ScheduleHeader = props => {
   const {
@@ -80,13 +81,7 @@ const ScheduleHeader = props => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.schBg }]}>
-      <Text
-        style={[
-          styles.team,
-          { color: theme.primaryText, fontFamily: theme.fontRegular },
-        ]}>
-        U8 Markham Houseleague
-      </Text>
+      <TeamSelect currentTeam="Toronto Raptors"/>
       <View style={styles.headerContainer}>
         <Text
           style={[
