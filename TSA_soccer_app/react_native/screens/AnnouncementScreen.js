@@ -236,10 +236,6 @@ const AnnouncementScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    console.log('Component redered');
-  });
-
   return (
     <View style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
       <StatusBar
