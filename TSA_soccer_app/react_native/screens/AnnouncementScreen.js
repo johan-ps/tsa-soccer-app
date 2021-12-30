@@ -116,7 +116,6 @@ const AnnouncementScreen = ({ navigation }) => {
           Platform.OS === 'ios' ? 'impactLight' : 'clockTick',
           options,
         );
-        filterRef.current.reset();
         const timeout = setTimeout(() => {
           loadFailHandler();
         }, 5000);
