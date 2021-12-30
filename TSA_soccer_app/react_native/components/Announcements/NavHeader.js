@@ -1,4 +1,10 @@
-import React, { forwardRef, useImperativeHandle, useEffect, memo } from 'react';
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+  memo,
+  useState,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -17,13 +23,16 @@ import Animated, {
 } from 'react-native-reanimated';
 import { UiInput } from '../_components';
 import * as announcementActions from '../../store/actions/AnnouncementActions';
-import * as loaderActions from '../../store/actions/LoaderActions';
+import LottieView from 'lottie-react-native';
+
+const loadingLottieAnim = require('../../assets/img/search-loader.json');
 
 const NavHeader = forwardRef((props, ref) => {
   const theme = useSelector(state => state.theme.colors);
   const dispatch = useDispatch();
   const scrollAnimation = useSharedValue(0);
   const scrollDownAnimInit = useSharedValue(false); // has scroll down animation started
+  const [loading, setLoading] = useState(false);
 
   // useImperativeHandle customizes the instance value that is exposed to parent components when using refs
   useImperativeHandle(ref, () => ({
@@ -55,11 +64,18 @@ const NavHeader = forwardRef((props, ref) => {
     };
   });
 
-  const onChangeHandler = (inputId, inputValue) => {
-    if (inputValue && inputValue.length > 3) {
-      dispatch(announcementActions.searchAnnouncements(inputValue));
-    } else {
-      dispatch(announcementActions.getAnnouncements());
+  const onChangeHandler = async (inputId, inputValue) => {
+    try {
+      // setLoading(true);
+      if (inputValue && inputValue.length > 2) {
+        dispatch(announcementActions.searchAnnouncements(inputValue));
+      } else {
+        dispatch(announcementActions.getAnnouncements());
+      }
+      // dispatch(announcementActions.searchAnnouncements(inputValue));
+      // setLoading(false);
+    } catch (err) {
+      console.log('err: ', err);
     }
   };
 
@@ -92,18 +108,35 @@ const NavHeader = forwardRef((props, ref) => {
         initialValue=""
         inputValidities={true}
         placeholder="Search"
-        style={styles.marginBottom}
+        paddingRight={30}
         onInputChange={onChangeHandler}
         bg={theme.secondaryBg}
         color={theme.secondaryText}
         placeholderClr={theme.secondaryText}
         cursor={theme.cursor}
       />
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <LottieView
+            style={styles.lottieView}
+            autoPlay={true}
+            source={loadingLottieAnim}
+          />
+        </View>
+      )}
     </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    width: 30,
+    height: 30,
+    position: 'absolute',
+    right: 30,
+    top: 85,
+    zIndex: 100,
+  },
   heading: {
     fontSize: 24,
     marginBottom: 15,
@@ -118,6 +151,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     paddingHorizontal: 15,
     paddingVertical: 15,
+    position: 'relative',
+    zIndex: 1000,
   },
   iconContainer: {
     borderRadius: 50,

@@ -118,6 +118,7 @@ const AnnouncementScreen = ({ navigation }) => {
         );
         const timeout = setTimeout(() => {
           loadFailHandler();
+          dispatch(loaderActions.updateLoader(false));
         }, 5000);
         if (loading) {
           dispatch(loaderActions.updateLoader(true));
