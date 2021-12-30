@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle, useEffect, memo } from 'react';
 import {
   View,
   StyleSheet,
@@ -106,12 +106,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 150,
     flexDirection: 'column',
-    // elevation: 15,
-    // shadowRadius: 2,
-    // shadowColor: '#000000',
-    // shadowOpacity: 0.3,
-    // shadowOffset: { height: 2 },
-    // zIndex: 0,
     paddingHorizontal: 15,
     paddingVertical: 15,
   },
@@ -125,4 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NavHeader;
+export default memo(NavHeader);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -63,4 +63,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UiIcon;
+export default memo(UiIcon);

@@ -7,6 +7,7 @@ import React, {
   useMemo,
   forwardRef,
   useImperativeHandle,
+  memo,
 } from 'react';
 import {
   View,
@@ -111,16 +112,17 @@ const formReducer = (state, action) => {
 };
 
 const UiFilterModal = forwardRef((props, ref) => {
-  // let { visible } = props;
   const theme = useSelector(state => state.theme.colors);
   const modalAnimation = useSharedValue(0);
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
   const bottomSheetRef = useRef();
   const snapPoints = useMemo(() => ['75%'], []);
+  const ddRef = useRef();
 
   useImperativeHandle(ref, () => ({
     snapToIndex,
+    reset: secondaryBtnHandler,
   }));
 
   const loadFilteredAnnouncements = useCallback(
@@ -162,7 +164,7 @@ const UiFilterModal = forwardRef((props, ref) => {
 
   useEffect(() => {
     loadTeams();
-  }, []);
+  }, [loadTeams]);
 
   const animStyle = useAnimatedStyle(() => {
     return {
@@ -184,10 +186,12 @@ const UiFilterModal = forwardRef((props, ref) => {
   const primaryBtnHandler = useCallback(() => {
     dispatchFormState({ type: FORM_INPUT_APPLY });
     props.onUpdateFilter(formState.inputValues);
-    // loadFilteredAnnouncements(formState.inputValues);
-  }, [formState.inputValues, props]);
+    loadFilteredAnnouncements(formState.inputValues);
+    bottomSheetRef.current.close();
+  }, [formState.inputValues, loadFilteredAnnouncements, props]);
 
   const secondaryBtnHandler = () => {
+    ddRef.current.reset();
     dispatchFormState({ type: 'reset' });
   };
 
@@ -304,6 +308,7 @@ const UiFilterModal = forwardRef((props, ref) => {
         <BottomSheetScrollView>
           <View style={styles.bottomSheetContent}>
             <UiDropdown
+              ref={ddRef}
               options={teams}
               multiselect={true}
               group={true}
@@ -433,4 +438,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UiFilterModal;
+export default memo(UiFilterModal);

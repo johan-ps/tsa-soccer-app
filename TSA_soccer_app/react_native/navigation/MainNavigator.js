@@ -26,25 +26,27 @@ const MainNavigator = () => {
   const theme = useSelector(state => state.theme.colors);
   const tabBarVisible = useSelector(state => state.tabbar.visible);
 
-  // run function whenever dispatch or scheme changes
-  useEffect(() => {
-    if (scheme === 'dark') {
-      dispatch(ThemeActions.updateTheme(scheme));
-    }
+  // useEffect(() => {
+  //   // update theme
+  //   if (scheme === 'dark') {
+  //     dispatch(ThemeActions.updateTheme(scheme));
+  //   }
+  // }, [dispatch, scheme]);
 
+  useEffect(() => {
+    // update android system nav colour
     if (Platform.OS === 'android') {
       NavigationBarColor.changeNavigationBarColor(
-        'white',
-        scheme === 'dark',
+        theme.bottomNavBg,
+        theme.name !== 'dark',
         true,
       );
     }
-  }, [NavigationBarColor, dispatch, scheme]);
+  }, [NavigationBarColor, theme.bottomNavBg, theme.name]);
 
   return (
     <MainNav.Navigator
       screenOptions={({ route }) => ({
-        safeAreaInsets: { top: 0 },
         tabBarIcon: ({ focused }) => {
           let iconName;
 
