@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     // shadowColor: '#000000',
     // shadowOpacity: 0.3,
     // shadowOffset: { height: 2 },
-    zIndex: 100,
+    // zIndex: 0,
     paddingHorizontal: 15,
     paddingVertical: 15,
   },

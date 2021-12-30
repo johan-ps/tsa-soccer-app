@@ -27,23 +27,35 @@ const AddButton = forwardRef((props, ref) => {
     onHide,
   }));
 
-  const onShow = () => {
+  const onShow = (animated = true) => {
     if (scrollDownAnimInit.value) {
       visible.value = true;
       scrollDownAnimInit.value = false;
-      scrollAnimation.value = withTiming(1, {}, () => {
+
+      if (animated) {
+        scrollAnimation.value = withTiming(1, {}, () => {
+          isScroll.value = false;
+        });
+      } else {
+        scrollAnimation.value = 1;
         isScroll.value = false;
-      });
+      }
     }
   };
 
-  const onHide = () => {
+  const onHide = (animated = true) => {
     if (!scrollDownAnimInit.value) {
       isScroll.value = true;
       scrollDownAnimInit.value = true;
-      scrollAnimation.value = withTiming(0, {}, () => {
+
+      if (animated) {
+        scrollAnimation.value = withTiming(0, {}, () => {
+          visible.value = false;
+        });
+      } else {
+        scrollAnimation.value = 0;
         visible.value = false;
-      });
+      }
     }
   };
 
