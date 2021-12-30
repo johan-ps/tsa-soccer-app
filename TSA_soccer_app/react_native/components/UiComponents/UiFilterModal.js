@@ -15,6 +15,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import Animated, {
@@ -238,7 +239,9 @@ const UiFilterModal = forwardRef((props, ref) => {
 
   const renderFooter = useCallback(
     props => (
-      <BottomSheetFooter {...props} bottomInset={164}>
+      <BottomSheetFooter {...props} 
+        bottomInset={Platform.OS === 'ios' ? 250 : 164}
+      >
         <View style={styles.bottomSheetFooter}>
           <UiButton
             width="100%"
@@ -270,7 +273,7 @@ const UiFilterModal = forwardRef((props, ref) => {
   );
 
   return (
-    <View style={styles.bottomSheetContainer}>
+    <>
       <BottomSheet
         style={styles.bottomSheet}
         handleIndicatorStyle={{ backgroundColor: theme.primaryText }}
@@ -350,7 +353,7 @@ const UiFilterModal = forwardRef((props, ref) => {
           <View style={{ height: 300 }} />
         </BottomSheetScrollView>
       </BottomSheet>
-    </View>
+    </>
   );
 });
 
