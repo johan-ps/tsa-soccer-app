@@ -3,7 +3,7 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useMemo,
+  memo,
 } from 'react';
 import {
   View,
@@ -348,4 +348,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AnnouncementScreen;
+export default memo(AnnouncementScreen);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, memo, useMemo} from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { useSelector } from 'react-redux';
 
@@ -9,7 +9,7 @@ const ErrorScreen = props => {
   const { error } = props;
   const theme = useSelector(state => state.theme.colors);
 
-  const getHeading = (() => {
+  const getHeading = useMemo(() => {
     let heading;
     if (error === CONST.NO_RESULTS) {
       heading = CONST.NO_RESULTS_HEADING;
@@ -17,9 +17,9 @@ const ErrorScreen = props => {
       heading = CONST.NO_INTERNET_HEADING;
     }
     return heading;
-  })();
+  }, [error]);
 
-  const getSubHeading = (() => {
+  const getSubHeading = useMemo(() => {
     let subheading;
     if (error === CONST.NO_RESULTS) {
       subheading = CONST.NO_RESULTS_SUBHEADING;
@@ -27,7 +27,7 @@ const ErrorScreen = props => {
       subheading = CONST.NO_INTERNET_SUBHEADING;
     }
     return subheading;
-  })();
+  }, [error]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
@@ -113,4 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ErrorScreen;
+export default memo(ErrorScreen);
