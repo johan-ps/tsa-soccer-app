@@ -1,4 +1,13 @@
-import React, { useEffect, useState, useCallback, useReducer } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useReducer,
+  useRef,
+  useMemo,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import {
   View,
   Text,
@@ -23,7 +32,12 @@ import UiDatePicker from './UiDatePicker';
 import moment from 'moment';
 import * as loaderActions from '../../store/actions/LoaderActions';
 import * as announcementActions from '../../store/actions/AnnouncementActions';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import BottomSheet, {
+  BottomSheetScrollView,
+  BottomSheetFooter,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const FORM_INPUT_APPLY = 'FORM_INPUT_APPLY';
@@ -95,29 +109,18 @@ const formReducer = (state, action) => {
   }
 };
 
-const UiFilterModal = props => {
-  let { visible } = props;
-  const [showModal, setShowModal] = useState(visible);
+const UiFilterModal = forwardRef((props, ref) => {
+  // let { visible } = props;
   const theme = useSelector(state => state.theme.colors);
   const modalAnimation = useSharedValue(0);
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
+  const bottomSheetRef = useRef();
+  const snapPoints = useMemo(() => ['75%'], []);
 
-  const toggleModal = () => {
-    if (visible) {
-      setShowModal(true);
-      modalAnimation.value = withSpring(1, {
-        damping: 10,
-        mass: 1,
-        stiffness: 100,
-        overshootClamping: true,
-      });
-    } else {
-      modalAnimation.value = withTiming(0, {}, () => {
-        runOnJS(setShowModal)(false);
-      });
-    }
-  };
+  useImperativeHandle(ref, () => ({
+    snapToIndex,
+  }));
 
   const loadFilteredAnnouncements = useCallback(
     async filters => {
@@ -144,6 +147,10 @@ const UiFilterModal = props => {
     [dispatch],
   );
 
+  const snapToIndex = index => {
+    bottomSheetRef.current.snapToIndex(index);
+  };
+
   const loadTeams = useCallback(async () => {
     try {
       await dispatch(teamActions.getTeams());
@@ -154,12 +161,7 @@ const UiFilterModal = props => {
 
   useEffect(() => {
     loadTeams();
-  }, [loadTeams]);
-
-  useEffect(() => {
-    toggleModal();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
+  }, []);
 
   const animStyle = useAnimatedStyle(() => {
     return {
@@ -178,11 +180,11 @@ const UiFilterModal = props => {
     };
   });
 
-  const primaryBtnHandler = () => {
+  const primaryBtnHandler = useCallback(() => {
     dispatchFormState({ type: FORM_INPUT_APPLY });
     props.onUpdateFilter(formState.inputValues);
-    loadFilteredAnnouncements(formState.inputValues);
-  };
+    // loadFilteredAnnouncements(formState.inputValues);
+  }, [formState.inputValues, props]);
 
   const secondaryBtnHandler = () => {
     dispatchFormState({ type: 'reset' });
@@ -220,112 +222,153 @@ const UiFilterModal = props => {
     });
   };
 
-  const onCloseHandler = () => {
+  const onCloseHandler = useCallback(() => {
     dispatchFormState({ type: FORM_INPUT_RESET });
-    props.onCloseHandler(false);
-  };
+    props.onCloseHandler();
+  }, [props]);
+
+  const handleSheetChanges = useCallback(
+    (fromIndex, toIndex) => {
+      if (toIndex === -1) {
+        onCloseHandler();
+      }
+    },
+    [onCloseHandler],
+  );
+
+  const renderFooter = useCallback(
+    props => (
+      <BottomSheetFooter {...props} bottomInset={164}>
+        <View style={styles.bottomSheetFooter}>
+          <UiButton
+            width="100%"
+            height={62}
+            borderRadius={16}
+            style={styles.button}
+            primaryClr={theme.buttonPrimaryBg}
+            secondaryClr={theme.buttonPrimaryText}
+            label={'Apply'}
+            onPress={primaryBtnHandler}
+            size="medium"
+            darkBg={true}
+          />
+        </View>
+      </BottomSheetFooter>
+    ),
+    [primaryBtnHandler, theme.buttonPrimaryBg, theme.buttonPrimaryText],
+  );
+
+  const renderBackdrop = useCallback(
+    props => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+      />
+    ),
+    [],
+  );
 
   return (
-    <Modal transparent={true} visible={showModal}>
-      <Animated.View style={[styles.modalViewContainer, opacity]}>
-        <Animated.View
-          style={[
-            styles.modalContainer,
-            { backgroundColor: theme.cardBg },
-            animStyle,
-          ]}>
-          <TouchableOpacity style={styles.closeBtn} onPress={onCloseHandler}>
-            <Icon name="close-outline" color={theme.primaryText} size={40} />
-          </TouchableOpacity>
-          <View style={styles.textContainer}>
+    <View style={styles.bottomSheetContainer}>
+      <BottomSheet
+        style={styles.bottomSheet}
+        handleIndicatorStyle={{ backgroundColor: theme.primaryText }}
+        ref={bottomSheetRef}
+        index={-1}
+        enablePanDownToClose={true}
+        snapPoints={snapPoints}
+        onAnimate={handleSheetChanges}
+        footerComponent={renderFooter}
+        backdropComponent={renderBackdrop}>
+        <View
+          style={[styles.modalContainer, { backgroundColor: theme.primaryBg }]}>
+          <View style={styles.headingContainer}>
             <Text
               style={[
-                styles.title,
-                { color: theme.primaryText, fontFamily: theme.fontMedium },
+                styles.heading,
+                { fontFamily: theme.fontBold, color: theme.primaryText },
               ]}>
-              {props.title}
+              Filter Announcements
             </Text>
-            <ScrollView>
-              <UiDropdown
-                options={teams}
-                multiselect={true}
-                group={true}
-                placeholder="Choose teams"
-                size="large"
-                optionSize="large"
-                onSelect={onSelectHandler}
-                existingValues={formState.inputValues.teams}
-                isValid={formState.inputValidities.teams}
-                errCode={formState.errors.teams}
-              />
-              <View style={styles.marginTop}>
-                <UiDatePicker
-                  id="startDate"
-                  placeholder={
-                    formState.inputValues.startDate
-                      ? moment(formState.inputValues.startDate).format(
-                          'dddd, D MMM YYYY',
-                        )
-                      : 'Select start date'
-                  }
-                  existingDate={formState.inputValues.startDate}
-                  onChange={onDateChange}
-                  height={280}
-                  isValid={formState.inputValidities.startDate}
-                  errCode={formState.errors.startDate}
-                />
-              </View>
-              <View style={styles.marginTop}>
-                <UiDatePicker
-                  id="endDate"
-                  placeholder={
-                    formState.inputValues.endDate
-                      ? moment(formState.inputValues.endDate).format(
-                          'dddd, D MMM YYYY',
-                        )
-                      : 'Select end date'
-                  }
-                  existingDate={formState.inputValues.endDate}
-                  onChange={onDateChange}
-                  height={280}
-                  isValid={formState.inputValidities.endDate}
-                  errCode={formState.errors.endDate}
-                />
-              </View>
-            </ScrollView>
-          </View>
-          <View style={styles.buttonContainer}>
-            <UiButton
-              primaryClr={theme.button4Txt}
-              secondaryClr={theme.button4Bg}
-              label={props.secondaryLabel}
+            <TouchableOpacity
               onPress={secondaryBtnHandler}
-              type="secondary"
-              size="medium"
-              borderRadius={10}
-              darkBg={true}
-              width={130}
-              height={50}
-            />
-            <UiButton
-              primaryClr={theme.buttonPrimaryBg}
-              secondaryClr={theme.button4Txt}
-              label={props.primaryLabel}
-              onPress={primaryBtnHandler}
-              size="medium"
-              borderRadius={10}
-              darkBg={true}
-              width={130}
-              height={50}
-            />
+              style={styles.iconContainer}>
+              <Icon name="refresh" color={theme.primaryText} size={20} />
+            </TouchableOpacity>
           </View>
-        </Animated.View>
-      </Animated.View>
-    </Modal>
+        </View>
+        <BottomSheetScrollView>
+          <View style={styles.bottomSheetContent}>
+            <UiDropdown
+              options={teams}
+              multiselect={true}
+              group={true}
+              placeholder="Choose teams"
+              size="large"
+              optionSize="large"
+              onSelect={onSelectHandler}
+              existingValues={formState.inputValues.teams}
+              isValid={formState.inputValidities.teams}
+              errCode={formState.errors.teams}
+            />
+            <View style={styles.marginTop}>
+              <UiDatePicker
+                id="startDate"
+                placeholder={
+                  formState.inputValues.startDate
+                    ? moment(formState.inputValues.startDate).format(
+                        'dddd, D MMM YYYY',
+                      )
+                    : 'Select start date'
+                }
+                existingDate={formState.inputValues.startDate}
+                onChange={onDateChange}
+                height={280}
+                isValid={formState.inputValidities.startDate}
+                errCode={formState.errors.startDate}
+              />
+            </View>
+            <View style={styles.marginTop}>
+              <UiDatePicker
+                id="endDate"
+                placeholder={
+                  formState.inputValues.endDate
+                    ? moment(formState.inputValues.endDate).format(
+                        'dddd, D MMM YYYY',
+                      )
+                    : 'Select end date'
+                }
+                existingDate={formState.inputValues.endDate}
+                onChange={onDateChange}
+                height={280}
+                isValid={formState.inputValidities.endDate}
+                errCode={formState.errors.endDate}
+              />
+            </View>
+          </View>
+          <View style={{ height: 300 }} />
+        </BottomSheetScrollView>
+      </BottomSheet>
+    </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
+  bottomSheetContainer: {
+    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  bottomSheetContent: {
+    paddingHorizontal: 15,
+  },
+  bottomSheetFooter: {
+    paddingHorizontal: 15,
+  },
   closeBtn: {
     position: 'absolute',
     top: 30,
@@ -334,44 +377,56 @@ const styles = StyleSheet.create({
   marginTop: {
     marginTop: 40,
   },
-  modalViewContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   modalContainer: {
-    borderRadius: 16,
-    padding: 26,
-    width: '90%',
-    height: '80%',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    elevation: 20,
-    shadowRadius: 10,
-    shadowColor: '#000000',
-    shadowOpacity: 0.3,
-    shadowOffset: { height: 20 },
-    zIndex: 20,
-    position: 'relative',
+    paddingHorizontal: 15,
   },
   textContainer: {
     padding: 5,
     overflow: 'hidden',
-    height: '90%',
   },
   title: {
     fontSize: 24,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   content: {
     fontSize: 15,
     marginBottom: 15,
   },
   buttonContainer: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 5,
+  },
+  contentWrapper: {
+    justifyContent: 'space-between',
+  },
+  heading: {
+    fontSize: 24,
+    marginBottom: 15,
+  },
+  headingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  iconContainer: {
+    borderRadius: 50,
+    height: 40,
+    width: 40,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bottomSheet: {
+    elevation: 24,
+    borderTopStartRadius: 24,
+    borderTopEndRadius: 24,
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.75,
+    shadowRadius: 16.0,
+    shadowColor: '#000000',
+    zIndex: 200,
   },
 });
 

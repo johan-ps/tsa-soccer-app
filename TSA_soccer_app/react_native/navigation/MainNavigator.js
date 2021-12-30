@@ -44,6 +44,7 @@ const MainNavigator = () => {
   return (
     <MainNav.Navigator
       screenOptions={({ route }) => ({
+        safeAreaInsets: { top: 0 },
         tabBarIcon: ({ focused }) => {
           let iconName;
 

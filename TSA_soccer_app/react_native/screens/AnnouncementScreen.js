@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -7,6 +13,7 @@ import {
   Platform,
   FlatList,
   PermissionsAndroid,
+  Text,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import AnimScrollView from '../components/AnimScrollView';
@@ -27,12 +34,15 @@ import * as tabbarActions from '../store/actions/TabbarActions';
 import * as loaderActions from '../store/actions/LoaderActions';
 import { getImageUrl } from '../api/announcements';
 import ScrollTop from '../components/UiComponents/UiScrollTop';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { BlurView } from '@react-native-community/blur';
 
 const AnnouncementScreen = ({ navigation }) => {
   const addBtnRef = useRef();
   const searchBarRef = useRef();
   const scrollTopRef = useRef();
   const flatlistRef = useRef();
+  const filterRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -46,7 +56,7 @@ const AnnouncementScreen = ({ navigation }) => {
   const [filters, setFilters] = useState(null);
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [refreshEnabled, setRefreshEnabled] = useState(true);
-
+  const [showBlur, setShowBlur] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -236,8 +246,16 @@ const AnnouncementScreen = ({ navigation }) => {
     setModalVisible(false);
   };
 
-  const toggleFilter = visible => {
-    setFilterVisible(visible);
+  const showFilter = () => {
+    dispatch(tabbarActions.updateVisibility(false));
+    addBtnRef.current.onHide(false);
+    scrollTopRef.current.onHide();
+    filterRef.current.snapToIndex(0);
+  };
+
+  const hideFilter = () => {
+    dispatch(tabbarActions.updateVisibility(true));
+    addBtnRef.current.onShow();
   };
 
   const deleteAnnouncement = () => {
@@ -286,7 +304,7 @@ const AnnouncementScreen = ({ navigation }) => {
         />
       ) : null}
       <SafeAreaView style={announcements.length === 0 ? styles.container : {}}>
-        <NavHeader ref={searchBarRef} toggleFilter={toggleFilter} />
+        <NavHeader ref={searchBarRef} toggleFilter={showFilter} />
         {announcements.length === 0 ? (
           <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
         ) : (
@@ -361,6 +379,14 @@ const AnnouncementScreen = ({ navigation }) => {
             </View> */
           /* </AnimScrollView> */
         )}
+        {showBlur && (
+          <BlurView
+            style={styles.absolute}
+            blurType="light"
+            blurAmount={1}
+            reducedTransparencyFallbackColor="white"
+          />
+        )}
         {userData && userData.accessLevel > 0 ? (
           <UiModal
             primaryLabel="Confirm"
@@ -375,13 +401,13 @@ const AnnouncementScreen = ({ navigation }) => {
             icon="file-tray-full-outline"
           />
         ) : null}
-
         <UiFilterModal
+          ref={filterRef}
           primaryLabel="Apply"
           secondaryLabel="Reset"
           visible={filterVisible}
           title="Filter Announcements"
-          onCloseHandler={toggleFilter}
+          onCloseHandler={hideFilter}
           onUpdateFilter={setFilters}
         />
       </SafeAreaView>
@@ -433,6 +459,13 @@ const styles = StyleSheet.create({
   },
   scrollable: {
     paddingBottom: 200,
+  },
+  absolute: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
 });
 
