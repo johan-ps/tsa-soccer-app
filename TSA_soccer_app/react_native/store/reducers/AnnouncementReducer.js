@@ -3,8 +3,9 @@ import {
   ADD_ANNOUNCEMENT,
   DELETE_ANNOUNCEMENT,
   UPDATE_ANNOUNCEMENT,
+  SEARCH_ANNOUNCEMENT,
 } from '../actions/AnnouncementActions';
-// import { sortByDate } from '../../Util/utilities';
+import { getTime } from '../../Util/utilities';
 
 const INITIAL_STATE = [];
 
@@ -28,6 +29,23 @@ const announcementReducer = (state = INITIAL_STATE, action) => {
       newState[id] = action.announcement;
 
       return newState;
+    case SEARCH_ANNOUNCEMENT:
+      const query = action.query;
+
+      const filteredAnnouncements = [];
+      const oldState = [...state];
+
+      oldState.forEach(a => {
+        const regStr = `${a.firstName}${a.lastName}${getTime(a.date)}${
+          a.description
+        }`;
+
+        if (regStr.indexOf(query) !== -1) {
+          filteredAnnouncements.push(a);
+        }
+      });
+
+      return filteredAnnouncements;
     default:
       return state;
   }

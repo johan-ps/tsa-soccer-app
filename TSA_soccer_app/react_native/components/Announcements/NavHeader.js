@@ -9,17 +9,19 @@ import {
   Text,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
 import { UiInput } from '../_components';
+import * as announcementActions from '../../store/actions/AnnouncementActions';
+import * as loaderActions from '../../store/actions/LoaderActions';
 
 const NavHeader = forwardRef((props, ref) => {
   const theme = useSelector(state => state.theme.colors);
-
+  const dispatch = useDispatch();
   const scrollAnimation = useSharedValue(0);
   const scrollDownAnimInit = useSharedValue(false); // has scroll down animation started
 
@@ -53,6 +55,14 @@ const NavHeader = forwardRef((props, ref) => {
     };
   });
 
+  const onChangeHandler = (inputId, inputValue) => {
+    if (inputValue && inputValue.length > 3) {
+      dispatch(announcementActions.searchAnnouncements(inputValue));
+    } else {
+      dispatch(announcementActions.getAnnouncements());
+    }
+  };
+
   return (
     <Animated.View
       style={[
@@ -83,7 +93,7 @@ const NavHeader = forwardRef((props, ref) => {
         inputValidities={true}
         placeholder="Search"
         style={styles.marginBottom}
-        onInputChange={() => {}}
+        onInputChange={onChangeHandler}
         bg={theme.secondaryBg}
         color={theme.secondaryText}
         placeholderClr={theme.secondaryText}
