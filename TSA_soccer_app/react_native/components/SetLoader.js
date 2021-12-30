@@ -26,13 +26,13 @@ const SetLoader = props => {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingContainer: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
   },
 });
 

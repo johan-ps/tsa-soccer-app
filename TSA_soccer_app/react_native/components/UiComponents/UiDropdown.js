@@ -660,7 +660,6 @@ const UiDropdown = props => {
   }, [focusAnimation]);
 
   useEffect(() => {
-    console.log('here b')
     const [newSelectedValues, newSelectedLabels] = updateSelectedValues(
       initialValue,
       options,
@@ -671,7 +670,6 @@ const UiDropdown = props => {
   }, [initialValue]);
 
   useEffect(() => {
-    console.log('here')
     const [newSelectedValues, newSelectedLabels] = updateSelectedValues(
       existingValues,
       options,
