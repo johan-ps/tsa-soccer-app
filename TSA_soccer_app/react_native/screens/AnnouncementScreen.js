@@ -7,6 +7,7 @@ import {
   Platform,
   FlatList,
   PermissionsAndroid,
+  Keyboard,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import fetch_blob from 'rn-fetch-blob';
@@ -97,6 +98,8 @@ const AnnouncementScreen = ({ navigation }) => {
     } else {
       scrollTopRef.current.onHide();
     }
+
+    Keyboard.dismiss();
   };
 
   const onScrollToTop = () => {

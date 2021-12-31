@@ -27,6 +27,10 @@ const formInit = {
     username: true,
     password: true,
   },
+  errors: {
+    username: null,
+    password: null,
+  },
   formIsValid: true,
 };
 
@@ -40,6 +44,10 @@ const formReducer = (state, action) => {
       ...state.inputValidities,
       [action.input]: action.isValid,
     };
+    const updatedErrors = { ...state.errors };
+    if (action.error !== undefined) {
+      updatedErrors[action.input] = action.error;
+    }
     let updatedFormIsValid = true;
     for (let key in updatedValidities) {
       updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
@@ -48,6 +56,7 @@ const formReducer = (state, action) => {
       formIsValid: updatedFormIsValid,
       inputValues: updatedValues,
       inputValidities: updatedValidities,
+      errors: updatedErrors,
     };
   } else {
     return formInit;
@@ -76,16 +85,31 @@ const LoginScreen = ({ navigation }) => {
   });
 
   const loginHandler = async () => {
-    Keyboard.dismiss();
-    dispatch(loaderActions.updateLoader(true));
-    await dispatch(
-      userActions.loginUser({
-        username: formState.inputValues.username,
-        password: formState.inputValues.password,
-      }),
-    );
-    dispatch(loaderActions.updateLoader(false));
-    navigation.goBack();
+    try {
+      Keyboard.dismiss();
+      dispatch(loaderActions.updateLoader(true));
+      await dispatch(
+        userActions.loginUser({
+          username: formState.inputValues.username,
+          password: formState.inputValues.password,
+        }),
+      );
+      dispatch(loaderActions.updateLoader(false));
+      navigation.goBack();
+    } catch (error) {
+      if (error && error.length > 0) {
+        error.forEach(err => {
+          dispatchFormState({
+            type: FORM_INPUT_UPDATE,
+            isValid: false,
+            error: err.errCode,
+            input: err.field,
+          });
+        });
+      }
+    } finally {
+      dispatch(loaderActions.updateLoader(false));
+    }
   };
 
   const dismissKeyboard = () => {
@@ -144,17 +168,20 @@ const LoginScreen = ({ navigation }) => {
                 id="username"
                 iconLeft="mail"
                 initialValue={formState.inputValues.username}
-                inputValidities={formState.inputValidities.username}
+                isValid={formState.inputValidities.username}
+                errCode={formState.errors.username}
                 contentType="username"
                 placeholder="Username"
                 style={styles.marginBottom}
                 onInputChange={onChangeText}
               />
+              <View style={{ marginTop: 20 }} />
               <UiInput
                 id="password"
                 iconLeft="lock"
                 initialValue={formState.inputValues.password}
-                inputValidities={formState.inputValidities.password}
+                isValid={formState.inputValidities.password}
+                errCode={formState.errors.password}
                 contentType="password"
                 placeholder="Password"
                 icon={{

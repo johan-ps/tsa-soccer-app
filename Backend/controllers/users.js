@@ -25,23 +25,50 @@ exports.getUserById = async (req, res, next) => {
 }
 
 exports.loginUser = async (req, res, next) => {
-    const { username = null, password = null } = req.body;
-
     try {
-        if (username && password) {
+        const { username = null, password = null } = req.body;
+        const errors = [];
+        let isValid = true;
+
+        if (!username || username.length === 0) {
+            isValid = false;
+            errors.push({
+                errCode: '0001',
+                field: 'username',
+            });
+        }
+        
+        if (!password || password.length === 0) {
+            isValid = false;
+            errors.push({
+                errCode: '0001',
+                field: 'password',
+            });
+        }
+
+        if (isValid) {
             const [[user], _] = await User.findOneByUsername(username);
+            
             // generate hashed password
-            const valid = await bcrypt.compare(password, user.password)
+            const valid = user ? await bcrypt.compare(password, user.password) : false;
             
             if (valid) {
                 // generate token
                 const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
                 res.status(200).json({ success: true, user, token });
             } else {
-                res.status(404).json({ success: false, message: "Invalid username or password" });
+                errors.push({
+                    errCode: '0005',
+                    field: 'username',
+                })
+                errors.push({
+                    errCode: '0005',
+                    field: 'password',
+                })
+                res.status(400).json({ errors });
             }
         } else {
-            res.status(404).json({ success: false, message: "Invalid username or password" });
+            res.status(400).json({ errors });
         }
     } catch (error) {
         next(error);
