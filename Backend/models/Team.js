@@ -45,6 +45,12 @@ class Team {
         return db.execute(sql);
     }
 
+    static findAllUsers(id){
+      const sql = `SELECT u.id, u.firstName, u.lastName FROM USERS u, TEAMS_USERS tu WHERE u.id = tu.userId AND tu.teamId = ${id}`;
+
+      return db.execute(sql);
+    }
+
     static findAllCoaches(id) {
         const sql = `SELECT u.id, u.firstName, u.lastName FROM USERS u, TEAMS_USERS tu WHERE u.id = tu.userId AND tu.teamId = ${id} AND u.role = 'coach'`;
 

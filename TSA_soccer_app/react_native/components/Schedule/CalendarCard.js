@@ -65,7 +65,7 @@ const CalendarCard = props => {
             ]}>
             {item.type}
           </Text>
-          {userData.authenticated ?
+          {userData && userData.authenticated && userData.teamId === item.teamId ?
             <StatusIndicator
               label={availability.label}
               icon={availability.icon}

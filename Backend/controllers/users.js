@@ -17,7 +17,8 @@ exports.getUserById = async (req, res, next) => {
     try {
         const { id } = req.body;
         const [user, _] = await User.findOneById(id);
-        
+        const [teams, __] = await User.findAllTeams(id);
+        user.teams = teams;
         res.status(200).json({ user })
     } catch (error) {
         next (error);
@@ -30,6 +31,8 @@ exports.loginUser = async (req, res, next) => {
     try {
         if (username && password) {
             const [[user], _] = await User.findOneByUsername(username);
+            const [teams, __] = await User.findAllTeams(id);
+            user.teams = teams;
             // generate hashed password
             const valid = await bcrypt.compare(password, user.password)
             
@@ -55,6 +58,9 @@ exports.session = async (req, res, next) => {
         try {
             const decode = jwt.verify(token, process.env.JWT_SECRET);
             const [user, _] = await User.findOneById(decode.id);
+            const [teams, __] = await User.findAllTeams(id);
+            console.log(user);
+            user.teams = teams;
 
             if (user && user.length === 1) {
                 res.status(200).json({ success: true, user: user[0] });

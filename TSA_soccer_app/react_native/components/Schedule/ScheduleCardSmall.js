@@ -71,18 +71,9 @@ const ScheduleCardSmall = props => {
     }
   }, [props.event]);
 
-  const editEvents = (event) => {
-  //   navigation.navigate('CreateEvent', {
-  //     type: event.type,
-  //     selectedDate: selectedDate,
-  //     event: event
-  //   });
-  // } else if (buttonIndex === 2) {
-  //   // DELETE EVENT
-  // }
-    
-    
-  }
+  console.log("Joell userData", userData);
+  console.log("Joell event", event);
+  console.log("Joell availability", availability);
 
   return (
     <TouchableOpacity
@@ -119,7 +110,7 @@ const ScheduleCardSmall = props => {
               {moment.utc(event.date).format('DD')}
             </Text>
           </View>
-          {userData.authenticated ?
+          {userData && userData.authenticated && userData.teams && userData.teams.includes(event.teamId) ?
             <StatusIndicator
               label={availability.label}
               icon={availability.icon}

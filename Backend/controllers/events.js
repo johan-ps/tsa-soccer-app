@@ -1,5 +1,6 @@
 const Event = require("../models/Event");
 const Team = require("../models/Team");
+const User = require("../models/User");
 const dateFormat = require('../utils/dateFormat');
 
 exports.getAllEvents = async (req, res, next) => {
@@ -49,11 +50,17 @@ exports.getEventsOnDate = async (req, res, next) => {
 
 exports.getEventsFromDate = async (req, res, next) => {
   try {
-    const {date, userId} = req.query;
+    const {date, userId, teamId} = req.query;
     let eventDate = new Date(date);
     eventDate = dateFormat.dateTime(eventDate);
-    const [eventsOnDate, _] = await Event.findByDate(eventDate, userId);
-    const [eventsAfterDate, __] = await Event.findFromDate(eventDate, userId);
+    const [allUsers, ____] = await Team.findAllUsers(teamId);
+    let status = allUsers.length === 0;
+    if(status){
+      const [allTeams, _____] = await User.findAllTeams(userId);
+      status = allTeams.includes(teamId);
+    }
+    const [eventsOnDate, _] = await Event.findByDate(eventDate, userId, teamId, status);
+    const [eventsAfterDate, __] = await Event.findFromDate(eventDate, userId, teamId, status);
     for(let event of eventsAfterDate){
       const [availabilities, ___] = await Event.findPlayerAvailabilities(event.id);
       event.availabilities = availabilities;
@@ -172,6 +179,7 @@ exports.createEvent = async (req, res, next) => {
         const [event, _] = await newEvent.save();
         const [players, __] = await Team.findAllPlayers(teamId);
         await newEvent.saveAvailability(event.insertId, players);
+        console.log("Joell newEvent", newEvent);
         res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
       }
       else{

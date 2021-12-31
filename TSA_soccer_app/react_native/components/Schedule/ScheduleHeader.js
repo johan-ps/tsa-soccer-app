@@ -22,6 +22,8 @@ const ScheduleHeader = props => {
     value,
     onChange,
     loadEventsFromDate,
+    currentTeam,
+    onTeamChange
   } = props;
   const currentDate = moment();
   const [selectedDate, setSelectedDate] = useState(currentDate);
@@ -78,10 +80,9 @@ const ScheduleHeader = props => {
     setMode(options[0]);
   });
 
-
   return (
     <View style={[styles.container, { backgroundColor: theme.schBg }]}>
-      <TeamSelect currentTeam="Toronto Raptors"/>
+      <TeamSelect currentTeam={currentTeam} reloadEvents={onTeamChange}/>
       <View style={styles.headerContainer}>
         <Text
           style={[

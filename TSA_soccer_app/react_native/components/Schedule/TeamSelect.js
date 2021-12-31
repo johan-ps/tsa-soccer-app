@@ -1,22 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Text, StyleSheet, View, Image, ScrollView, SafeAreaView, TouchableHighlight, Modal } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import TeamListItem from './TeamListItem';
+import { formatTeams } from '../../Util/utilities';
+import * as teamActions from '../../store/actions/TeamActions'
 
 const TeamSelect = props => {
-  const { currentTeam, teams, reloadEvents } = props;
+  const { currentTeam, reloadEvents } = props;
   const [showTeams, setShowTeams] = useState(false);
-  const [selected, setSelected] = useState(currentTeam);
   const theme = useSelector(state => state.theme.colors);
+  const dispatch = useDispatch();
+  const unformattedTeams = useSelector(state => state.teams);
+  const formattedTeams = unformattedTeams && formatTeams(unformattedTeams);
 
   const onClickHandler = () => {
     setShowTeams(!showTeams);
   }
 
-  const onSelectHandler = (teamId, teamName) => {
-    setSelected(teamName);
-    reloadEvents(teamId);
+  const loadTeams = useCallback(async () => {
+    try {
+      await dispatch(teamActions.getTeams());
+    } catch (err) {
+      console.log(err);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    loadTeams();
+  }, [loadTeams]);
+
+  const onSelectHandler = (team) => {
+    onClickHandler();
+    reloadEvents(team);
   }
 
   return (
@@ -29,7 +46,7 @@ const TeamSelect = props => {
           styles.team,
           { color: theme.primaryText, fontFamily: theme.fontRegular },
         ]}>
-          {selected}
+          {currentTeam.name}
         </Text>
         <Icon name="chevron-forward-outline" size={20} color={theme.primaryText} style={{marginTop:22}}/>
       </View>
@@ -44,11 +61,37 @@ const TeamSelect = props => {
         <View style={[styles.modalContainer, {backgroundColor: theme.secondaryBg}]}>
           <View style={{flexDirection: 'row', width: '100%', marginLeft: 20}}>
             <View style={{alignItems: 'center', justifyContent: 'center'}}>
-              <Text style={{fontSize: 20, color: 'black', fontFamily: 'Mark Pro Bold'}}>Select Team</Text>
+              <Text sstyle={{fontSize: 20, color: 'black', fontFamily: 'Mark Pro Bold'}}>Select Team</Text>
             </View>
             <View style={[styles.close,  {flex: 0.9}]}>
               <Icon name="close" color="black" size={30} onPress={onClickHandler}/>
             </View>
+          </View>
+          <View style={{margin: 10}}>
+            <Text style={{fontSize: 16, color: 'grey', fontFamily: 'Mark Pro'}}>{formattedTeams[0].label}</Text>
+          </View>
+          <View style={styles.subContainer}>
+            {formattedTeams[0].children.map((team, index) => (
+              <TeamListItem
+                key={team.id + index + 1}
+                team={team}
+                selectTeam={(selectedTeam) => onSelectHandler(selectedTeam)}
+                currentTeam={currentTeam}
+              />
+            ))}
+          </View>
+          <View style={{margin: 10}}>
+            <Text style={{fontSize: 16, color: 'grey', fontFamily: 'Mark Pro'}}>{formattedTeams[1].label}</Text>
+          </View>
+          <View style={styles.subContainer}>
+            {formattedTeams[1].children.map((team, index) => (
+              <TeamListItem
+                key={team.id + index + 1}
+                team={team}
+                selectTeam={(selectedTeam) => onSelectHandler(selectedTeam)}
+                currentTeam={currentTeam}
+              />
+            ))}
           </View>
         </View>
       </Modal>
