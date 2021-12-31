@@ -72,6 +72,7 @@ const ScheduleScreen = ({ navigation, events }) => {
       } catch (err) {
         console.log(err);
       } finally {
+        console.log("Joell here", !isReload);
         if (!isReload) {
           dispatch(loaderActions.updateLoader(false));
         }

@@ -102,7 +102,6 @@ export const getEventsFromDate = (date, userId, teamId) => {
 
       const resData = await response.json();
       const events = resData.events;
-      console.log("Joell events", events);
       dispatch({
         type: GET_EVENTS,
         events,

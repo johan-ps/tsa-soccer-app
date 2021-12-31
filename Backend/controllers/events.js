@@ -57,7 +57,7 @@ exports.getEventsFromDate = async (req, res, next) => {
     let status = allUsers.length === 0;
     if(status){
       const [allTeams, _____] = await User.findAllTeams(userId);
-      status = allTeams.includes(teamId);
+      status = allTeams.filter(team => team.teamId === teamId).length === 0;
     }
     const [eventsOnDate, _] = await Event.findByDate(eventDate, userId, teamId, status);
     const [eventsAfterDate, __] = await Event.findFromDate(eventDate, userId, teamId, status);
@@ -179,7 +179,6 @@ exports.createEvent = async (req, res, next) => {
         const [event, _] = await newEvent.save();
         const [players, __] = await Team.findAllPlayers(teamId);
         await newEvent.saveAvailability(event.insertId, players);
-        console.log("Joell newEvent", newEvent);
         res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
       }
       else{

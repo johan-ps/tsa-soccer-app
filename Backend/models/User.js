@@ -52,39 +52,19 @@ class User {
     }
 
     static findOneByUsername(username) {
-        let sql = `SELECT
-        username,
-        firstName,
-        lastName,
-        profileImg,
-        email,
-        role,
-        position,
-        phoneNum,
-        accessLevel
-        FROM USERS WHERE username = '${ username }' LIMIT 1`;
+        let sql = `SELECT * FROM USERS WHERE username = '${ username }' LIMIT 1`;
 
         return db.execute(sql);
     }
 
     static findOneById(id) {
-        let sql = `SELECT
-        username,
-        firstName,
-        lastName,
-        profileImg,
-        email,
-        role,
-        position,
-        phoneNum,
-        accessLevel
-        FROM USERS WHERE id = '${ id }' LIMIT 1`;
+        let sql = `SELECT * FROM USERS WHERE id = '${ id }' LIMIT 1`;
 
         return db.execute(sql);
     }
 
     static findAllTeams(id){
-      let sql = `SELECT teamId FROM TEAM_USERS WHERE userId = ${id}`;
+      let sql = `SELECT teamId FROM TEAMS_USERS WHERE userId = ${id}`;
 
       return db.execute(sql);
     }

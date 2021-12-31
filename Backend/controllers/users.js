@@ -31,13 +31,13 @@ exports.loginUser = async (req, res, next) => {
     try {
         if (username && password) {
             const [[user], _] = await User.findOneByUsername(username);
-            const [teams, __] = await User.findAllTeams(id);
-            user.teams = teams;
             // generate hashed password
             const valid = await bcrypt.compare(password, user.password)
             
             if (valid) {
                 // generate token
+                const [teams, __] = await User.findAllTeams(user.id);
+                user.teams = teams;
                 const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
                 res.status(200).json({ success: true, user, token });
             } else {
@@ -58,9 +58,8 @@ exports.session = async (req, res, next) => {
         try {
             const decode = jwt.verify(token, process.env.JWT_SECRET);
             const [user, _] = await User.findOneById(decode.id);
-            const [teams, __] = await User.findAllTeams(id);
-            console.log(user);
-            user.teams = teams;
+            const [teams, __] = await User.findAllTeams(decode.id);
+            user[0].teams = teams;
 
             if (user && user.length === 1) {
                 res.status(200).json({ success: true, user: user[0] });

@@ -7,6 +7,7 @@ const loadingLottieAnim = require('../assets/img/global-load-anim.json');
 
 const SetLoader = props => {
   const visible = useSelector(state => state.loading.visible);
+  console.log("Joell visible", visible);
 
   return (
     <Modal transparent={true} animationType="fade" visible={visible}>
