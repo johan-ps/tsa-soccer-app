@@ -30,6 +30,8 @@ const ScheduleScreen = ({ navigation, events }) => {
   const addBtnRef = useRef();
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
+  const teams = useSelector(state => state.teams);
+  const [currentTeam, setCurrentTeam] = useState(teams[0])
   const userId = userData && userData.id;
   const eventsToday = events.today;
   const eventsUpcoming = events.upcoming;
@@ -54,7 +56,7 @@ const ScheduleScreen = ({ navigation, events }) => {
   };
 
   const loadEventsFromDate = useCallback(
-    async (date, isReload = false) => {
+    async (date, isReload = false, teamId = currentTeam && currentTeam.id) => {
       if (!isReload) {
         dispatch(loaderActions.updateLoader(true));
       }
@@ -64,11 +66,13 @@ const ScheduleScreen = ({ navigation, events }) => {
             '2021-09-02',
             // moment(date).format('YYYY-MM-DD'),
             userId,
+            teamId
           ),
         );
       } catch (err) {
         console.log(err);
       } finally {
+        console.log("Joell here", !isReload);
         if (!isReload) {
           dispatch(loaderActions.updateLoader(false));
         }
@@ -180,7 +184,12 @@ const ScheduleScreen = ({ navigation, events }) => {
             }}
             value={selectedDate}
             onChange={aDate => setSelectedDate(aDate)}
-            loadEventsFromDate={loadEventsFromDate}
+            loadEventsFromDate={(date, reload) => loadEventsFromDate(date, reload, currentTeam.id)}
+            currentTeam={currentTeam}
+            onTeamChange={(team) => {
+              setCurrentTeam(team);
+              loadEventsFromDate(selectedDate, true, team.id);
+            }}
           />
           <View>
             <AnimScrollView
@@ -188,7 +197,7 @@ const ScheduleScreen = ({ navigation, events }) => {
               loadingLottieAnim={loadingLottieAnim}
               backgroundColor={theme.secondaryBg}
               enabled={refreshEnabled}
-              load={() => loadEventsFromDate(selectedDate, true)}
+              load={() => loadEventsFromDate(selectedDate, true, currentTeam.id)}
               onlyPullToRefresh={true}>
               <View style={[styles.bodyContainer]}>
                 {eventsToday && eventsToday.length > 0 ? (

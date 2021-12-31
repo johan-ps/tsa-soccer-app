@@ -22,7 +22,7 @@ const CalendarCard = props => {
   const [availability, setAvailability] = useState(defaultOption);
 
   useEffect(() => {
-    if(item.status === null){
+    if(item.status === null || item.status === undefined){
       setAvailability(defaultOption);
     }
     else{
@@ -65,7 +65,7 @@ const CalendarCard = props => {
             ]}>
             {item.type}
           </Text>
-          {userData.authenticated ?
+          {userData && userData.authenticated && userData.teams && userData.teams.filter(team => team.teamId === item.teamId).length !== 0 ?
             <StatusIndicator
               label={availability.label}
               icon={availability.icon}

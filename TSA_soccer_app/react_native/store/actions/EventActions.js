@@ -85,11 +85,11 @@ export const getEventsOnDate = (date, userId) => {
   }
 }
 
-export const getEventsFromDate = (date, userId) => {
+export const getEventsFromDate = (date, userId, teamId) => {
   return async dispatch => {
     try {
       const response = await fetch(
-        `http://${environmentUrl}/api/events/startingFrom/?date=${date}&userId=${userId}`,
+        `http://${environmentUrl}/api/events/startingFrom/?date=${date}&userId=${userId}&teamId=${teamId}`,
         {
           method: 'GET'
         }
@@ -112,6 +112,7 @@ export const getEventsFromDate = (date, userId) => {
     }
   }
 }
+
 
 export const getEventDatesByMonth = (startOfMonth, endOfMonth) => {
   return async dispatch => {
@@ -285,7 +286,6 @@ export const updateEvent = eventData => {
 
       const resData = await response.json();
       const event = resData.event;
-      console.log("Joell newEvent", event);
       dispatch({
         type: EDIT_EVENT,
         eventId: eventData.id,

@@ -56,7 +56,7 @@ const ScheduleCardSmall = props => {
   const [playerList, setPlayerList] = useState([]);
 
   useEffect(() => {
-    if(event.status === null){
+    if(event.status === null || event.status === undefined){
       setAvailability(defaultOption);
     }
     else{
@@ -66,23 +66,10 @@ const ScheduleCardSmall = props => {
         }
       }
     }
-    if(event.availabilities){
+    if(event.availabilities.length !== 0){
       setPlayerList(event.availabilities);
     }
   }, [props.event]);
-
-  const editEvents = (event) => {
-  //   navigation.navigate('CreateEvent', {
-  //     type: event.type,
-  //     selectedDate: selectedDate,
-  //     event: event
-  //   });
-  // } else if (buttonIndex === 2) {
-  //   // DELETE EVENT
-  // }
-    
-    
-  }
 
   return (
     <TouchableOpacity
@@ -119,7 +106,7 @@ const ScheduleCardSmall = props => {
               {moment.utc(event.date).format('DD')}
             </Text>
           </View>
-          {userData.authenticated ?
+          {userData && userData.authenticated && userData.teams && userData.teams.filter(team => team.teamId === event.teamId).length !== 0 ?
             <StatusIndicator
               label={availability.label}
               icon={availability.icon}

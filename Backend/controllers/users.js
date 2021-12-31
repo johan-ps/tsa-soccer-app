@@ -17,7 +17,8 @@ exports.getUserById = async (req, res, next) => {
     try {
         const { id } = req.body;
         const [user, _] = await User.findOneById(id);
-        
+        const [teams, __] = await User.findAllTeams(id);
+        user.teams = teams;
         res.status(200).json({ user })
     } catch (error) {
         next (error);
@@ -35,6 +36,8 @@ exports.loginUser = async (req, res, next) => {
             
             if (valid) {
                 // generate token
+                const [teams, __] = await User.findAllTeams(user.id);
+                user.teams = teams;
                 const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
                 res.status(200).json({ success: true, user, token });
             } else {
@@ -55,6 +58,8 @@ exports.session = async (req, res, next) => {
         try {
             const decode = jwt.verify(token, process.env.JWT_SECRET);
             const [user, _] = await User.findOneById(decode.id);
+            const [teams, __] = await User.findAllTeams(decode.id);
+            user[0].teams = teams;
 
             if (user && user.length === 1) {
                 res.status(200).json({ success: true, user: user[0] });

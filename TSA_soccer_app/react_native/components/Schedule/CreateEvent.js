@@ -404,7 +404,7 @@ const CreateEvent = props => {
                   }
                   onChange={(id, date) => onChange(id, date)}
                   height={300}
-                  existingDate={new Date(moment(formState.inputValues.date))}
+                  existingDate={formState.inputValues.date ? new Date(moment(formState.inputValues.date)) : null}
                   isValid={formState.inputValidities.date}
                   errCode={formState.errors.date}
                 />

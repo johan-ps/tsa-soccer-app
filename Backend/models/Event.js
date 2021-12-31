@@ -71,7 +71,7 @@ save() {
 
 saveAvailability(id, players) {
   let availabilityInsert = '';
-  if(players){
+  if(players.length !== 0){
     if(this.teamId){
       players.forEach((player, i) => {
         availabilityInsert += `('${ id }', '${ player.id }', NULL)`;
@@ -168,29 +168,51 @@ static findByTeam(teamId) {
   return db.execute(sql);
 }
 
-static findByDate(date, userId) {
+static findByDate(date, userId, teamId, teamNoUsers) {
   let sql = '';
   if(userId !== 'undefined' && userId !== undefined){
-    sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name, a.status FROM EVENTS e, LOCATIONS l, AVAILABILITY a WHERE e.date = '${date}' AND l.id = e.locationId AND a.playerId = ${userId} AND a.eventId = e.id ORDER BY startTime ASC`;
-  }
-  else{
-    sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status, e.opponent, e.teamId, l.name FROM EVENTS e, LOCATIONS l WHERE e.date = '${date}' AND l.id = e.locationId ORDER BY startTime ASC`;
-  }
+    if(teamNoUsers){
+      sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status AS eventStatus, e.opponent, e.teamId, l.name FROM EVENTS e, LOCATIONS l WHERE e.date = '${date}' AND l.id = e.locationId AND e.teamId = ${teamId} ORDER BY startTime ASC`;
+    }else{
+      if(teamId != undefined){
+        sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status AS eventStatus, e.opponent, e.teamId, l.name, a.status FROM EVENTS e, LOCATIONS l, AVAILABILITY a WHERE e.date = '${date}' AND l.id = e.locationId AND a.playerId = ${userId} AND a.eventId = e.id AND e.teamId = ${teamId} ORDER BY startTime ASC`;
+      }else{
+        sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status AS eventStatus, e.opponent, e.teamId, l.name, a.status FROM EVENTS e, LOCATIONS l, AVAILABILITY a WHERE e.date = '${date}' AND l.id = e.locationId AND a.playerId = ${userId} AND a.eventId = e.id ORDER BY startTime ASC`;
+      }
+    }
+  }else{
+    if(teamId != undefined){
+      sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status AS eventStatus, e.opponent, e.teamId, l.name FROM EVENTS e, LOCATIONS l WHERE e.date = '${date}' AND l.id = e.locationId AND e.teamId = ${teamId} ORDER BY startTime ASC`;
 
+    }else{
+      sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.status AS eventStatus, e.opponent, e.teamId, l.name FROM EVENTS e, LOCATIONS l WHERE e.date = '${date}' AND l.id = e.locationId ORDER BY startTime ASC`;
+    }
+  }
   return db.execute(sql);
 }
 
-static findFromDate(date, userId){
+static findFromDate(date, userId, teamId, teamNoUsers){
   let sql = '';
   if(userId !== 'undefined' && userId !== undefined){
-    sql =  `SELECT e.id, e.type, e.date, e.timeTBD, e.startTime, e.endTime, e.opponent, e.status, a.status FROM EVENTS e, AVAILABILITY a WHERE a.playerId = ${userId} AND a.eventId = e.id AND e.date > '${date}' ORDER BY date ASC LIMIT 10`;
+    if(teamNoUsers){
+      sql = `SELECT id, type, date, timeTBD, teamId, startTime, endTime, opponent, status AS eventStatus FROM EVENTS WHERE date > '${date}' AND teamId = ${teamId} ORDER BY date ASC LIMIT 10`;
+    }else{
+      if(teamId != undefined){
+        sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.teamId, e.startTime, e.endTime, e.opponent, e.status AS eventStatus, a.status FROM EVENTS e, AVAILABILITY a WHERE a.playerId = ${userId} AND a.eventId = e.id AND e.date > '${date}' AND e.teamId = ${teamId} ORDER BY date ASC LIMIT 10`;
+      }else{
+        sql = `SELECT e.id, e.type, e.date, e.timeTBD, e.teamId, e.startTime, e.endTime, e.opponent, e.status AS eventStatus, a.status FROM EVENTS e, AVAILABILITY a WHERE a.playerId = ${userId} AND a.eventId = e.id AND e.date > '${date}' ORDER BY date ASC LIMIT 10`;
+      }
+    }
+  }else{
+    if(teamId != undefined){
+      sql = `SELECT id, type, date, timeTBD, teamId, startTime, endTime, opponent, status AS eventStatus FROM EVENTS WHERE date > '${date}' AND teamId = ${teamId} ORDER BY date ASC LIMIT 10`;
+    }else{
+      sql = `SELECT id, type, date, timeTBD, teamId, startTime, endTime, opponent, status AS eventStatus FROM EVENTS WHERE date > '${date}' ORDER BY date ASC LIMIT 10`;
+    }
   }
-  else{
-    sql =  `SELECT id, type, date, timeTBD, startTime, endTime, opponent, status FROM EVENTS WHERE date > '${date}' ORDER BY date ASC LIMIT 10`;
-  }
-
   return db.execute(sql);
 }
+
 // TODO: fix query
 static findAllEventDatesForMonth(startOfMonth, endOfMonth){
   const sql = `SELECT date from EVENTS WHERE date >= '${startOfMonth}' AND date <= '${endOfMonth}';`; 

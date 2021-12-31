@@ -63,6 +63,12 @@ class User {
         return db.execute(sql);
     }
 
+    static findAllTeams(id){
+      let sql = `SELECT teamId FROM TEAMS_USERS WHERE userId = ${id}`;
+
+      return db.execute(sql);
+    }
+
     static updateOneById(id, data) {
         const { firstName, lastName, profileImg = null, phoneNum, email } = data;
 

@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import ScheduleHeaderItem from './ScheduleHeaderItem';
 import DropdownSwitch from './DropdownSwitch';
+import TeamSelect from './TeamSelect';
 
 const ScheduleHeader = props => {
   const {
@@ -21,6 +22,8 @@ const ScheduleHeader = props => {
     value,
     onChange,
     loadEventsFromDate,
+    currentTeam,
+    onTeamChange
   } = props;
   const currentDate = moment();
   const [selectedDate, setSelectedDate] = useState(currentDate);
@@ -77,16 +80,9 @@ const ScheduleHeader = props => {
     setMode(options[0]);
   });
 
-
   return (
     <View style={[styles.container, { backgroundColor: theme.schBg }]}>
-      <Text
-        style={[
-          styles.team,
-          { color: theme.primaryText, fontFamily: theme.fontRegular },
-        ]}>
-        U8 Markham Houseleague
-      </Text>
+      <TeamSelect currentTeam={currentTeam} reloadEvents={onTeamChange}/>
       <View style={styles.headerContainer}>
         <Text
           style={[
