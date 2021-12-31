@@ -7,6 +7,7 @@ export const GET_ANNOUNCEMENTS = 'GET_ANNOUNCEMENTS';
 export const ADD_ANNOUNCEMENT = 'ADD_ANNOUNCEMENT';
 export const DELETE_ANNOUNCEMENT = 'DELETE_ANNOUNCEMENT';
 export const UPDATE_ANNOUNCEMENT = 'UPDATE_ANNOUNCEMENT';
+export const SEARCH_ANNOUNCEMENT = 'SEARCH_ANNOUNCEMENT';
 
 export const getAnnouncements = () => {
   return async dispatch => {
@@ -218,5 +219,12 @@ export const updateAnnouncement = announcementData => {
         throw err.errors;
       }
     }
+  };
+};
+
+export const searchAnnouncements = searchQuery => {
+  return {
+    type: SEARCH_ANNOUNCEMENT,
+    query: searchQuery,
   };
 };

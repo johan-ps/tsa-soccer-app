@@ -1,6 +1,5 @@
 import React, {
   useEffect,
-  useState,
   useCallback,
   useReducer,
   useRef,
@@ -9,24 +8,8 @@ import React, {
   useImperativeHandle,
   memo,
 } from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import Animated, {
-  useSharedValue,
-  withSpring,
-  withTiming,
-  useAnimatedStyle,
-  interpolate,
-  runOnJS,
-} from 'react-native-reanimated';
 import { formatTeams } from '../../Util/utilities';
 import { UiButton, UiDropdown } from '../_components';
 import * as teamActions from '../../store/actions/TeamActions';
@@ -35,11 +18,8 @@ import moment from 'moment';
 import * as loaderActions from '../../store/actions/LoaderActions';
 import * as announcementActions from '../../store/actions/AnnouncementActions';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import BottomSheet, {
-  BottomSheetScrollView,
-  BottomSheetFooter,
-  BottomSheetBackdrop,
-} from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import UiBottomSheet from './UiBottomSheet';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 const FORM_INPUT_APPLY = 'FORM_INPUT_APPLY';
@@ -113,7 +93,6 @@ const formReducer = (state, action) => {
 
 const UiFilterModal = forwardRef((props, ref) => {
   const theme = useSelector(state => state.theme.colors);
-  const modalAnimation = useSharedValue(0);
   const dispatch = useDispatch();
   const [formState, dispatchFormState] = useReducer(formReducer, formInit);
   const bottomSheetRef = useRef();
@@ -166,23 +145,6 @@ const UiFilterModal = forwardRef((props, ref) => {
     loadTeams();
   }, [loadTeams]);
 
-  const animStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          scale: interpolate(modalAnimation.value, [0, 1], [0.5, 1]),
-        },
-      ],
-      opacity: modalAnimation.value,
-    };
-  });
-
-  const opacity = useAnimatedStyle(() => {
-    return {
-      opacity: modalAnimation.value,
-    };
-  });
-
   const primaryBtnHandler = useCallback(() => {
     dispatchFormState({ type: FORM_INPUT_APPLY });
     props.onUpdateFilter(formState.inputValues);
@@ -232,133 +194,99 @@ const UiFilterModal = forwardRef((props, ref) => {
     props.onCloseHandler();
   }, [props]);
 
-  const handleSheetChanges = useCallback(
-    (fromIndex, toIndex) => {
-      if (toIndex === -1) {
-        onCloseHandler();
-      }
-    },
-    [onCloseHandler],
-  );
-
   const renderFooter = useCallback(
     props => (
-      <BottomSheetFooter {...props} 
-        bottomInset={Platform.OS === 'ios' ? 250 : 164}
-      >
-        <View style={styles.bottomSheetFooter}>
-          <UiButton
-            width="100%"
-            height={62}
-            borderRadius={16}
-            style={styles.button}
-            primaryClr={theme.buttonPrimaryBg}
-            secondaryClr={theme.buttonPrimaryText}
-            label={'Apply'}
-            onPress={primaryBtnHandler}
-            size="medium"
-            darkBg={true}
-          />
-        </View>
-      </BottomSheetFooter>
+      <UiButton
+        width="100%"
+        height={62}
+        borderRadius={16}
+        style={styles.button}
+        primaryClr={theme.buttonPrimaryBg}
+        secondaryClr={theme.buttonPrimaryText}
+        label={'Apply'}
+        onPress={primaryBtnHandler}
+        size="medium"
+        darkBg={true}
+      />
     ),
     [primaryBtnHandler, theme.buttonPrimaryBg, theme.buttonPrimaryText],
   );
 
-  const renderBackdrop = useCallback(
-    props => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-      />
-    ),
-    [],
-  );
-
   return (
-    <>
-      <BottomSheet
-        style={styles.bottomSheet}
-        handleIndicatorStyle={{ backgroundColor: theme.primaryText }}
-        ref={bottomSheetRef}
-        index={-1}
-        enablePanDownToClose={true}
-        snapPoints={snapPoints}
-        onAnimate={handleSheetChanges}
-        footerComponent={renderFooter}
-        backdropComponent={renderBackdrop}>
-        <View
-          style={[styles.modalContainer, { backgroundColor: theme.primaryBg }]}>
-          <View style={styles.headingContainer}>
-            <Text
-              style={[
-                styles.heading,
-                { fontFamily: theme.fontBold, color: theme.primaryText },
-              ]}>
-              Filter Announcements
-            </Text>
-            <TouchableOpacity
-              onPress={secondaryBtnHandler}
-              style={styles.iconContainer}>
-              <Icon name="refresh" color={theme.primaryText} size={20} />
-            </TouchableOpacity>
+    <UiBottomSheet
+      ref={bottomSheetRef}
+      onCloseHandler={onCloseHandler}
+      footerComponent={renderFooter}
+      snaps={snapPoints}>
+      <View
+        style={[styles.modalContainer, { backgroundColor: theme.primaryBg }]}>
+        <View style={styles.headingContainer}>
+          <Text
+            style={[
+              styles.heading,
+              { fontFamily: theme.fontBold, color: theme.primaryText },
+            ]}>
+            Filter Announcements
+          </Text>
+          <TouchableOpacity
+            onPress={secondaryBtnHandler}
+            style={styles.iconContainer}>
+            <Icon name="refresh" color={theme.primaryText} size={20} />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <BottomSheetScrollView>
+        <View style={styles.bottomSheetContent}>
+          <UiDropdown
+            ref={ddRef}
+            options={teams}
+            multiselect={true}
+            group={true}
+            placeholder="Choose teams"
+            size="large"
+            optionSize="large"
+            onSelect={onSelectHandler}
+            existingValues={formState.inputValues.teams}
+            isValid={formState.inputValidities.teams}
+            errCode={formState.errors.teams}
+          />
+          <View style={styles.marginTop}>
+            <UiDatePicker
+              id="startDate"
+              placeholder={
+                formState.inputValues.startDate
+                  ? moment(formState.inputValues.startDate).format(
+                      'dddd, D MMM YYYY',
+                    )
+                  : 'Select start date'
+              }
+              existingDate={formState.inputValues.startDate}
+              onChange={onDateChange}
+              height={280}
+              isValid={formState.inputValidities.startDate}
+              errCode={formState.errors.startDate}
+            />
+          </View>
+          <View style={styles.marginTop}>
+            <UiDatePicker
+              id="endDate"
+              placeholder={
+                formState.inputValues.endDate
+                  ? moment(formState.inputValues.endDate).format(
+                      'dddd, D MMM YYYY',
+                    )
+                  : 'Select end date'
+              }
+              existingDate={formState.inputValues.endDate}
+              onChange={onDateChange}
+              height={280}
+              isValid={formState.inputValidities.endDate}
+              errCode={formState.errors.endDate}
+            />
           </View>
         </View>
-        <BottomSheetScrollView>
-          <View style={styles.bottomSheetContent}>
-            <UiDropdown
-              ref={ddRef}
-              options={teams}
-              multiselect={true}
-              group={true}
-              placeholder="Choose teams"
-              size="large"
-              optionSize="large"
-              onSelect={onSelectHandler}
-              existingValues={formState.inputValues.teams}
-              isValid={formState.inputValidities.teams}
-              errCode={formState.errors.teams}
-            />
-            <View style={styles.marginTop}>
-              <UiDatePicker
-                id="startDate"
-                placeholder={
-                  formState.inputValues.startDate
-                    ? moment(formState.inputValues.startDate).format(
-                        'dddd, D MMM YYYY',
-                      )
-                    : 'Select start date'
-                }
-                existingDate={formState.inputValues.startDate}
-                onChange={onDateChange}
-                height={280}
-                isValid={formState.inputValidities.startDate}
-                errCode={formState.errors.startDate}
-              />
-            </View>
-            <View style={styles.marginTop}>
-              <UiDatePicker
-                id="endDate"
-                placeholder={
-                  formState.inputValues.endDate
-                    ? moment(formState.inputValues.endDate).format(
-                        'dddd, D MMM YYYY',
-                      )
-                    : 'Select end date'
-                }
-                existingDate={formState.inputValues.endDate}
-                onChange={onDateChange}
-                height={280}
-                isValid={formState.inputValidities.endDate}
-                errCode={formState.errors.endDate}
-              />
-            </View>
-          </View>
-          <View style={{ height: 300 }} />
-        </BottomSheetScrollView>
-      </BottomSheet>
-    </>
+      </BottomSheetScrollView>
+    </UiBottomSheet>
   );
 });
 

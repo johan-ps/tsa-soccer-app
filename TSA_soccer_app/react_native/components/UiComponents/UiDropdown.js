@@ -92,10 +92,6 @@ const UiDropdown = forwardRef((props, ref) => {
   const theme = useSelector(state => state.theme.colors);
   const ddBtn = useRef();
 
-  useEffect(() => {
-    console.log('Component redered');
-  });
-
   useImperativeHandle(ref, () => ({
     reset,
   }));
