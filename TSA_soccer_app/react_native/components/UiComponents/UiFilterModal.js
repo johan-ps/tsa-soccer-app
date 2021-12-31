@@ -194,22 +194,19 @@ const UiFilterModal = forwardRef((props, ref) => {
     props.onCloseHandler();
   }, [props]);
 
-  const renderFooter = useCallback(
-    props => (
-      <UiButton
-        width="100%"
-        height={62}
-        borderRadius={16}
-        style={styles.button}
-        primaryClr={theme.buttonPrimaryBg}
-        secondaryClr={theme.buttonPrimaryText}
-        label={'Apply'}
-        onPress={primaryBtnHandler}
-        size="medium"
-        darkBg={true}
-      />
-    ),
-    [primaryBtnHandler, theme.buttonPrimaryBg, theme.buttonPrimaryText],
+  const renderFooter = (
+    <UiButton
+      width="100%"
+      height={62}
+      borderRadius={16}
+      style={styles.button}
+      primaryClr={theme.buttonPrimaryBg}
+      secondaryClr={theme.buttonPrimaryText}
+      label={'Apply'}
+      onPress={primaryBtnHandler}
+      size="medium"
+      darkBg={true}
+    />
   );
 
   return (

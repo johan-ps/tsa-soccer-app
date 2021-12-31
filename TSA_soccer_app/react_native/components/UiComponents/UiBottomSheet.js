@@ -48,18 +48,19 @@ const UiBottomSheet = forwardRef((props, ref) => {
     [onCloseHandler],
   );
 
-  const renderFooter = useCallback(
-    props => {
-      footerComponent ? (
+  const renderFooter = (() => {
+    if (footerComponent) {
+      return props => (
         <BottomSheetFooter
           {...props}
           bottomInset={Platform.OS === 'ios' ? 250 : 164}>
           <View style={styles.bottomSheetFooter}>{footerComponent}</View>
         </BottomSheetFooter>
-      ) : null;
-    },
-    [footerComponent],
-  );
+      );
+    } else {
+      return null;
+    }
+  })();
 
   const renderBackdrop = useCallback(
     props => (
