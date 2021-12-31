@@ -66,12 +66,13 @@ const NavHeader = forwardRef((props, ref) => {
 
   const onChangeHandler = async (inputId, inputValue) => {
     try {
+      dispatch(announcementActions.searchAnnouncements(inputValue));
       // setLoading(true);
-      if (inputValue && inputValue.length > 2) {
-        dispatch(announcementActions.searchAnnouncements(inputValue));
-      } else {
-        dispatch(announcementActions.getAnnouncements());
-      }
+      // if (inputValue && inputValue.length > 2) {
+      //   dispatch(announcementActions.searchAnnouncements(inputValue));
+      // } else {
+      //   dispatch(announcementActions.getAnnouncements());
+      // }
       // dispatch(announcementActions.searchAnnouncements(inputValue));
       // setLoading(false);
     } catch (err) {
@@ -135,7 +136,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 30,
     top: 85,
-    zIndex: 100,
   },
   heading: {
     fontSize: 24,
@@ -152,7 +152,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 15,
     position: 'relative',
-    zIndex: 1000,
   },
   iconContainer: {
     borderRadius: 50,

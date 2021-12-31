@@ -7,18 +7,36 @@ import {
 } from '../actions/AnnouncementActions';
 import { getTime } from '../../Util/utilities';
 
-const INITIAL_STATE = [];
+const INITIAL_STATE = {
+  announcements: [],
+  filteredAnnouncements: [],
+  applyFilters: false,
+};
 
 const announcementReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case GET_ANNOUNCEMENTS:
-      return action.announcements;
+      return {
+        announcements: action.announcements,
+        filteredAnnouncements: [],
+        applyFilters: false,
+      };
     case ADD_ANNOUNCEMENT:
-      return [action.announcement, ...state];
+      return {
+        announcements: [action.announcement, ...state.announcements],
+        filteredAnnouncements: [],
+        applyFilters: false,
+      };
     case DELETE_ANNOUNCEMENT:
-      return state.filter(item => item.id !== action.announcementId);
+      return {
+        announcements: state.announcements.filter(
+          item => item.id !== action.announcementId,
+        ),
+        filteredAnnouncements: [],
+        applyFilters: false,
+      };
     case UPDATE_ANNOUNCEMENT:
-      const newState = [...state];
+      const newState = [...state.announcements];
 
       const id = newState
         .map(announcement => {
@@ -28,12 +46,16 @@ const announcementReducer = (state = INITIAL_STATE, action) => {
 
       newState[id] = action.announcement;
 
-      return newState;
+      return {
+        announcements: newState,
+        filteredAnnouncements: [],
+        applyFilters: false,
+      };
     case SEARCH_ANNOUNCEMENT:
       const query = action.query;
 
       const filteredAnnouncements = [];
-      const oldState = [...state];
+      const oldState = [...state.announcements];
 
       oldState.forEach(a => {
         const regStr = `${a.firstName}${a.lastName}${getTime(a.date)}${
@@ -44,8 +66,12 @@ const announcementReducer = (state = INITIAL_STATE, action) => {
           filteredAnnouncements.push(a);
         }
       });
-
-      return filteredAnnouncements;
+      console.log(query, filteredAnnouncements.length);
+      return {
+        announcements: [...state.announcements],
+        filteredAnnouncements,
+        applyFilters: true,
+      };
     default:
       return state;
   }

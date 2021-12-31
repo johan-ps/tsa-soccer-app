@@ -7,6 +7,7 @@ import {
   Platform,
   FlatList,
   PermissionsAndroid,
+  Keyboard,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import fetch_blob from 'rn-fetch-blob';
@@ -75,14 +76,19 @@ const AnnouncementScreen = ({ navigation }) => {
   const [deleteId, setDeleteId] = useState(null);
   const theme = useSelector(state => state.theme.colors);
   const activeTheme = useSelector(state => state.theme.activeTheme);
-  const announcements = useSelector(state => state.announcements);
+  // eslint-disable-next-line no-shadow
+  const announcements = useSelector(({ announcements }) => {
+    if (announcements.applyFilters) {
+      return announcements.filteredAnnouncements;
+    } else {
+      return announcements.announcements;
+    }
+  });
   const userData = useSelector(state => state.userData);
   const dispatch = useDispatch();
   const [showBadge, setShowBadge] = useState(false);
   const [filters, setFilters] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // const [offsetY, setOffsetY] = useState(0);
 
   const onScrollHandler = event => {
     const curOffsetY = event.nativeEvent.contentOffset.y;
@@ -92,6 +98,8 @@ const AnnouncementScreen = ({ navigation }) => {
     } else {
       scrollTopRef.current.onHide();
     }
+
+    Keyboard.dismiss();
   };
 
   const onScrollToTop = () => {

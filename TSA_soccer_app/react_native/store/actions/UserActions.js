@@ -23,14 +23,19 @@ export const loginUser = (credentials = {}) => {
       });
 
       if (!response.ok) {
-        throw new Error('Something went wrong login user!');
+        const error = await response.json();
+        throw error;
       }
 
       const resData = await response.json();
       await AsyncStorage.setItem(CONST.AUTH_TOKEN_KEY, resData.token);
       dispatch({ type: LOGIN_USER, userData: resData });
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log('err<>', err);
+
+      if (err && err.errors && err.errors.length > 0) {
+        throw err.errors;
+      }
     }
   };
 };
