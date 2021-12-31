@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { UiInput, UiButton, UiIconButton } from '../components/_components';
@@ -87,14 +88,21 @@ const LoginScreen = ({ navigation }) => {
     navigation.goBack();
   };
 
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   return (
     <ScrollView
+      keyboardShouldPersistTaps="always"
       contentContainerStyle={styles.scrollContainer}
       style={{ backgroundColor: theme.primaryBg }}>
       <KeyboardAvoidingView
         behavior="position"
         style={{ backgroundColor: theme.primaryBg }}>
-        <View style={[styles.container, { backgroundColor: theme.primaryBg }]}>
+        <Pressable
+          onPress={dismissKeyboard}
+          style={[styles.container, { backgroundColor: theme.primaryBg }]}>
           <View style={styles.contentContainer}>
             <View style={styles.closeButton}>
               <UiIconButton
@@ -170,7 +178,7 @@ const LoginScreen = ({ navigation }) => {
               secondaryClr={theme.buttonPrimaryText}
             />
           </View>
-        </View>
+        </Pressable>
       </KeyboardAvoidingView>
     </ScrollView>
   );
