@@ -641,7 +641,7 @@ const UiFilterModal = forwardRef((props, ref) => {
   );
 
   return (
-    <View style={styles.bottomSheetContainer}>
+    <>
       <BottomSheet
         style={styles.bottomSheet}
         handleIndicatorStyle={{ backgroundColor: theme.primaryText }}
@@ -722,7 +722,7 @@ const UiFilterModal = forwardRef((props, ref) => {
           <View style={{ height: 300 }} />
         </BottomSheetScrollView>
       </BottomSheet>
-    </View>
+    </>
   );
 });
 
