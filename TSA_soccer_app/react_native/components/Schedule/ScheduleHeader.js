@@ -5,11 +5,9 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  TouchableOpacity,
   Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import ScheduleHeaderItem from './ScheduleHeaderItem';
 import DropdownSwitch from './DropdownSwitch';
@@ -31,7 +29,6 @@ const ScheduleHeader = props => {
   const [datesArray, setDatesArray] = useState([]);
   const theme = useSelector(state => state.theme.colors);
   const [mode, setMode] = useState(0);
-
   const options = useMemo(() => {
     return [
       { label: 'Daily', id: 0 },
@@ -82,7 +79,7 @@ const ScheduleHeader = props => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.schBg }]}>
-      <TeamSelect currentTeam={currentTeam} reloadEvents={onTeamChange}/>
+      <TeamSelect current={currentTeam} onSelect={onTeamChange} title="Select Teams"/>
       <View style={styles.headerContainer}>
         <Text
           style={[

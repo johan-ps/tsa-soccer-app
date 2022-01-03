@@ -12,32 +12,36 @@ const constants = {
   AUTH_TOKEN_KEY: 'tsaAuthToken',
   REPEATS: [
     {
-      label: 'Every Monday',
-      id: 0,
-    },
-    {
-      label: 'Every Tuesday',
-      id: 1,
-    },
-    {
-      label: 'Every Wednesday',
-      id: 2,
-    },
-    {
-      label: 'Every Thursday',
-      id: 3,
-    },
-    {
-      label: 'Every Friday',
-      id: 4,
-    },
-    {
-      label: 'Every Saturday',
-      id: 5,
-    },
-    {
-      label: 'Every Sunday',
-      id: 6,
+      children: [
+        {
+          name: 'Every Monday',
+          id: 0,
+        },
+        {
+          name: 'Every Tuesday',
+          id: 1,
+        },
+        {
+          name: 'Every Wednesday',
+          id: 2,
+        },
+        {
+          name: 'Every Thursday',
+          id: 3,
+        },
+        {
+          name: 'Every Friday',
+          id: 4,
+        },
+        {
+          name: 'Every Saturday',
+          id: 5,
+        },
+        {
+          name: 'Every Sunday',
+          id: 6,
+        }
+      ]
     }],
 };
 

@@ -3,21 +3,16 @@ import {
   Text,
   View,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
-  TouchableOpacity,
   StatusBar,
-  Modal,
   ActionSheetIOS,
   Alert,
   Platform,
 } from 'react-native';
 import { AddButton, UiImage } from '../components/_components';
-import moment from 'moment';
 import ScheduleHeader from '../components/Schedule/ScheduleHeader';
 import ScheduleCardSmall from '../components/Schedule/ScheduleCardSmall';
 import { connect, useSelector, useDispatch } from 'react-redux';
-import { Events } from '../data/events';
 import CalendarCard from '../components/Schedule/CalendarCard';
 import AnimScrollView from '../components/AnimScrollView';
 const loadingLottieAnim = require('../assets/img/spinning-anim.json');
@@ -72,7 +67,6 @@ const ScheduleScreen = ({ navigation, events }) => {
       } catch (err) {
         console.log(err);
       } finally {
-        console.log("Joell here", !isReload);
         if (!isReload) {
           dispatch(loaderActions.updateLoader(false));
         }
