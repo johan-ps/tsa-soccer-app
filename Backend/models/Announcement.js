@@ -12,13 +12,12 @@ class Announcement {
 
     save() {
         const dateTimeStr = dateFormat.dateTime(new Date());
+        this.date = dateTimeStr;
 
-        let imageInsert = '';
-        let imageData = '';
+        let imageData = null;
 
         if (this.image !== null) {
-            imageInsert = ', image'
-            imageData = `, '${ this.image }'`
+            imageData = `${ this.image }`
         }
 
         const sql = `
@@ -26,19 +25,15 @@ class Announcement {
                 date,
                 title,
                 description,
-                authorId
-                ${ imageInsert }
+                authorId,
+                image
             )
-            VALUES (
-                '${ dateTimeStr }',
-                '${ this.title }',
-                '${ this.description }',
-                '${ this.authorId }'
-                ${ imageData }
-            );
+            VALUES (?, ?, ?, ?, ?);
         `;
         
-        return db.execute(sql);
+        return db.execute(sql, [
+            dateTimeStr, this.title, this.description, this.authorId, imageData
+        ]);
     }
 
     saveTeams (id) {
@@ -180,12 +175,14 @@ class Announcement {
 
     static findTeams (id) {
         const sql = `
-            SELECT teamId
+            SELECT teamId, name
             FROM ANNOUNCEMENTS_TEAMS as at
-            WHERE at.announcementid = ${id};
+            INNER JOIN TEAMS as t
+                ON at.announcementid = ? AND
+                    at.teamId = t.id;
         `;
 
-        return db.execute(sql);
+        return db.execute(sql, [id]);
     }
 
     static getImage (id) {
@@ -193,6 +190,16 @@ class Announcement {
             SELECT image
             FROM ANNOUNCEMENTS as a
             WHERE a.id = ${id};
+        `;
+
+        return db.execute(sql);
+    }
+
+    static getAuthor (authorId) {
+        const sql = `
+            SELECT firstName, lastName, profileImg
+            FROM USERS as u
+            WHERE ${authorId} = u.id;
         `;
 
         return db.execute(sql);

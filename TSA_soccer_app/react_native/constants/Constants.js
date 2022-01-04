@@ -10,6 +10,7 @@ const constants = {
     'There seems to be a problem with your Network Connection',
   NO_INTERNET_IMG: 'internet-slash.png',
   AUTH_TOKEN_KEY: 'tsaAuthToken',
+  NOTIFICATION_KEY: 'tsaNotificationKey',
   REPEATS: [
     {
       label: 'Every Monday',
