@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     borderRadius: 16,
     overflow: 'hidden',
+    zIndex: 100,
   },
   touchable: {
     borderRadius: 16,

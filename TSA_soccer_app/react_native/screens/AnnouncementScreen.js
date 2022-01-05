@@ -307,14 +307,6 @@ const AnnouncementScreen = ({ navigation }) => {
             icon="file-tray-full-outline"
           />
         ) : null}
-        <UiFilterModal
-          ref={filterRef}
-          primaryLabel="Apply"
-          secondaryLabel="Reset"
-          title="Filter Announcements"
-          onCloseHandler={hideFilter}
-          onUpdateFilter={setFilters}
-        />
       </SafeAreaView>
       <ScrollTop ref={scrollTopRef} onPress={onScrollToTop} />
       {userData && userData.accessLevel > 0 ? (
@@ -327,6 +319,14 @@ const AnnouncementScreen = ({ navigation }) => {
           time={1000}
         />
       )}
+      <UiFilterModal
+        ref={filterRef}
+        primaryLabel="Apply"
+        secondaryLabel="Reset"
+        title="Filter Announcements"
+        onCloseHandler={hideFilter}
+        onUpdateFilter={setFilters}
+      />
     </View>
   );
 };
