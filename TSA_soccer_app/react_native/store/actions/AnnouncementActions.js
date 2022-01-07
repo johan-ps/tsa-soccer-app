@@ -1,7 +1,6 @@
 import Announcement from '../../models/announcement';
 import { environmentUrl } from '../../constants/Environment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import CONST from '../../constants/Constants';
+import { fetchAndHandleError } from '../../Util/error-handling';
 
 export const GET_ANNOUNCEMENTS = 'GET_ANNOUNCEMENTS';
 export const ADD_ANNOUNCEMENT = 'ADD_ANNOUNCEMENT';
@@ -10,216 +9,121 @@ export const UPDATE_ANNOUNCEMENT = 'UPDATE_ANNOUNCEMENT';
 export const SEARCH_ANNOUNCEMENT = 'SEARCH_ANNOUNCEMENT';
 
 export const getAnnouncements = () => {
-  return async dispatch => {
-    try {
-      const response = await fetch(
-        `http://${environmentUrl}/api/announcements`,
-      );
-
-      if (!response.ok) {
-        throw new Error('Something went wrong get announcements!');
-      }
-
-      const resData = await response.json();
-      const announcements = resData.announcements.sort((a, b) =>
-        a.date < b.date ? 1 : a.date > b.date ? -1 : 0,
-      ); // TODO: Sorting should be done in backend
-      dispatch({
-        type: GET_ANNOUNCEMENTS,
-        announcements,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+  const url = `http://${environmentUrl}/api/announcements`;
+  const reqInit = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   };
+  const auth = false;
+  const callback = resData => {
+    return {
+      type: GET_ANNOUNCEMENTS,
+      announcements: resData.announcements.sort((a, b) =>
+        a.date < b.date ? 1 : a.date > b.date ? -1 : 0,
+      ),
+    };
+  };
+
+  return fetchAndHandleError(url, reqInit, auth, callback);
 };
 
 export const getFilteredAnnouncements = filters => {
-  return async dispatch => {
-    try {
-      const response = await fetch(
-        `http://${environmentUrl}/api/announcements`,
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ ...filters }),
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw error;
-      }
-
-      const resData = await response.json();
-      const announcements = resData.announcements.sort((a, b) =>
-        a.date < b.date ? 1 : a.date > b.date ? -1 : 0,
-      ); // TODO: Sorting should be done in backend
-      dispatch({
-        type: GET_ANNOUNCEMENTS,
-        announcements,
-      });
-    } catch (err) {
-      console.log(err);
-
-      if (err && err.errors && err.errors.length > 0) {
-        throw err.errors;
-      }
-    }
+  const url = `http://${environmentUrl}/api/announcements`;
+  const reqInit = {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ ...filters }),
   };
+  const auth = false;
+  const callback = resData => {
+    return {
+      type: GET_ANNOUNCEMENTS,
+      announcements: resData.announcements.sort((a, b) =>
+        a.date < b.date ? 1 : a.date > b.date ? -1 : 0,
+      ),
+    };
+  };
+
+  return fetchAndHandleError(url, reqInit, auth, callback);
 };
 
 export const addAnnouncement = announcementData => {
-  return async dispatch => {
-    try {
-      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
-
-      if (!authToken) {
-        throw new Error('No token set');
-      }
-
-      const formData = new FormData();
-      for (const key in announcementData) {
-        if (
-          announcementData[key] !== undefined &&
-          announcementData[key] !== null
-        ) {
-          formData.append(key, announcementData[key]);
-        }
-      }
-
-      const response = await fetch(
-        `http://${environmentUrl}/api/announcements/add`,
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'multipart/form-data',
-            'x-auth-token': `Bearer ${authToken}`,
-          },
-          body: formData,
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw error;
-      }
-
-      const resData = await response.json();
-
-      dispatch({
-        type: ADD_ANNOUNCEMENT,
-        announcement: resData.announcement,
-      });
-    } catch (err) {
-      console.log('err<>', err);
-
-      if (err && err.errors && err.errors.length > 0) {
-        throw err.errors;
-      }
+  const formData = new FormData();
+  for (const key in announcementData) {
+    if (announcementData[key] !== undefined && announcementData[key] !== null) {
+      formData.append(key, announcementData[key]);
     }
+  }
+
+  const url = `http://${environmentUrl}/api/announcements/add`;
+  const reqInit = {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+    },
+    body: formData,
   };
+  const auth = true;
+  const callback = resData => {
+    return {
+      type: ADD_ANNOUNCEMENT,
+      announcement: resData.announcement,
+    };
+  };
+
+  return fetchAndHandleError(url, reqInit, auth, callback);
 };
 
 export const deleteAnnouncement = id => {
-  return async dispatch => {
-    try {
-      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
-
-      if (!authToken) {
-        throw new Error('No token set');
-      }
-
-      const response = await fetch(
-        `http://${environmentUrl}/api/announcements/${id}/delete`,
-        {
-          method: 'DELETE',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'x-auth-token': `Bearer ${authToken}`,
-          },
-          body: null,
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw error;
-      }
-
-      const resData = await response.json();
-
-      dispatch({
-        type: DELETE_ANNOUNCEMENT,
-        announcementId: id,
-      });
-    } catch (err) {
-      console.log('err<>', err);
-
-      if (err && err.errors && err.errors.length > 0) {
-        throw err.errors;
-      }
-    }
+  const url = `http://${environmentUrl}/api/announcements/${id}/delete`;
+  const reqInit = {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   };
+  const auth = true;
+  const callback = resData => ({
+    type: DELETE_ANNOUNCEMENT,
+    announcementId: id,
+  });
+
+  return fetchAndHandleError(url, reqInit, auth, callback);
 };
 
 export const updateAnnouncement = announcementData => {
-  return async dispatch => {
-    try {
-      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
-
-      if (!authToken) {
-        throw new Error('No token set');
-      }
-
-      const formData = new FormData();
-      for (const key in announcementData) {
-        if (
-          announcementData[key] !== undefined &&
-          announcementData[key] !== null
-        ) {
-          formData.append(key, announcementData[key]);
-        }
-      }
-
-      const response = await fetch(
-        `http://${environmentUrl}/api/announcements/${announcementData.id}/update`,
-        {
-          method: 'PUT',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'multipart/form-data',
-            'x-auth-token': `Bearer ${authToken}`,
-          },
-          body: formData,
-        },
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw error;
-      }
-
-      const resData = await response.json();
-
-      dispatch({
-        type: UPDATE_ANNOUNCEMENT,
-        announcement: resData.announcement,
-        announcementId: announcementData.id,
-      });
-    } catch (err) {
-      console.log('err<>', err);
-
-      if (err && err.errors && err.errors.length > 0) {
-        throw err.errors;
-      }
+  const formData = new FormData();
+  for (const key in announcementData) {
+    if (announcementData[key] !== undefined && announcementData[key] !== null) {
+      formData.append(key, announcementData[key]);
     }
+  }
+
+  const url = `http://${environmentUrl}/api/announcements/${announcementData.id}/update`;
+  const reqInit = {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+    },
+    body: formData,
   };
+  const auth = true;
+  const callback = resData => ({
+    type: UPDATE_ANNOUNCEMENT,
+    announcement: resData.announcement,
+    announcementId: announcementData.id,
+  });
+
+  return fetchAndHandleError(url, reqInit, auth, callback);
 };
 
 export const searchAnnouncements = searchQuery => {
