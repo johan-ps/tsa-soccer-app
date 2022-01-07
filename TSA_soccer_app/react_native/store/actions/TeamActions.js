@@ -1,6 +1,4 @@
-import { environmentUrl } from '../../constants/Environment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import CONST from '../../constants/Constants';
+import { dispatchAndHandleError } from '../../Util/error-handling';
 
 export const GET_TEAMS = 'GET_TEAMS';
 export const ADD_TEAM = 'ADD_TEAM';
@@ -8,82 +6,54 @@ export const DELETE_TEAM = 'DELETE_TEAM';
 export const GET_TEAM_USERS = 'GET_TEAM_USERS';
 
 export const getTeams = () => {
-  return async dispatch => {
-    try {
-      const response = await fetch(`http://${environmentUrl}/api/teams`);
-
-      if (!response.ok) {
-        throw new Error('Something went wrong get announcements!');
-      }
-
-      const resData = await response.json();
-      const teams = resData.teams;
-
-      dispatch({
-        type: GET_TEAMS,
-        teams,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+  const url = 'teams';
+  const payload = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   };
+  const auth = false;
+  const config = resData => ({
+    type: GET_TEAMS,
+    teams: resData.teams,
+  });
+
+  return dispatchAndHandleError(url, payload, auth, config);
 };
 
 export const getAllUsersFromTeam = teamId => {
-  return async dispatch => {
-    try {
-      const response = await fetch(
-        `http://${environmentUrl}/api/teams/${teamId}/users`,
-      );
-
-      if (!response.ok) {
-        throw new Error('Something went wrong get announcements!');
-      }
-
-      const resData = await response.json();
-      const users = resData.users;
-
-      dispatch({
-        type: GET_TEAM_USERS,
-        users,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+  const url = `teams/${teamId}/users`;
+  const payload = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   };
+  const auth = false;
+  const config = resData => ({
+    type: GET_TEAM_USERS,
+    users: resData.users,
+  });
+
+  return dispatchAndHandleError(url, payload, auth, config);
 };
 
 export const addTeam = teamData => {
-  return async dispatch => {
-    try {
-      let authToken = await AsyncStorage.getItem(CONST.AUTH_TOKEN_KEY);
-
-      if (!authToken) {
-        throw new Error('No token set');
-      }
-
-      const response = await fetch(
-        `http://${environmentUrl}/api/announcements/add`,
-        {
-          method: 'POST',
-          body: teamData,
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error('Something went wrong add announcement!');
-      }
-
-      const resData = await response.json();
-
-      dispatch({
-        type: ADD_TEAM,
-        team: resData.team,
-      });
-    } catch (err) {
-      console.log(err);
-    }
+  const url = 'announcements/add';
+  const payload = {
+    method: 'POST',
+    body: teamData,
   };
+  const auth = false;
+  const config = resData => ({
+    type: ADD_TEAM,
+    team: resData.team,
+  });
+
+  return dispatchAndHandleError(url, payload, auth, config);
 };
 
 export const deleteAnnouncement = id => {
