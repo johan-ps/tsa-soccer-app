@@ -7,6 +7,7 @@ import Animated, {
   interpolate,
   runOnJS,
 } from 'react-native-reanimated';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const UiSwitch = props => {
   const { trackColor, onValueChange, value } = props;
@@ -16,7 +17,7 @@ const UiSwitch = props => {
     return {
       transform: [
         {
-          translateX: interpolate(anim.value, [0, 1], [5, 26]),
+          translateX: interpolate(anim.value, [0, 1], [2, 25]),
         },
       ],
     };
@@ -36,6 +37,13 @@ const UiSwitch = props => {
   }, [value]);
 
   const onToggleHandler = () => {
+    ReactNativeHapticFeedback.trigger(
+      Platform.OS === 'ios' ? 'impactLight' : 'clockTick',
+      {
+        enableVibrateFallback: true,
+        ignoreAndroidSystemSettings: true,
+      },
+    );
     if (anim.value === 0) {
       anim.value = withSpring(
         1,
@@ -51,7 +59,7 @@ const UiSwitch = props => {
           runOnJS(setEnabled)(true);
         },
       );
-      props.onValueChange();
+      props.onValueChange(!value);
     } else {
       anim.value = withSpring(
         0,
@@ -67,7 +75,7 @@ const UiSwitch = props => {
           runOnJS(setEnabled)(false);
         },
       );
-      props.onValueChange();
+      props.onValueChange(!value);
     }
   };
 
@@ -82,8 +90,8 @@ const UiSwitch = props => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 60,
-    height: 35,
+    width: 55,
+    height: 32,
     backgroundColor: 'grey',
     borderRadius: 20,
     justifyContent: 'center',

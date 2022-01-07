@@ -158,7 +158,7 @@ const UiInput = props => {
             color: isValid ? theme.secondaryText : theme.error,
           },
           // eslint-disable-next-line react-native/no-inline-styles
-          !multiline ? { paddingLeft: 60 } : {},
+          // !multiline ? { paddingLeft: 60 } : {},
         ]}
         multiline={multiline}
         onFocus={onFocus}

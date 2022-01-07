@@ -120,6 +120,7 @@ const EventLocation = props => {
     const apiUrl = `${GOOGLE_PLACES_API_BASE_URL}/autocomplete/json?key=AIzaSyB-HOOioh0lR-hXaggyEzYXVFKdylnbpFk&libraries=places&input=${encodeURIComponent(aSearchString)}&location=${encodeURIComponent(location)}&radius=${encodeURIComponent(radius)}`
     fetch(apiUrl).then((response) => response.json())
     .then((result) => {
+      console.log("Joell result", result);
       if(result.status === 'OK'){
         const { predictions } = result;
         setLocationOptions(predictions);
@@ -258,9 +259,9 @@ const EventLocation = props => {
               </View>
             </View>
           </TouchableOpacity>
-          {preExistingLocations && preExistingLocations.map(location => {
+          {preExistingLocations && preExistingLocations.map((location, index) => {
             return (
-          <TouchableOpacity style={styles.locationContainer} onPress={() => {onSelect(location); closeLocation();}}>
+          <TouchableOpacity key={index} style={styles.locationContainer} onPress={() => {onSelect(location); closeLocation();}}>
             <View>
               <Text style={{color: theme.cardTextSubHeading, fontSize: 18, fontWeight: '500'}}>{location.name}</Text>
               <Text style={{color: theme.cardTextSubHeading}}>{location.street}</Text>
@@ -324,8 +325,8 @@ const EventLocation = props => {
               onChangeText={searchPlaces}
             />
             <ScrollView>
-            {locationOptions.map(option => { return (
-              <TouchableOpacity onPress={() => onSelectLocation(option.place_id)} style={{alignItems: 'center', width: '100%', height: 60, backgroundColor:'#A9A9A9', padding: 10, paddingRight: 50, flexDirection: 'row', borderBottomWidth: 0.5}}>
+            {locationOptions.map((option, index) => { return (
+              <TouchableOpacity key={index} onPress={() => onSelectLocation(option.place_id)} style={{alignItems: 'center', width: '100%', height: 60, backgroundColor:'#A9A9A9', padding: 10, paddingRight: 50, flexDirection: 'row', borderBottomWidth: 0.5}}>
                 <Icon name={'location'} size={20} style={{marginRight: 10}}/>
                 <View>
                   <Text numberOfLines={1} style={{color: 'black', fontSize: 16, fontWeight: '500'}}>{option.structured_formatting.main_text}</Text>
@@ -353,8 +354,6 @@ const EventLocation = props => {
           )
         }
       </View>
-
-
     </Modal>
     </SafeAreaView>
   );

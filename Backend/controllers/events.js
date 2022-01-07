@@ -179,6 +179,11 @@ exports.createEvent = async (req, res, next) => {
         const [event, _] = await newEvent.save();
         const [players, __] = await Team.findAllPlayers(teamId);
         await newEvent.saveAvailability(event.insertId, players);
+        // Create Events_meta rows
+        // 1) Create repeat_start for start date
+        // 2) Create repeat_interval_'X' where X is the id of step 1 row and which contains info of what the repetition is 
+        // 3) Repeat steps 1 and 2 if more than one repetition
+        // 4) If no repetitions then set repeat_interval_x to 1
         res.status(200).json({event: {...newEvent, id: event.insertId, availability: null} })
       }
       else{

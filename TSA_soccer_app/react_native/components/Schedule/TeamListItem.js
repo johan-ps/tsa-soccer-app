@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const TeamListItem = props => {
   const { team, currentTeam, selectTeam } = props;
   const theme = useSelector(state => state.theme.colors);
-
+console.log("Joell currentTeam", currentTeam);
   return (
     <TouchableOpacity
       onPress={() => selectTeam(team)}
