@@ -33,8 +33,7 @@ import * as tabbarActions from '../store/actions/TabbarActions';
 import * as loaderActions from '../store/actions/LoaderActions';
 import UiBottomSheet from '../components/UiComponents/UiBottomSheet';
 import EventDetails from '../components/Schedule/EventDetails';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { UiButton } from '../components/_components';
+import openMap from 'react-native-open-maps';
 
 const ScheduleScreen = ({ navigation, events }) => {
   const addBtnRef = useRef();
@@ -195,7 +194,9 @@ const ScheduleScreen = ({ navigation, events }) => {
     showEventDetails(eventId);
   };
 
-  const onShowMapsHandler = () => {};
+  const onShowMapsHandler = () => {
+    openMap({ latitude: 37.865101, longitude: -119.53833 });
+  };
 
   return (
     <View style={{ backgroundColor: theme.secondaryBg }}>
@@ -331,7 +332,7 @@ const ScheduleScreen = ({ navigation, events }) => {
         footerLabel="Show in maps"
         title="Event Details"
         ref={bottomSheetRef}
-        primaryBtnHandler={() => {}}
+        primaryBtnHandler={onShowMapsHandler}
         onCloseHandler={hideEventDetails}>
         <EventDetails eventId={eventId} />
       </UiBottomSheet>

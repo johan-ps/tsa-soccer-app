@@ -199,6 +199,11 @@ const UiFilterModal = forwardRef((props, ref) => {
     props.onCloseHandler();
   }, [props]);
 
+  const headingStyle = {
+    fontFamily: theme.fontMedium,
+    color: theme.primaryText,
+  };
+
   return (
     <UiBottomSheet
       bottomInset={Platform.OS === 'ios' ? 250 : 170}
@@ -210,6 +215,9 @@ const UiFilterModal = forwardRef((props, ref) => {
       footerLabel="Apply Filter"
       secondaryLabel="Reset">
       <View style={styles.bottomSheetContent}>
+        <View style={styles.subheadingContainer}>
+          <Text style={[styles.subheading, headingStyle]}>Teams</Text>
+        </View>
         <UiDropdown
           ref={ddRef}
           options={teams}
@@ -224,6 +232,9 @@ const UiFilterModal = forwardRef((props, ref) => {
           errCode={formState.errors.teams}
         />
         <View style={styles.marginTop}>
+          <View style={styles.subheadingContainer}>
+            <Text style={[styles.subheading, headingStyle]}>Start Date</Text>
+          </View>
           <UiDatePicker
             id="startDate"
             placeholder={
@@ -241,6 +252,9 @@ const UiFilterModal = forwardRef((props, ref) => {
           />
         </View>
         <View style={styles.marginTop}>
+          <View style={styles.subheadingContainer}>
+            <Text style={[styles.subheading, headingStyle]}>End Date</Text>
+          </View>
           <UiDatePicker
             id="endDate"
             placeholder={
@@ -263,6 +277,13 @@ const UiFilterModal = forwardRef((props, ref) => {
 });
 
 const styles = StyleSheet.create({
+  subheadingContainer: {
+    marginTop: 0,
+    marginBottom: 15,
+  },
+  subheading: {
+    fontSize: 16,
+  },
   bottomSheetContainer: {
     flex: 1,
     position: 'absolute',
@@ -283,7 +304,7 @@ const styles = StyleSheet.create({
     right: 20,
   },
   marginTop: {
-    marginTop: 40,
+    marginTop: 20,
   },
   modalContainer: {
     paddingHorizontal: 15,

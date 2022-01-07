@@ -22,8 +22,6 @@ const EventDetails = props => {
     { label: 'Going', value: 1 },
   ];
 
-  const secondaryBtnHandler = () => {};
-
   const loadEventById = useCallback(
     async id => {
       try {
