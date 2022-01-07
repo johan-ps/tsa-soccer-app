@@ -212,14 +212,18 @@ const AnnouncementScreen = ({ navigation }) => {
 
   const showFilter = useCallback(() => {
     dispatch(tabbarActions.updateVisibility(false));
-    addBtnRef.current.onHide(false);
+    if (addBtnRef.current) {
+      addBtnRef.current.onHide(false);
+    }
     scrollTopRef.current.onHide();
     filterRef.current.snapToIndex(0);
   }, [addBtnRef, scrollTopRef, filterRef, dispatch]);
 
   const hideFilter = () => {
     dispatch(tabbarActions.updateVisibility(true));
-    addBtnRef.current.onShow();
+    if (addBtnRef.current) {
+      addBtnRef.current.onShow();
+    }
   };
 
   const deleteAnnouncement = () => {
@@ -303,14 +307,6 @@ const AnnouncementScreen = ({ navigation }) => {
             icon="file-tray-full-outline"
           />
         ) : null}
-        <UiFilterModal
-          ref={filterRef}
-          primaryLabel="Apply"
-          secondaryLabel="Reset"
-          title="Filter Announcements"
-          onCloseHandler={hideFilter}
-          onUpdateFilter={setFilters}
-        />
       </SafeAreaView>
       <ScrollTop ref={scrollTopRef} onPress={onScrollToTop} />
       {userData && userData.accessLevel > 0 ? (
@@ -323,6 +319,14 @@ const AnnouncementScreen = ({ navigation }) => {
           time={1000}
         />
       )}
+      <UiFilterModal
+        ref={filterRef}
+        primaryLabel="Apply"
+        secondaryLabel="Reset"
+        title="Filter Announcements"
+        onCloseHandler={hideFilter}
+        onUpdateFilter={setFilters}
+      />
     </View>
   );
 };

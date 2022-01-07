@@ -161,11 +161,6 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 15,
-    // elevation: 20,
-    // shadowRadius: 2,
-    // shadowColor: '#000000',
-    // shadowOpacity: 0.3,
-    // shadowOffset: { height: 20 },
   },
   headerImg: {
     height: '100%',

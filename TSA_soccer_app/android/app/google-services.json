@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "615589548373",
+    "project_id": "tsa-soccer-app",
+    "storage_bucket": "tsa-soccer-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615589548373:android:caf0678c2fccffdee49fdc",
+        "android_client_info": {
+          "package_name": "com.tsa_soccer_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "615589548373-lt0tghgpj2rq8hubuhv1afos79kgfbgm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tsa_soccer_app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "615589548373-k4qvamm60oqt9cena82mbpdcpr03nkqo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8eA6G4DjMiYopY_JKWEe9tR4pE3iX2xc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "615589548373-k4qvamm60oqt9cena82mbpdcpr03nkqo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

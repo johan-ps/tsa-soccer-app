@@ -20,9 +20,19 @@ import BottomSheet, {
   BottomSheetFooter,
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
+import UiButton from './UiButton';
+import UiIconButton from './UiIconButton';
 
 const UiBottomSheet = forwardRef((props, ref) => {
-  const { snaps = ['75%'], footerComponent = null, icon, title = '' } = props;
+  const {
+    snaps = ['80%'],
+    footerLabel = null,
+    icon,
+    title = '',
+    borderRadius = 35,
+    width = 45,
+    secondaryLabel = null,
+  } = props;
   const theme = useSelector(state => state.theme.colors);
   const bottomSheetRef = useRef();
   const snapPoints = useMemo(() => snaps, [snaps]);
@@ -33,6 +43,11 @@ const UiBottomSheet = forwardRef((props, ref) => {
 
   const snapToIndex = index => {
     bottomSheetRef.current.snapToIndex(index);
+  };
+
+  const closeSheet = () => {
+    bottomSheetRef.current.close();
+    onCloseHandler();
   };
 
   const onCloseHandler = useCallback(() => {
@@ -48,13 +63,39 @@ const UiBottomSheet = forwardRef((props, ref) => {
     [onCloseHandler],
   );
 
+  const primaryBtnHandler = () => {
+    if (props.primaryBtnHandler) {
+      props.primaryBtnHandler();
+    }
+  };
+
+  const secondaryBtnHandler = () => {
+    if (props.secondaryBtnHandler) {
+      props.secondaryBtnHandler();
+    }
+  };
+
   const renderFooter = (() => {
-    if (footerComponent) {
+    if (footerLabel) {
       return props => (
         <BottomSheetFooter
           {...props}
-          bottomInset={Platform.OS === 'ios' ? 250 : 164}>
-          <View style={styles.bottomSheetFooter}>{footerComponent}</View>
+          bottomInset={Platform.OS === 'ios' ? 250 : 20}>
+          <View
+            style={[styles.bottomSheetFooter, { shadowColor: theme.addBtnBg }]}>
+            <UiButton
+              width="100%"
+              height={62}
+              borderRadius={16}
+              style={styles.button}
+              primaryClr={theme.buttonPrimaryBg}
+              secondaryClr={theme.buttonPrimaryText}
+              label={footerLabel}
+              onPress={primaryBtnHandler}
+              size="medium"
+              darkBg={true}
+            />
+          </View>
         </BottomSheetFooter>
       );
     } else {
@@ -76,17 +117,29 @@ const UiBottomSheet = forwardRef((props, ref) => {
   return (
     <>
       <BottomSheet
-        style={styles.bottomSheet}
-        handleIndicatorStyle={{ backgroundColor: theme.primaryText }}
+        style={[styles.bottomSheet, { borderRadius }]}
+        handleIndicatorStyle={{
+          backgroundColor: theme.tertiaryText,
+          width,
+        }}
         ref={bottomSheetRef}
         index={-1}
         enablePanDownToClose={true}
         snapPoints={snapPoints}
         onAnimate={handleSheetChanges}
+        backgroundStyle={{ borderRadius }}
         footerComponent={renderFooter}
         backdropComponent={renderBackdrop}>
         <View
           style={[styles.modalContainer, { backgroundColor: theme.primaryBg }]}>
+          <UiIconButton
+            icon="close"
+            color={theme.secondaryText}
+            backgroundColor={theme.secondaryBg}
+            size={20}
+            darkBg={false}
+            onPress={closeSheet}
+          />
           <View style={styles.headingContainer}>
             <Text
               style={[
@@ -95,18 +148,32 @@ const UiBottomSheet = forwardRef((props, ref) => {
               ]}>
               {title}
             </Text>
-            {icon && (
+            {/* <View><Text>Hello</Text></View> */}
+            {/* {icon && (
               <TouchableOpacity
                 onPress={props.iconHandler}
                 style={styles.iconContainer}>
-                <Icon name={icon} color={theme.primaryText} size={20} />
+                {icon}
               </TouchableOpacity>
-            )}
+            )} */}
           </View>
+          <TouchableOpacity
+            onPress={secondaryBtnHandler}
+            style={styles.secondaryLabelContainer}>
+            {secondaryLabel && (
+              <Text
+                style={[
+                  styles.secondaryLabel,
+                  { fontFamily: theme.fontRegular, color: theme.secondaryText },
+                ]}>
+                {secondaryLabel}
+              </Text>
+            )}
+          </TouchableOpacity>
         </View>
         <BottomSheetScrollView>
-          {props.children}
-          <View style={{ height: 300 }} />
+          <View style={styles.bottomSheetContent}>{props.children}</View>
+          <View style={{ height: 100 }} />
         </BottomSheetScrollView>
       </BottomSheet>
     </>
@@ -114,19 +181,23 @@ const UiBottomSheet = forwardRef((props, ref) => {
 });
 
 const styles = StyleSheet.create({
-  bottomSheetContainer: {
-    flex: 1,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  secondaryLabelContainer: {
+    padding: 10,
+  },
+  secondaryLabel: {
+    fontSize: 14,
   },
   bottomSheetContent: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 30,
+    paddingTop: 20,
   },
   bottomSheetFooter: {
     paddingHorizontal: 15,
+    elevation: 10,
+    shadowRadius: 10,
+    shadowOpacity: 0.3,
+    shadowOffset: { height: 10 },
+    zIndex: 200,
   },
   closeBtn: {
     position: 'absolute',
@@ -137,10 +208,14 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   modalContainer: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    position: 'relative',
   },
   textContainer: {
-    padding: 5,
     overflow: 'hidden',
   },
   title: {
@@ -159,12 +234,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   heading: {
-    fontSize: 24,
-    marginBottom: 15,
+    fontSize: 20,
   },
   headingContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconContainer: {
     borderRadius: 50,
@@ -176,8 +256,8 @@ const styles = StyleSheet.create({
   },
   bottomSheet: {
     elevation: 24,
-    borderTopStartRadius: 24,
-    borderTopEndRadius: 24,
+    borderTopStartRadius: 0,
+    borderTopEndRadius: 0,
     shadowOffset: {
       width: 0,
       height: 12,

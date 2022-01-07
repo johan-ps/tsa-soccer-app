@@ -66,7 +66,7 @@ const announcementReducer = (state = INITIAL_STATE, action) => {
           filteredAnnouncements.push(a);
         }
       });
-      console.log(query, filteredAnnouncements.length);
+
       return {
         announcements: [...state.announcements],
         filteredAnnouncements,

@@ -1,5 +1,6 @@
 const Announcement = require("../models/Announcement");
 const sharp = require('sharp');
+const notification = require('../utils/notifications');
 
 exports.getAllAnnouncements = async (req, res, next) => {
     try {
@@ -77,7 +78,10 @@ exports.addAnnouncement = async (req, res, next) => {
             const newAnnouncement = new Announcement(title, description, authorId, teams, image);
             const [announcement, _] = await newAnnouncement.save();
             await newAnnouncement.saveTeams(announcement.insertId);
-            res.status(200).json({ announcement: { ...newAnnouncement, id: announcement.insertId } })
+            const [authorData, temp] = await Announcement.getAuthor(authorId);
+            const [a_teams, temp2] = await Announcement.findTeams(announcement.insertId);
+            res.status(200).json({ announcement: { ...newAnnouncement, id: announcement.insertId, ...authorData[0] } });
+            notification.sendAnnouncementNotification({...newAnnouncement, name: authorData[0].lastName, id: announcement.insertId }, a_teams);
         } else {
             res.status(400).json({ errors });
         }

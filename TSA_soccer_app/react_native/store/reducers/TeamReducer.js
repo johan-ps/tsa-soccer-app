@@ -1,4 +1,9 @@
-import { GET_TEAMS, ADD_TEAM, DELETE_TEAM, GET_TEAM_USERS } from '../actions/TeamActions';
+import {
+  GET_TEAMS,
+  ADD_TEAM,
+  DELETE_TEAM,
+  GET_TEAM_USERS,
+} from '../actions/TeamActions';
 
 const INITIAL_STATE = [];
 

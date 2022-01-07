@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+} from 'react';
 import {
   Text,
   View,
@@ -20,23 +26,28 @@ import * as eventsActions from '../store/actions/EventActions';
 import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
 import * as loaderActions from '../store/actions/LoaderActions';
+import UiBottomSheet from '../components/UiComponents/UiBottomSheet';
+import EventDetails from '../components/Schedule/EventDetails';
+import openMap from 'react-native-open-maps';
 
 const ScheduleScreen = ({ navigation, events }) => {
   const addBtnRef = useRef();
   const theme = useSelector(state => state.theme.colors);
   const userData = useSelector(state => state.userData);
   const teams = useSelector(state => state.teams);
-  const [currentTeam, setCurrentTeam] = useState(teams[0])
+  const [currentTeam, setCurrentTeam] = useState(teams[0]);
   const userId = userData && userData.id;
   const eventsToday = events.today;
   const eventsUpcoming = events.upcoming;
   const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [refreshEnabled, setRefreshEnabled] = useState(true);
+  const bottomSheetRef = useRef();
+  const [eventId, setEventId] = useState(null);
 
-  useFocusEffect(() => {
-    dispatch(tabbarActions.updateVisibility(true));
-  });
+  // useFocusEffect(() => {
+  //   dispatch(tabbarActions.updateVisibility(true));
+  // });
 
   const onScrollHandler = ({ nativeEvent }) => {
     if (nativeEvent.contentOffset.y <= 0) {
@@ -47,6 +58,26 @@ const ScheduleScreen = ({ navigation, events }) => {
       if (refreshEnabled) {
         setRefreshEnabled(false);
       }
+    }
+  };
+
+  const showEventDetails = useCallback(
+    eventId => {
+      setEventId(eventId);
+      dispatch(tabbarActions.updateVisibility(false));
+      if (addBtnRef.current) {
+        addBtnRef.current.onHide(false);
+      }
+      bottomSheetRef.current.snapToIndex(0);
+    },
+    [addBtnRef, dispatch],
+  );
+
+  const hideEventDetails = () => {
+    setEventId(null);
+    dispatch(tabbarActions.updateVisibility(true));
+    if (addBtnRef.current) {
+      addBtnRef.current.onShow();
     }
   };
 
@@ -61,7 +92,7 @@ const ScheduleScreen = ({ navigation, events }) => {
             '2021-09-02',
             // moment(date).format('YYYY-MM-DD'),
             userId,
-            teamId
+            teamId,
           ),
         );
       } catch (err) {
@@ -78,7 +109,7 @@ const ScheduleScreen = ({ navigation, events }) => {
 
   useEffect(() => {
     loadEventsFromDate(new Date());
-  }, [dispatch, navigation])
+  }, [dispatch, loadEventsFromDate, navigation]);
 
   useEffect(() => {
     loadEventsFromDate(new Date());
@@ -151,9 +182,14 @@ const ScheduleScreen = ({ navigation, events }) => {
   };
 
   const onClickEvent = eventId => {
-    navigation.navigate('Event', {
-      eventId: eventId,
-    });
+    // navigation.navigate('Event', {
+    //   eventId: eventId,
+    // });
+    showEventDetails(eventId);
+  };
+
+  const onShowMapsHandler = () => {
+    openMap({ latitude: 37.865101, longitude: -119.53833 });
   };
 
   return (
@@ -178,9 +214,11 @@ const ScheduleScreen = ({ navigation, events }) => {
             }}
             value={selectedDate}
             onChange={aDate => setSelectedDate(aDate)}
-            loadEventsFromDate={(date, reload) => loadEventsFromDate(date, reload, currentTeam.id)}
+            loadEventsFromDate={(date, reload) =>
+              loadEventsFromDate(date, reload, currentTeam.id)
+            }
             currentTeam={currentTeam}
-            onTeamChange={(team) => {
+            onTeamChange={team => {
               setCurrentTeam(team);
               loadEventsFromDate(selectedDate, true, team.id);
             }}
@@ -191,7 +229,9 @@ const ScheduleScreen = ({ navigation, events }) => {
               loadingLottieAnim={loadingLottieAnim}
               backgroundColor={theme.secondaryBg}
               enabled={refreshEnabled}
-              load={() => loadEventsFromDate(selectedDate, true, currentTeam.id)}
+              load={() =>
+                loadEventsFromDate(selectedDate, true, currentTeam.id)
+              }
               onlyPullToRefresh={true}>
               <View style={[styles.bodyContainer]}>
                 {eventsToday && eventsToday.length > 0 ? (
@@ -282,6 +322,14 @@ const ScheduleScreen = ({ navigation, events }) => {
       {userData && userData.accessLevel > 0 && (
         <AddButton ref={addBtnRef} onPress={onAddClicked} />
       )}
+      <UiBottomSheet
+        footerLabel="Show in maps"
+        title="Event Details"
+        ref={bottomSheetRef}
+        primaryBtnHandler={onShowMapsHandler}
+        onCloseHandler={hideEventDetails}>
+        <EventDetails eventId={eventId} />
+      </UiBottomSheet>
     </View>
   );
 };

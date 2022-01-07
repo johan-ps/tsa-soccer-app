@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import Animated, {
   withSpring,
@@ -22,6 +22,19 @@ const UiSwitch = props => {
       ],
     };
   });
+
+  useEffect(() => {
+    setEnabled(value);
+    anim.value = withSpring(value ? 1 : 0, {
+      damping: 100,
+      mass: 10,
+      stiffness: 1000,
+      overshootClamping: true,
+      restDisplacementThreshold: 0,
+      restSpeedThreshold: 0,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   const onToggleHandler = () => {
     ReactNativeHapticFeedback.trigger(
