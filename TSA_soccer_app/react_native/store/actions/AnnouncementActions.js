@@ -1,6 +1,4 @@
-import Announcement from '../../models/announcement';
-import { environmentUrl } from '../../constants/Environment';
-import { fetchAndHandleError } from '../../Util/error-handling';
+import { dispatchAndHandleError } from '../../Util/error-handling';
 
 export const GET_ANNOUNCEMENTS = 'GET_ANNOUNCEMENTS';
 export const ADD_ANNOUNCEMENT = 'ADD_ANNOUNCEMENT';
@@ -9,8 +7,8 @@ export const UPDATE_ANNOUNCEMENT = 'UPDATE_ANNOUNCEMENT';
 export const SEARCH_ANNOUNCEMENT = 'SEARCH_ANNOUNCEMENT';
 
 export const getAnnouncements = () => {
-  const url = `http://${environmentUrl}/api/announcements`;
-  const reqInit = {
+  const url = 'announcements';
+  const payload = {
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -18,7 +16,7 @@ export const getAnnouncements = () => {
     },
   };
   const auth = false;
-  const callback = resData => {
+  const config = resData => {
     return {
       type: GET_ANNOUNCEMENTS,
       announcements: resData.announcements.sort((a, b) =>
@@ -27,12 +25,12 @@ export const getAnnouncements = () => {
     };
   };
 
-  return fetchAndHandleError(url, reqInit, auth, callback);
+  return dispatchAndHandleError(url, payload, auth, config);
 };
 
 export const getFilteredAnnouncements = filters => {
-  const url = `http://${environmentUrl}/api/announcements`;
-  const reqInit = {
+  const url = 'announcements';
+  const payload = {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -41,7 +39,7 @@ export const getFilteredAnnouncements = filters => {
     body: JSON.stringify({ ...filters }),
   };
   const auth = false;
-  const callback = resData => {
+  const config = resData => {
     return {
       type: GET_ANNOUNCEMENTS,
       announcements: resData.announcements.sort((a, b) =>
@@ -50,7 +48,7 @@ export const getFilteredAnnouncements = filters => {
     };
   };
 
-  return fetchAndHandleError(url, reqInit, auth, callback);
+  return dispatchAndHandleError(url, payload, auth, config);
 };
 
 export const addAnnouncement = announcementData => {
@@ -61,8 +59,8 @@ export const addAnnouncement = announcementData => {
     }
   }
 
-  const url = `http://${environmentUrl}/api/announcements/add`;
-  const reqInit = {
+  const url = 'announcements/add';
+  const payload = {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -71,19 +69,19 @@ export const addAnnouncement = announcementData => {
     body: formData,
   };
   const auth = true;
-  const callback = resData => {
+  const config = resData => {
     return {
       type: ADD_ANNOUNCEMENT,
       announcement: resData.announcement,
     };
   };
 
-  return fetchAndHandleError(url, reqInit, auth, callback);
+  return dispatchAndHandleError(url, payload, auth, config);
 };
 
 export const deleteAnnouncement = id => {
-  const url = `http://${environmentUrl}/api/announcements/${id}/delete`;
-  const reqInit = {
+  const url = `announcements/${id}/delete`;
+  const payload = {
     method: 'DELETE',
     headers: {
       Accept: 'application/json',
@@ -91,12 +89,12 @@ export const deleteAnnouncement = id => {
     },
   };
   const auth = true;
-  const callback = resData => ({
+  const config = resData => ({
     type: DELETE_ANNOUNCEMENT,
     announcementId: id,
   });
 
-  return fetchAndHandleError(url, reqInit, auth, callback);
+  return dispatchAndHandleError(url, payload, auth, config);
 };
 
 export const updateAnnouncement = announcementData => {
@@ -107,8 +105,8 @@ export const updateAnnouncement = announcementData => {
     }
   }
 
-  const url = `http://${environmentUrl}/api/announcements/${announcementData.id}/update`;
-  const reqInit = {
+  const url = `announcements/${announcementData.id}/update`;
+  const payload = {
     method: 'PUT',
     headers: {
       Accept: 'application/json',
@@ -117,13 +115,13 @@ export const updateAnnouncement = announcementData => {
     body: formData,
   };
   const auth = true;
-  const callback = resData => ({
+  const config = resData => ({
     type: UPDATE_ANNOUNCEMENT,
     announcement: resData.announcement,
     announcementId: announcementData.id,
   });
 
-  return fetchAndHandleError(url, reqInit, auth, callback);
+  return dispatchAndHandleError(url, payload, auth, config);
 };
 
 export const searchAnnouncements = searchQuery => {

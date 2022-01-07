@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useReducer,
   useRef,
-  useMemo,
   forwardRef,
   useImperativeHandle,
   memo,
@@ -12,19 +11,16 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Platform,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { formatTeams } from '../../Util/utilities';
-import { UiButton, UiDropdown } from '../_components';
+import { UiDropdown } from '../_components';
 import * as teamActions from '../../store/actions/TeamActions';
 import UiDatePicker from './UiDatePicker';
 import moment from 'moment';
 import * as loaderActions from '../../store/actions/LoaderActions';
 import * as announcementActions from '../../store/actions/AnnouncementActions';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import UiBottomSheet from './UiBottomSheet';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
@@ -154,7 +150,7 @@ const UiFilterModal = forwardRef((props, ref) => {
     dispatchFormState({ type: FORM_INPUT_APPLY });
     props.onUpdateFilter(formState.inputValues);
     loadFilteredAnnouncements(formState.inputValues);
-    bottomSheetRef.current.close();
+    bottomSheetRef.current.closeSheet();
   }, [formState.inputValues, loadFilteredAnnouncements, props]);
 
   const secondaryBtnHandler = () => {

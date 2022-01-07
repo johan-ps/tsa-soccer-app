@@ -39,6 +39,7 @@ const UiBottomSheet = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     snapToIndex,
+    closeSheet,
   }));
 
   const snapToIndex = index => {
