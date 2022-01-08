@@ -1,21 +1,14 @@
-import React, { useState, useReducer, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   Text,
   View,
   StyleSheet,
   ScrollView,
-  Platform,
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import ImagePicker from 'react-native-image-crop-picker';
-import {
-  UiButton,
-  UiDropdown,
-  UiModal,
-  UiInput,
-} from '../components/_components';
+import { UiButton, UiDropdown, UiInput } from '../components/_components';
 import ImageUpload from '../components/Announcements/ImageUpload';
 import * as announcementActions from '../store/actions/AnnouncementActions';
 import * as loaderActions from '../store/actions/LoaderActions';
@@ -26,119 +19,47 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { getTeamsFromAnnouncement } from '../api/announcements';
 import { useFormik } from 'formik';
 
-const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
-
-const formInit = {
-  inputValues: {
-    title: '',
-    imageUrl: null,
-    description: '',
-    teams: [],
-  },
-  inputValidities: {
-    title: true,
-    imageUrl: true,
-    description: true,
-    teams: true,
-  },
-  errors: {
-    title: null,
-    imageUrl: null,
-    description: null,
-    teams: null,
-  },
-  formIsValid: true,
-};
-
-const getFormData = (isEdit, data) => {
-  if (isEdit) {
-    return {
-      inputValues: {
-        title: data.title || '',
-        imageUrl: data.image || null,
-        description: data.description || '',
-        teams: data.teams || [],
-      },
-      inputValidities: {
-        title: true,
-        imageUrl: true,
-        description: true,
-        teams: true,
-      },
-      errors: {
-        title: null,
-        imageUrl: null,
-        description: null,
-        teams: null,
-      },
-      formIsValid: true,
-    };
-  } else {
-    return formInit;
-  }
-};
-
-const formReducer = (state, action) => {
-  if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = { ...state.inputValues };
-    if (action.value !== undefined) {
-      updatedValues[action.input] = action.value;
-    }
-
-    const updatedValidities = { ...state.inputValidities };
-    if (action.isValid !== undefined) {
-      updatedValidities[action.input] = action.isValid;
-    }
-
-    const updatedErrors = { ...state.errors };
-    if (action.error !== undefined) {
-      updatedErrors[action.input] = action.error;
-    }
-
-    let updatedFormIsValid = true;
-    for (let key in updatedValidities) {
-      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
-    }
-
-    return {
-      formIsValid: updatedFormIsValid,
-      inputValues: updatedValues,
-      inputValidities: updatedValidities,
-      errors: updatedErrors,
-    };
-  } else {
-    return formInit;
-  }
-};
-
 const ModifyAnnouncementScreen = props => {
   const { navigation } = props;
   const theme = useSelector(state => state.theme.colors);
   const teams = useSelector(state => formatTeams(state.teams));
   const dispatch = useDispatch();
   const userData = useSelector(state => state.userData);
-
+  const [labelMapping, setLabelMapping] = useState({});
   const { isEdit } = props.route.params;
   const { announcementData } = props.route.params;
-
-  const [imgPickerModalVisible, setImgPickerModalVisible] = useState(false);
   const [initTeams, setInitTeams] = useState([]);
 
-  const [formState, dispatchFormState] = useReducer(
-    formReducer,
-    getFormData(isEdit, announcementData),
-  );
+  useEffect(() => {
+    const selectedTeams = [];
+    const mapping = {};
+
+    teams.forEach((option, i) => {
+      selectedTeams.push(false);
+      mapping[option.id] = i;
+    });
+
+    setLabelMapping(mapping);
+    setInitTeams(selectedTeams);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const formik = useFormik({
     initialValues: {
       imageUrl: null,
       description: '',
-      teams: [],
+      teams: initTeams,
     },
     onSubmit: values => {
       console.log(values);
     },
   });
+
+  useEffect(() => {
+    formik.setFieldValue('teams', initTeams);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initTeams]);
 
   const loadTeamsFromAnnouncements = useCallback(async () => {
     return await getTeamsFromAnnouncement(announcementData.id);
@@ -150,142 +71,20 @@ const ModifyAnnouncementScreen = props => {
       loadTeamsFromAnnouncements()
         .then(res => {
           if (res && res.length > 0) {
-            const teamsArr = [];
+            const teamsArr = [...initTeams];
 
             res.forEach(({ teamId }) => {
-              teamsArr.push(teamId.toString());
+              teamsArr[labelMapping[teamId.toString()]] = true;
             });
 
             setInitTeams(teamsArr);
-
-            dispatchFormState({
-              type: FORM_INPUT_UPDATE,
-              value: teamsArr,
-              input: 'teams',
-            });
           }
         })
         .finally(() => {
           dispatch(loaderActions.updateLoader(false));
         });
     }
-  }, [loadTeamsFromAnnouncements, isEdit, dispatch]);
-
-  const imagePickerHandler = () => {
-    if (Platform.OS === 'ios') {
-      setTimeout(() => {
-        ImagePicker.openPicker({
-          width: 300,
-          height: 300,
-          cropping: true,
-          includeBase64: true,
-          includeExif: true,
-        })
-          .then(img => {
-            dispatchFormState({
-              type: FORM_INPUT_UPDATE,
-              value: {
-                uri: `data:${img.mime};base64,` + img.data,
-                width: img.width,
-                height: img.height,
-                type: img.mime,
-                name: `profileImg.${img.mime.split('/')[1]}`,
-              },
-              input: 'imageUrl',
-            });
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      }, 400);
-    } else {
-      ImagePicker.openPicker({
-        width: 300,
-        height: 300,
-        cropping: true,
-        includeBase64: true,
-        includeExif: true,
-      })
-        .then(img => {
-          dispatchFormState({
-            type: FORM_INPUT_UPDATE,
-            value: {
-              uri: `${img.path}`,
-              width: img.width,
-              height: img.height,
-              type: img.mime,
-              name: `profileImg.${img.mime.split('/')[1]}`,
-            },
-            input: 'imageUrl',
-          });
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    }
-  };
-
-  const cameraHandler = () => {
-    if (Platform.OS === 'ios') {
-      setTimeout(() => {
-        ImagePicker.openCamera({
-          cropping: true,
-          width: 500,
-          height: 500,
-          includeExif: true,
-          mediaType: 'photo',
-        })
-          .then(img => {
-            dispatchFormState({
-              type: FORM_INPUT_UPDATE,
-              value: {
-                uri: img.path,
-                width: img.width,
-                height: img.height,
-                type: img.mime,
-                name: `profileImg.${img.mime.split('/')[1]}`,
-              },
-              input: 'imageUrl',
-            });
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      }, 400);
-    } else {
-      ImagePicker.openCamera({
-        cropping: true,
-        width: 500,
-        height: 500,
-        includeExif: true,
-        mediaType: 'photo',
-      })
-        .then(img => {
-          dispatchFormState({
-            type: FORM_INPUT_UPDATE,
-            value: {
-              uri: `${img.path}`,
-              width: img.width,
-              height: img.height,
-              type: img.mime,
-              name: `profileImg.${img.mime.split('/')[1]}`,
-            },
-            input: 'imageUrl',
-          });
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    }
-  };
-
-  const clearImage = () => {
-    dispatchFormState({
-      type: FORM_INPUT_UPDATE,
-      value: null,
-      input: 'imageUrl',
-    });
-  };
+  }, [loadTeamsFromAnnouncements, isEdit, dispatch, initTeams, labelMapping]);
 
   const loadTeams = useCallback(async () => {
     try {
@@ -305,15 +104,22 @@ const ModifyAnnouncementScreen = props => {
     dispatch(tabbarActions.updateVisibility(false));
   }, [dispatch, loadTeams]);
 
-  const modifyAnnouncementScreenHandler = async () => {
+  const modifyAnnouncementScreenHandler = async values => {
     formik.handleSubmit();
     dispatch(loaderActions.updateLoader(true));
     try {
+      const selectedTeams = [];
+      for (const key in labelMapping) {
+        if (values.teams[labelMapping[key]]) {
+          selectedTeams.push(key);
+        }
+      }
+
       const updateData = {
         title: '',
-        description: formState.inputValues.description,
-        image: formState.inputValues.imageUrl,
-        teams: JSON.stringify(formState.inputValues.teams),
+        description: values.description,
+        image: values.imageUrl,
+        teams: JSON.stringify(selectedTeams),
         authorId: userData.id,
       };
 
@@ -328,17 +134,11 @@ const ModifyAnnouncementScreen = props => {
       );
       await dispatch(announcementActions.getAnnouncements());
       navigation.goBack();
-      dispatchFormState({ type: 'reset' });
+      formik.resetForm();
     } catch (error) {
       if (error && error.length > 0) {
         error.forEach(err => {
           formik.setFieldError(err.field, err.errCode);
-          // dispatchFormState({
-          //   type: FORM_INPUT_UPDATE,
-          //   isValid: false,
-          //   error: err.errCode,
-          //   input: err.field,
-          // });
         });
       }
     } finally {
@@ -346,45 +146,17 @@ const ModifyAnnouncementScreen = props => {
     }
   };
 
-  const onChangeText = useCallback(
-    (inputId, inputValue) => {
-      dispatchFormState({
-        type: FORM_INPUT_UPDATE,
-        value: inputValue,
-        input: inputId,
-        isValid: true,
-      });
-    },
-    [dispatchFormState],
-  );
-
-  const onSelectHandler = useCallback(
-    inputValue => {
-      if (inputValue) {
-        let selectedTeams = [];
-
-        for (let group in inputValue) {
-          for (let teamId in inputValue[group].children) {
-            if (inputValue[group].children[teamId]) {
-              selectedTeams.push(teamId);
-            }
-          }
-        }
-
-        dispatchFormState({
-          type: FORM_INPUT_UPDATE,
-          value: selectedTeams,
-          input: 'teams',
-          isValid: true,
-        });
-      }
-    },
-    [dispatchFormState],
-  );
-
   const onCloseHandler = () => {
-    dispatchFormState({ type: 'reset' });
+    formik.resetForm();
     navigation.goBack();
+  };
+
+  const handleDropdownChange = values => {
+    formik.setFieldValue('teams', values);
+  };
+
+  const handleImageChange = (imageUrl = null) => {
+    formik.setFieldValue('imageUrl', imageUrl);
   };
 
   const labelFont = {
@@ -436,25 +208,20 @@ const ModifyAnnouncementScreen = props => {
                 <Text style={[styles.formLabels, labelFont]}>Team</Text>
                 <UiDropdown
                   id="teams"
-                  initialValue={initTeams}
-                  onSelect={onSelectHandler}
-                  modalOffsetY={110}
-                  modalOffsetX={0}
                   options={teams}
+                  labelMapping={labelMapping}
                   multiselect={true}
                   group={true}
                   placeholder="Choose teams"
-                  size="large"
-                  optionSize="large"
-                  isValid={formState.inputValidities.teams}
-                  errCode={formState.errors.teams}
+                  onChange={handleDropdownChange}
+                  selectedValues={formik.values.teams}
+                  error={formik.errors.teams}
                 />
                 <Text style={[styles.formLabels, labelFont]}>Upload Image</Text>
                 <ImageUpload
-                  imgUrl={formState.inputValues.imageUrl}
-                  onPress={() => {
-                    setImgPickerModalVisible(true);
-                  }}
+                  onChange={handleImageChange}
+                  imgUrl={formik.values.imageUrl}
+                  error={formik.errors.imageUrl}
                 />
                 <View style={styles.uploadBtnContainer}>
                   <UiButton
@@ -463,20 +230,18 @@ const ModifyAnnouncementScreen = props => {
                     type="primary"
                     primaryClr={theme.buttonSecondaryBg}
                     secondaryClr={theme.buttonSecondaryText}
-                    onPress={() => {
-                      setImgPickerModalVisible(true);
-                    }}
+                    onPress={() => {}}
                     darkBg={false}
                     borderRadius={16}
                   />
-                  {formState.inputValues.imageUrl ? (
+                  {formik.values.imageUrl ? (
                     <UiButton
                       icon="close"
                       type="primary"
                       primaryClr={theme.buttonSecondaryBg}
                       secondaryClr={theme.buttonSecondaryText}
                       onPress={() => {
-                        clearImage();
+                        handleImageChange(null);
                       }}
                       darkBg={false}
                       borderRadius={16}
@@ -501,23 +266,6 @@ const ModifyAnnouncementScreen = props => {
             />
           </View>
         </View>
-        <UiModal
-          primaryLabel="Camera"
-          secondaryLabel="Library"
-          visible={imgPickerModalVisible}
-          title="Upload Image"
-          content={'How would you like to upload your image?'}
-          primaryBtnHandler={cameraHandler}
-          secondaryBtnHandler={imagePickerHandler}
-          onCloseHandler={() => {
-            setImgPickerModalVisible(false);
-          }}
-          icon="aperture-outline"
-          closeable={true}
-          onClose={() => {
-            setImgPickerModalVisible(false);
-          }}
-        />
       </View>
     </SafeAreaView>
   );

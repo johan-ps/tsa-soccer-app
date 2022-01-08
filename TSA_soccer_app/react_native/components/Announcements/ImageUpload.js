@@ -5,14 +5,32 @@ import {
   TouchableNativeFeedback,
   Text,
   Image,
+  Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
+import ImagePicker from 'react-native-image-crop-picker';
+import { UiModal } from '../_components';
+
+const cameraConfig = {
+  cropping: true,
+  width: 500,
+  height: 500,
+  includeExif: true,
+  mediaType: 'photo',
+};
+const imageConfig = {
+  width: 300,
+  height: 300,
+  cropping: true,
+  includeBase64: true,
+  includeExif: true,
+};
 
 const ImageUpload = props => {
-  const { imgUrl = null } = props;
+  const { imgUrl } = props;
   const theme = useSelector(state => state.theme.colors);
-
+  const [imgPickerModalVisible, setImgPickerModalVisible] = useState(false);
   const [imgSrc, setImgSrc] = useState(null);
 
   useEffect(() => {
@@ -21,12 +39,63 @@ const ImageUpload = props => {
     } else {
       setImgSrc(imgUrl);
     }
-  }, [setImgSrc, imgUrl]);
+  }, [imgUrl]);
+
+  const handleImageSelect = img => {
+    if (props.onChange) {
+      const data = {
+        uri: `data:${img.mime};base64,` + img.data,
+        width: img.width,
+        height: img.height,
+        type: img.mime,
+        name: `profileImg.${img.mime.split('/')[1]}`,
+      };
+      props.onChange(data);
+    }
+  };
+
+  const imagePickerHandler = () => {
+    if (Platform.OS === 'ios') {
+      setTimeout(() => {
+        ImagePicker.openPicker(imageConfig)
+          .then(handleImageSelect)
+          .catch(e => {
+            console.log(e);
+          });
+      }, 400);
+    } else {
+      ImagePicker.openPicker(imageConfig)
+        .then(handleImageSelect)
+        .catch(e => {
+          console.log(e);
+        });
+    }
+  };
+
+  const cameraHandler = () => {
+    if (Platform.OS === 'ios') {
+      setTimeout(() => {
+        ImagePicker.openCamera(cameraConfig)
+          .then(handleImageSelect)
+          .catch(e => {
+            console.log(e);
+          });
+      }, 400);
+    } else {
+      ImagePicker.openCamera(cameraConfig)
+        .then(handleImageSelect)
+        .catch(e => {
+          console.log(e);
+        });
+    }
+  };
 
   return (
     <View style={styles.container}>
       <TouchableNativeFeedback
-        onPress={props.onPress}
+        onPress={() => {
+          setImgPickerModalVisible(true);
+        }}
         style={styles.touchable}
         background={TouchableNativeFeedback.Ripple(
           theme.name === 'dark'
@@ -64,6 +133,23 @@ const ImageUpload = props => {
           )}
         </View>
       </TouchableNativeFeedback>
+      <UiModal
+        primaryLabel="Camera"
+        secondaryLabel="Library"
+        visible={imgPickerModalVisible}
+        title="Upload Image"
+        content={'How would you like to upload your image?'}
+        primaryBtnHandler={cameraHandler}
+        secondaryBtnHandler={imagePickerHandler}
+        onCloseHandler={() => {
+          setImgPickerModalVisible(false);
+        }}
+        icon="aperture-outline"
+        closeable={true}
+        onClose={() => {
+          setImgPickerModalVisible(false);
+        }}
+      />
     </View>
   );
 };

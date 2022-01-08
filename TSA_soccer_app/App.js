@@ -61,11 +61,6 @@ const handleAnnouncementNotification = ({
 };
 
 const App = () => {
-  // AppRegistry.registerHeadlessTask(
-  //   'RNFirebaseBackgroundMessage',
-  //   handleAnnouncementNotification,
-  // );
-
   const requestUserPermission = async () => {
     /**
      * On iOS, messaging permission must be requested by

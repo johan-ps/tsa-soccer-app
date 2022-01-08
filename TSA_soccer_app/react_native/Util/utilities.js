@@ -119,11 +119,13 @@ export const sortByDate = data => {
 export const formatTeams = teams => {
   const teamsOpt = [
     {
+      group: true,
       label: 'House League',
       id: 0,
       children: [],
     },
     {
+      group: true,
       label: 'Rep',
       id: 1,
       children: [],
@@ -136,5 +138,10 @@ export const formatTeams = teams => {
       teamsOpt[0].children.push({ ...team, label: team.name });
     }
   });
-  return teamsOpt;
+  return [
+    teamsOpt[0],
+    ...teamsOpt[0].children,
+    teamsOpt[1],
+    ...teamsOpt[1].children,
+  ];
 };
