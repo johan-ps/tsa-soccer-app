@@ -24,6 +24,7 @@ import { formatTeams } from '../Util/utilities';
 import * as tabbarActions from '../store/actions/TabbarActions';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getTeamsFromAnnouncement } from '../api/announcements';
+import { useFormik } from 'formik';
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
 
@@ -127,6 +128,17 @@ const ModifyAnnouncementScreen = props => {
     formReducer,
     getFormData(isEdit, announcementData),
   );
+
+  const formik = useFormik({
+    initialValues: {
+      imageUrl: null,
+      description: '',
+      teams: [],
+    },
+    onSubmit: values => {
+      console.log(values);
+    },
+  });
 
   const loadTeamsFromAnnouncements = useCallback(async () => {
     return await getTeamsFromAnnouncement(announcementData.id);
@@ -294,6 +306,7 @@ const ModifyAnnouncementScreen = props => {
   }, [dispatch, loadTeams]);
 
   const modifyAnnouncementScreenHandler = async () => {
+    formik.handleSubmit();
     dispatch(loaderActions.updateLoader(true));
     try {
       const updateData = {
@@ -319,12 +332,13 @@ const ModifyAnnouncementScreen = props => {
     } catch (error) {
       if (error && error.length > 0) {
         error.forEach(err => {
-          dispatchFormState({
-            type: FORM_INPUT_UPDATE,
-            isValid: false,
-            error: err.errCode,
-            input: err.field,
-          });
+          formik.setFieldError(err.field, err.errCode);
+          // dispatchFormState({
+          //   type: FORM_INPUT_UPDATE,
+          //   isValid: false,
+          //   error: err.errCode,
+          //   input: err.field,
+          // });
         });
       }
     } finally {
@@ -399,7 +413,11 @@ const ModifyAnnouncementScreen = props => {
               <TouchableOpacity
                 onPress={onCloseHandler}
                 style={styles.iconContainer}>
-                <Icon name="close-outline" color={theme.primaryText} size={36} />
+                <Icon
+                  name="close-outline"
+                  color={theme.primaryText}
+                  size={36}
+                />
               </TouchableOpacity>
             </View>
             <ScrollView
@@ -414,7 +432,9 @@ const ModifyAnnouncementScreen = props => {
                   errCode={formState.errors.description}
                   placeholder="Description"
                   multiline={true}
-                  onInputChange={onChangeText}
+                  onChangeText={formik.handleChange('description')}
+                  value={formik.values.description}
+                  error={formik.errors.description}
                 />
                 <Text style={[styles.formLabels, labelFont]}>Team</Text>
                 <UiDropdown

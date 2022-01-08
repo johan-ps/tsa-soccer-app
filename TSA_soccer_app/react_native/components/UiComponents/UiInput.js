@@ -1,18 +1,5 @@
-import React, {
-  useReducer,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from 'react';
-import {
-  TextInput,
-  StyleSheet,
-  Pressable,
-  View,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import React, { useRef, useState, useMemo } from 'react';
+import { TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useSelector } from 'react-redux';
 import Animated, {
@@ -21,96 +8,59 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { debounce } from 'lodash';
 import ErrorMessage from './ErrorMessage';
-
-const INPUT_CHANGE = 'INPUT_CHANGE';
-
-const inputReducer = (state, action) => {
-  switch (action.type) {
-    case INPUT_CHANGE:
-      return {
-        ...state,
-        value: action.value,
-      };
-    default:
-      return state;
-  }
-};
 
 const UiInput = props => {
   const theme = useSelector(state => state.theme.colors);
-
   const {
     placeholder,
     fontSize = 15,
     icon,
     iconLeft,
-    openOnFocus,
-    closeOnBlur,
     disabled,
-    onChangeText,
     contentType = 'none',
     multiline = false,
-    errCode,
-    isValid = true,
+    error,
     paddingRight,
+    value,
   } = props;
-  const translateAnim = useSharedValue(0);
-  const scaleAnim = useSharedValue(0);
-  const [inputState, dispatch] = useReducer(inputReducer, {
-    value: props.initialValue ? props.initialValue : '',
-  });
   const inputRef = useRef();
   const [showInput, setShowInput] = useState(false);
+  const focusAnimation = useSharedValue(0);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handler = useCallback(
-    debounce(text => onChangeText(text), 250),
-    [],
-  );
-
-  const inputHandler = text => {
-    if (onChangeText) {
-      handler(text);
-    }
-    dispatch({ type: INPUT_CHANGE, value: text });
+  const onFocusIn = () => {
+    focusAnimation.value = withTiming(1, { duration: 40 });
   };
 
-  const { onInputChange, id } = props;
-
-  useEffect(() => {
-    if (onInputChange) {
-      onInputChange(id, inputState.value);
-    }
-  }, [inputState, onInputChange, id]);
-
-  useEffect(() => {
-    if (inputState.value !== '') {
-      translateAnim.value = withTiming(1, { duration: 150 });
-      scaleAnim.value = 1;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onFocus = () => {
-    if (inputRef && inputRef.current) {
-      inputRef.current.focus();
-    }
-    if (openOnFocus) {
-      openOnFocus();
-    }
-    translateAnim.value = withTiming(1, { duration: 150 });
-    scaleAnim.value = 1;
+  const onFocusOut = () => {
+    focusAnimation.value = withTiming(0, { duration: 40 });
   };
 
-  const onBlur = () => {
-    if (closeOnBlur) {
-      closeOnBlur();
+  const scale = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          scale: interpolate(focusAnimation.value, [0, 1], [1, 0.99]),
+        },
+      ],
+    };
+  });
+
+  const onChangeTextHandler = val => {
+    if (props.onChangeText) {
+      props.onChangeText(val);
     }
-    if (!inputState.value || inputState.value.length === 0) {
-      translateAnim.value = withTiming(0, { duration: 150 });
-      scaleAnim.value = 0;
+  };
+
+  const onBlurHandler = () => {
+    if (props.onBlur) {
+      props.onBlur();
+    }
+  };
+
+  const onFocusHandler = () => {
+    if (props.onFocus) {
+      props.onFocus();
     }
   };
 
@@ -118,21 +68,26 @@ const UiInput = props => {
     setShowInput(!showInput);
   };
 
-  const autoCompleteType = () => {
+  const autoCompleteType = useMemo(() => {
     if (contentType === 'none') {
       return 'off';
     } else {
       return contentType;
     }
-  };
+  }, [contentType]);
+
+  const hideInput = useMemo(() => {
+    return contentType === 'password' && !showInput;
+  }, [contentType, showInput]);
 
   return (
-    <View
+    <Animated.View
       style={[
         styles.inputContainer,
         props.style,
         { backgroundColor: theme.secondaryBg },
         paddingRight ? { paddingRight } : {},
+        scale,
       ]}>
       {iconLeft ? (
         <Icon
@@ -143,11 +98,13 @@ const UiInput = props => {
         />
       ) : null}
       <TextInput
+        onPressIn={onFocusIn}
+        onPressOut={onFocusOut}
         selectionColor={theme.cursor}
-        placeholderTextColor={isValid ? theme.secondaryText : theme.error}
+        placeholderTextColor={!error ? theme.secondaryText : theme.error}
         placeholder={placeholder}
-        value={inputState.value}
-        onChangeText={inputHandler}
+        value={value}
+        onChangeText={onChangeTextHandler}
         editable={!disabled}
         selectTextOnFocus={false}
         style={[
@@ -155,18 +112,18 @@ const UiInput = props => {
           {
             fontSize,
             fontFamily: theme.fontMedium,
-            color: isValid ? theme.secondaryText : theme.error,
+            color: !error ? theme.secondaryText : theme.error,
           },
           // eslint-disable-next-line react-native/no-inline-styles
           !multiline ? { paddingLeft: 60 } : {},
         ]}
         multiline={multiline}
-        onFocus={onFocus}
-        onBlur={onBlur}
+        onFocus={onFocusHandler}
+        onBlur={onBlurHandler}
         ref={inputRef}
         textContentType={contentType}
-        autoCompleteType={autoCompleteType()}
-        secureTextEntry={contentType === 'password' && !showInput}
+        autoCompleteType={autoCompleteType}
+        secureTextEntry={hideInput}
       />
       {icon ? (
         <TouchableOpacity
@@ -183,8 +140,8 @@ const UiInput = props => {
           />
         </TouchableOpacity>
       ) : null}
-      <ErrorMessage isValid={isValid} errCode={errCode} />
-    </View>
+      <ErrorMessage isValid={!error} errCode={error} />
+    </Animated.View>
   );
 };
 
