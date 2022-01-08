@@ -1,25 +1,19 @@
 import { environmentUrl } from '../constants/Environment';
+import { fetchAndHandleError } from '../Util/error-handling';
 
 export const getTeamsFromAnnouncement = async id => {
-  try {
-    const response = await fetch(
-      `http://${environmentUrl}/api/announcements/${id}/teams`,
-    );
-
-    if (!response.ok) {
-      throw new Error('Something went wrong');
-    }
-
-    const resData = await response.json();
-    const teams = resData.teams;
-    return teams;
-  } catch (err) {
-    console.log('err<>', err);
-
-    if (err && err.errors && err.errors.length > 0) {
-      throw err.errors;
-    }
-  }
+  const url = `announcements/${id}/teams`;
+  const payload = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  };
+  const auth = false;
+  const resData = await fetchAndHandleError(url, payload, auth);
+  const teams = resData.teams;
+  return teams;
 };
 
 export const getImageUrl = id => {
