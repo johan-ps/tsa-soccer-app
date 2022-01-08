@@ -40,11 +40,16 @@ export const loadNotificationPreferences = async (userId = null) => {
   const auth = true;
 
   let preferences = [];
-  if (userId) {
-    const resData = await fetchAndHandleError(url, payload, auth);
-    preferences = resData.preferences;
-  } else {
-    preferences = await AsyncStorage.getItem(CONST.NOTIFICATION_KEY);
+
+  try {
+    if (userId) {
+      const resData = await fetchAndHandleError(url, payload, auth);
+      preferences = resData.preferences;
+    } else {
+      preferences = await AsyncStorage.getItem(CONST.NOTIFICATION_KEY);
+    }
+  } catch (error) {
+    console.log(error);
   }
 
   return preferences;

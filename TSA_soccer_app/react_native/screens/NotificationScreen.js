@@ -100,7 +100,7 @@ const NotificationScreen = ({ navigation }) => {
     const prefs = await loadNotificationPreferences(
       userData.authenticated ? userData.id : null,
     );
-    return prefs;
+    return prefs || [];
   }, [userData.authenticated, userData.id]);
 
   useEffect(() => {

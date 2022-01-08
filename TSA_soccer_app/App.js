@@ -6,8 +6,8 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import RNBootSplash from 'react-native-bootsplash';
 import PushNotification from 'react-native-push-notification';
-import { LogBox, AppRegistry } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
+import { PortalProvider } from '@gorhom/portal';
 
 import MainNavigator from './react_native/navigation/MainNavigator';
 import ThemeReducer from './react_native/store/reducers/ThemeReducer';
@@ -81,22 +81,26 @@ const App = () => {
   };
 
   useEffect(() => {
-    LogBox.ignoreLogs(['Require cycle:']);
-
     const init = async () => {
-      await store.dispatch(userActions.checkAuthToken());
-      const userData = store.getState().userData;
-      loadNotificationPreferences(
-        userData && userData.authenticated ? userData.id : null,
-      ).then(prefs => {
-        prefs.forEach(pref => {
-          messaging()
-            .subscribeToTopic(`${TOPIC}${pref}`)
-            .then(() => {
-              console.log(`Subscribed to topic: ${TOPIC}${pref}`);
+      try {
+        await store.dispatch(userActions.checkAuthToken());
+        const userData = store.getState().userData;
+        loadNotificationPreferences(
+          userData && userData.authenticated ? userData.id : null,
+        ).then(prefs => {
+          if (prefs) {
+            prefs.forEach(pref => {
+              messaging()
+                .subscribeToTopic(`${TOPIC}${pref}`)
+                .then(() => {
+                  console.log(`Subscribed to topic: ${TOPIC}${pref}`);
+                });
             });
+          }
         });
-      });
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     init().finally(async () => {
@@ -205,12 +209,14 @@ const App = () => {
   };
 
   return (
-    <Provider store={store}>
-      <SetLoader />
-      <NavigationContainer>
-        <MainNavigator />
-      </NavigationContainer>
-    </Provider>
+    <PortalProvider>
+      <Provider store={store}>
+        <SetLoader />
+        <NavigationContainer>
+          <MainNavigator />
+        </NavigationContainer>
+      </Provider>
+    </PortalProvider>
   );
 };
 

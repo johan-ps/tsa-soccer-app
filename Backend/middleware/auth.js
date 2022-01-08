@@ -4,6 +4,7 @@ const User = require("../models/User");
 exports.isAuth = async (req, res, next) => {
     if (req.headers && req.headers['x-auth-token'] && req.headers['x-auth-token'].split(' ')[1]) {
         const token = req.headers['x-auth-token'].split(' ')[1];
+        console.log('token', token)
         
         try {
             const decode = jwt.verify(token, process.env.JWT_SECRET);

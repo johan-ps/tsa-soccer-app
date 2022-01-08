@@ -15,102 +15,44 @@ import * as userActions from '../store/actions/UserActions';
 import * as loaderActions from '../store/actions/LoaderActions';
 import { useFocusEffect } from '@react-navigation/native';
 import * as tabbarActions from '../store/actions/TabbarActions';
-
-const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
-
-const formInit = {
-  inputValues: {
-    username: '',
-    password: '',
-  },
-  inputValidities: {
-    username: true,
-    password: true,
-  },
-  errors: {
-    username: null,
-    password: null,
-  },
-  formIsValid: true,
-};
-
-const formReducer = (state, action) => {
-  if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = {
-      ...state.inputValues,
-      [action.input]: action.value,
-    };
-    const updatedValidities = {
-      ...state.inputValidities,
-      [action.input]: action.isValid,
-    };
-    const updatedErrors = { ...state.errors };
-    if (action.error !== undefined) {
-      updatedErrors[action.input] = action.error;
-    }
-    let updatedFormIsValid = true;
-    for (let key in updatedValidities) {
-      updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
-    }
-    return {
-      formIsValid: updatedFormIsValid,
-      inputValues: updatedValues,
-      inputValidities: updatedValidities,
-      errors: updatedErrors,
-    };
-  } else {
-    return formInit;
-  }
-};
+import { useFormik } from 'formik';
 
 const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
   const theme = useSelector(state => state.theme.colors);
 
-  const onChangeText = useCallback(
-    (inputId, inputValue) => {
-      dispatchFormState({
-        type: FORM_INPUT_UPDATE,
-        value: inputValue,
-        isValid: true,
-        input: inputId,
-      });
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
     },
-    [dispatchFormState],
-  );
+    onSubmit: async values => {
+      try {
+        Keyboard.dismiss();
+        dispatch(loaderActions.updateLoader(true));
+        await dispatch(
+          userActions.loginUser({
+            username: values.username,
+            password: values.password,
+          }),
+        );
+        dispatch(loaderActions.updateLoader(false));
+        navigation.goBack();
+      } catch (error) {
+        if (error && error.length > 0) {
+          error.forEach(err => {
+            formik.setFieldError(err.field, err.errCode);
+          });
+        }
+      } finally {
+        dispatch(loaderActions.updateLoader(false));
+      }
+    },
+  });
 
   useFocusEffect(() => {
     dispatch(tabbarActions.updateVisibility(false));
   });
-
-  const loginHandler = async () => {
-    try {
-      Keyboard.dismiss();
-      dispatch(loaderActions.updateLoader(true));
-      await dispatch(
-        userActions.loginUser({
-          username: formState.inputValues.username,
-          password: formState.inputValues.password,
-        }),
-      );
-      dispatch(loaderActions.updateLoader(false));
-      navigation.goBack();
-    } catch (error) {
-      if (error && error.length > 0) {
-        error.forEach(err => {
-          dispatchFormState({
-            type: FORM_INPUT_UPDATE,
-            isValid: false,
-            error: err.errCode,
-            input: err.field,
-          });
-        });
-      }
-    } finally {
-      dispatch(loaderActions.updateLoader(false));
-    }
-  };
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -167,21 +109,17 @@ const LoginScreen = ({ navigation }) => {
               <UiInput
                 id="username"
                 iconLeft="mail"
-                initialValue={formState.inputValues.username}
-                isValid={formState.inputValidities.username}
-                errCode={formState.errors.username}
                 contentType="username"
                 placeholder="Username"
                 style={styles.marginBottom}
-                onInputChange={onChangeText}
+                onChangeText={formik.handleChange('username')}
+                value={formik.values.username}
+                error={formik.errors.username}
               />
               <View style={{ marginTop: 20 }} />
               <UiInput
                 id="password"
                 iconLeft="lock"
-                initialValue={formState.inputValues.password}
-                isValid={formState.inputValidities.password}
-                errCode={formState.errors.password}
                 contentType="password"
                 placeholder="Password"
                 icon={{
@@ -189,13 +127,15 @@ const LoginScreen = ({ navigation }) => {
                   altName: 'eye-off',
                   size: 26,
                 }}
-                onInputChange={onChangeText}
+                onChangeText={formik.handleChange('password')}
+                value={formik.values.password}
+                error={formik.errors.password}
               />
             </View>
           </View>
           <View style={styles.footer}>
             <UiButton
-              onPress={loginHandler}
+              onPress={formik.handleSubmit}
               label="Login"
               width="100%"
               height={62}

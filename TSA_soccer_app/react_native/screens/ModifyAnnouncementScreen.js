@@ -427,9 +427,6 @@ const ModifyAnnouncementScreen = props => {
                 <Text style={[styles.formLabels, labelFont]}>Description</Text>
                 <UiInput
                   id="description"
-                  initialValue={formState.inputValues.description}
-                  isValid={formState.inputValidities.description}
-                  errCode={formState.errors.description}
                   placeholder="Description"
                   multiline={true}
                   onChangeText={formik.handleChange('description')}
