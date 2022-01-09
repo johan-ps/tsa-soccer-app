@@ -52,7 +52,7 @@ const ModifyAnnouncementScreen = props => {
       teams: initTeams,
     },
     onSubmit: values => {
-      console.log(values);
+      modifyAnnouncementScreenHandler(values);
     },
   });
 
@@ -71,12 +71,17 @@ const ModifyAnnouncementScreen = props => {
       loadTeamsFromAnnouncements()
         .then(res => {
           if (res && res.length > 0) {
-            const teamsArr = [...initTeams];
+            const selectedTeams = [];
+            const mapping = {};
 
-            res.forEach(({ teamId }) => {
-              teamsArr[labelMapping[teamId.toString()]] = true;
+            teams.forEach((option, i) => {
+              selectedTeams.push(false);
+              mapping[option.id] = i;
             });
-
+            const teamsArr = [...selectedTeams];
+            res.forEach(({ teamId }) => {
+              teamsArr[mapping[teamId.toString()]] = true;
+            });
             setInitTeams(teamsArr);
           }
         })
@@ -84,7 +89,8 @@ const ModifyAnnouncementScreen = props => {
           dispatch(loaderActions.updateLoader(false));
         });
     }
-  }, [loadTeamsFromAnnouncements, isEdit, dispatch, initTeams, labelMapping]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadTeamsFromAnnouncements, isEdit, dispatch]);
 
   const loadTeams = useCallback(async () => {
     try {
@@ -105,13 +111,15 @@ const ModifyAnnouncementScreen = props => {
   }, [dispatch, loadTeams]);
 
   const modifyAnnouncementScreenHandler = async values => {
-    formik.handleSubmit();
     dispatch(loaderActions.updateLoader(true));
     try {
       const selectedTeams = [];
-      for (const key in labelMapping) {
-        if (values.teams[labelMapping[key]]) {
-          selectedTeams.push(key);
+
+      if (values && values.teams) {
+        for (const key in labelMapping) {
+          if (values.teams[labelMapping[key]]) {
+            selectedTeams.push(key);
+          }
         }
       }
 
@@ -126,7 +134,7 @@ const ModifyAnnouncementScreen = props => {
       if (isEdit) {
         updateData.id = announcementData.id;
       }
-
+      console.log(updateData);
       await dispatch(
         isEdit
           ? announcementActions.updateAnnouncement(updateData)
@@ -136,6 +144,7 @@ const ModifyAnnouncementScreen = props => {
       navigation.goBack();
       formik.resetForm();
     } catch (error) {
+      console.log(error);
       if (error && error.length > 0) {
         error.forEach(err => {
           formik.setFieldError(err.field, err.errCode);
@@ -253,9 +262,7 @@ const ModifyAnnouncementScreen = props => {
           </View>
           <View style={styles.modalFooter}>
             <UiButton
-              onPress={() => {
-                modifyAnnouncementScreenHandler();
-              }}
+              onPress={formik.handleSubmit}
               label={isEdit ? 'Update' : 'Create'}
               width="100%"
               height={62}

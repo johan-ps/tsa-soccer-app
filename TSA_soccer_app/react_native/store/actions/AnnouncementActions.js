@@ -70,6 +70,7 @@ export const addAnnouncement = announcementData => {
   };
   const auth = true;
   const config = resData => {
+    console.log(resData);
     return {
       type: ADD_ANNOUNCEMENT,
       announcement: resData.announcement,

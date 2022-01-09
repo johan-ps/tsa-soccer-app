@@ -50,6 +50,12 @@ const UiDropdown = props => {
   const ddBtn = useRef();
   const [selectedCount, setSelectedCount] = useState(0);
 
+  useEffect(() => {
+    if (selectedValues && selectedValues.length > 0) {
+      setSelectedCount(selectedValues.filter(val => val).length);
+    }
+  }, [selectedValues]);
+
   const onFocusIn = () => {
     focusAnimation.value = withTiming(1, { duration: 40 });
   };

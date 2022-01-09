@@ -44,7 +44,7 @@ const ImageUpload = props => {
   const handleImageSelect = img => {
     if (props.onChange) {
       const data = {
-        uri: `data:${img.mime};base64,` + img.data,
+        uri: `${img.path}`,
         width: img.width,
         height: img.height,
         type: img.mime,
