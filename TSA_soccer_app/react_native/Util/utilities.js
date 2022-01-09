@@ -117,6 +117,10 @@ export const sortByDate = data => {
 };
 
 export const formatTeams = teams => {
+  if (!teams || teams.length === 0) {
+    return [];
+  }
+
   const teamsOpt = [
     {
       group: true,

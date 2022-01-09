@@ -12,7 +12,6 @@ import { UiButton, UiDropdown, UiInput } from '../components/_components';
 import ImageUpload from '../components/Announcements/ImageUpload';
 import * as announcementActions from '../store/actions/AnnouncementActions';
 import * as loaderActions from '../store/actions/LoaderActions';
-import * as teamActions from '../store/actions/TeamActions';
 import { formatTeams } from '../Util/utilities';
 import * as tabbarActions from '../store/actions/TabbarActions';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -92,23 +91,10 @@ const ModifyAnnouncementScreen = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadTeamsFromAnnouncements, isEdit, dispatch]);
 
-  const loadTeams = useCallback(async () => {
-    try {
-      await dispatch(teamActions.getTeams());
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
-
   useEffect(() => {
     dispatch(tabbarActions.updateVisibility(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    loadTeams();
-    dispatch(tabbarActions.updateVisibility(false));
-  }, [dispatch, loadTeams]);
 
   const modifyAnnouncementScreenHandler = async values => {
     dispatch(loaderActions.updateLoader(true));
@@ -141,7 +127,7 @@ const ModifyAnnouncementScreen = props => {
       );
       await dispatch(announcementActions.getAnnouncements());
       navigation.goBack();
-      formik.resetForm();
+      formik.handleReset();
     } catch (error) {
       if (error && error.length > 0) {
         error.forEach(err => {
@@ -154,7 +140,7 @@ const ModifyAnnouncementScreen = props => {
   };
 
   const onCloseHandler = () => {
-    formik.resetForm();
+    formik.handleReset();
     navigation.goBack();
   };
 

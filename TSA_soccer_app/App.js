@@ -20,6 +20,7 @@ import SetLoader from './react_native/components/SetLoader';
 import LoaderReducer from './react_native/store/reducers/LoaderReducer';
 import TeamReducer from './react_native/store/reducers/TeamReducer';
 import TabbarReducer from './react_native/store/reducers/TabbarReducer';
+import * as teamActions from './react_native/store/actions/TeamActions';
 
 import { loadNotificationPreferences } from './react_native/api/notifications';
 
@@ -79,6 +80,7 @@ const App = () => {
     const init = async () => {
       try {
         await store.dispatch(userActions.checkAuthToken());
+        await store.dispatch(teamActions.getTeams());
         const userData = store.getState().userData;
         loadNotificationPreferences(
           userData && userData.authenticated ? userData.id : null,

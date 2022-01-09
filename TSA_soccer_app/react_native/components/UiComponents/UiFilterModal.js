@@ -11,7 +11,6 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { formatTeams } from '../../Util/utilities';
 import { UiDropdown } from '../_components';
-import * as teamActions from '../../store/actions/TeamActions';
 import UiDatePicker from './UiDatePicker';
 import * as loaderActions from '../../store/actions/LoaderActions';
 import * as announcementActions from '../../store/actions/AnnouncementActions';
@@ -24,7 +23,7 @@ const UiFilterModal = forwardRef((props, ref) => {
   const bottomSheetRef = useRef();
   const [initTeams, setInitTeams] = useState([]);
   const [labelMapping, setLabelMapping] = useState({});
-  const teams = useSelector(state => formatTeams(state.teams));
+  const teams = useSelector(state => state.teams);
 
   useImperativeHandle(ref, () => ({
     snapToIndex,
@@ -32,30 +31,16 @@ const UiFilterModal = forwardRef((props, ref) => {
   }));
 
   const formik = useFormik({
+    // enableReinitialize: true,
     initialValues: {
       startDate: null,
       endDate: null,
       teams: initTeams,
     },
     onSubmit: values => {
-      console.log(values);
+      primaryBtnHandler(values);
     },
   });
-
-  useEffect(() => {
-    const selectedTeams = [];
-    const mapping = {};
-
-    teams.forEach((option, i) => {
-      selectedTeams.push(false);
-      mapping[option.id] = i;
-    });
-
-    setLabelMapping(mapping);
-    setInitTeams(selectedTeams);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const loadFilteredAnnouncements = useCallback(
     async filters => {
@@ -81,31 +66,63 @@ const UiFilterModal = forwardRef((props, ref) => {
     bottomSheetRef.current.snapToIndex(index);
   };
 
-  const loadTeams = useCallback(async () => {
-    try {
-      await dispatch(teamActions.getTeams());
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
+  useEffect(() => {
+    formik.setFieldValue('teams', initTeams);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initTeams]);
 
   useEffect(() => {
-    loadTeams();
-  }, [loadTeams]);
+    if (teams && teams.length > 0) {
+      const formattedTeams = formatTeams(teams);
+      const selectedTeams = [];
+      const mapping = {};
 
-  const primaryBtnHandler = useCallback(() => {
-    props.onUpdateFilter(formik.values);
-    loadFilteredAnnouncements(formik.values);
+      formattedTeams.forEach((option, i) => {
+        selectedTeams.push(false);
+        mapping[option.id] = i;
+      });
+
+      setLabelMapping(mapping);
+      setInitTeams(selectedTeams);
+    }
+  }, [teams]);
+
+  const primaryBtnHandler = values => {
+    const selectedTeams = [];
+
+    if (values && values.teams) {
+      for (const key in labelMapping) {
+        if (values.teams[labelMapping[key]]) {
+          selectedTeams.push(key);
+        }
+      }
+    }
+
+    const filterData = {
+      ...values,
+      teams: selectedTeams,
+    };
+
+    props.onUpdateFilter(filterData);
+    loadFilteredAnnouncements(filterData);
+    formik.resetForm({ values });
     bottomSheetRef.current.closeSheet();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formik.values, loadFilteredAnnouncements]);
+  };
 
   const secondaryBtnHandler = () => {
-    formik.resetForm();
+    formik.resetForm({
+      values: {
+        startDate: null,
+        endDate: null,
+        teams: initTeams,
+      },
+    });
   };
 
   const onCloseHandler = () => {
-    formik.resetForm();
+    if (formik.dirty) {
+      formik.handleReset();
+    }
     props.onCloseHandler();
   };
 
@@ -132,7 +149,7 @@ const UiFilterModal = forwardRef((props, ref) => {
       title="Filter"
       ref={bottomSheetRef}
       onCloseHandler={onCloseHandler}
-      primaryBtnHandler={primaryBtnHandler}
+      primaryBtnHandler={formik.handleSubmit}
       secondaryBtnHandler={secondaryBtnHandler}
       footerLabel="Apply Filter"
       secondaryLabel="Reset">
@@ -141,7 +158,7 @@ const UiFilterModal = forwardRef((props, ref) => {
           <Text style={[styles.subheading, headingStyle]}>Teams</Text>
         </View>
         <UiDropdown
-          options={teams}
+          options={formatTeams(teams)}
           labelMapping={labelMapping}
           placeholder="Choose teams"
           onChange={handleDropdownChange}

@@ -436,6 +436,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'absolute',
+    backgroundColor: '#00000001',
   },
   optionsScrollContainer: {
     width: '100%',
@@ -471,33 +472,10 @@ const styles = StyleSheet.create({
   },
   selectLabelsContainer: {
     flexDirection: 'row',
-    // alignItems: 'flex-start',
     flexWrap: 'wrap',
-  },
-
-  selectLabels: {
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 5,
-    marginBottom: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
   },
   dropdownLabel: {
     fontSize: 15,
-  },
-  selectedText: {
-    color: '#A29FAF',
-  },
-  selectedOption: {
-    backgroundColor: '#E9EFFF',
-  },
-  selectedOptionText: {
-    color: '#356EFF',
-  },
-  optionText: {
-    color: '#000000',
   },
 });
 

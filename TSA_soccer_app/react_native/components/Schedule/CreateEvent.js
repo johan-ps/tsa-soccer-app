@@ -274,19 +274,6 @@ const CreateEvent = props => {
   const [repeatDays, setRepeatDays] = useState([]);
   const [showRepeatDate, setShowRepeatDate] = useState(false);
 
-  const loadTeams = useCallback(async () => {
-    try {
-      await dispatch(teamActions.getTeams());
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    loadTeams();
-  }, [loadTeams]);
-
-
   const onSelectLocation = () => {
     setLocation(true);
   };

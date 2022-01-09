@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from 'react';
 import {
   View,
   StyleSheet,
@@ -27,6 +33,7 @@ import * as loaderActions from '../store/actions/LoaderActions';
 import { getImageUrl } from '../api/announcements';
 import ScrollTop from '../components/UiComponents/UiScrollTop';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import LoadingSkeleton from '../components/Announcements/LoadingSkeleton';
 
 const downloadImage = (id, image) => {
   const date = new Date();
@@ -89,6 +96,7 @@ const AnnouncementScreen = ({ navigation }) => {
   const [showBadge, setShowBadge] = useState(false);
   const [filters, setFilters] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const onScrollHandler = event => {
     const curOffsetY = event.nativeEvent.contentOffset.y;
@@ -103,7 +111,9 @@ const AnnouncementScreen = ({ navigation }) => {
   };
 
   const onScrollToTop = () => {
-    flatlistRef.current.scrollToOffset({ animated: true, y: 0 });
+    if (flatlistRef.current) {
+      flatlistRef.current.scrollToOffset({ animated: true, y: 0 });
+    }
   };
 
   const onScrollStartHandler = () => {
@@ -128,9 +138,6 @@ const AnnouncementScreen = ({ navigation }) => {
           loadFailHandler();
           dispatch(loaderActions.updateLoader(false));
         }, 5000);
-        if (loading) {
-          dispatch(loaderActions.updateLoader(true));
-        }
         if (filters) {
           await dispatch(announcementActions.getFilteredAnnouncements(filters));
         } else {
@@ -140,10 +147,6 @@ const AnnouncementScreen = ({ navigation }) => {
       } catch (err) {
         console.log('error<1>', err);
         loadFailHandler();
-      } finally {
-        if (loading) {
-          dispatch(loaderActions.updateLoader(false));
-        }
       }
       if (!loading) {
         setIsRefreshing(false);
@@ -153,26 +156,31 @@ const AnnouncementScreen = ({ navigation }) => {
   );
 
   useEffect(() => {
-    loadAnnouncements(true);
+    loadAnnouncements(true).then(() => {
+      setIsLoading(false);
+    });
   }, [dispatch, loadAnnouncements]);
 
   useFocusEffect(() => {
     dispatch(tabbarActions.updateVisibility(true));
   });
 
-  const onEditHandler = item => {
-    navigation.navigate('ModifyAnnouncement', {
-      isEdit: true,
-      announcementData: item,
-    });
-  };
+  const onEditHandler = useCallback(
+    item => {
+      navigation.navigate('ModifyAnnouncement', {
+        isEdit: true,
+        announcementData: item,
+      });
+    },
+    [navigation],
+  );
 
   const onDeleteHandler = id => {
     setDeleteId(id);
     setModalVisible(true);
   };
 
-  const onDownloadHandler = ({ id, image }) => {
+  const onDownloadHandler = useCallback(({ id, image }) => {
     checkPermision(id, image)
       .then(() => {
         'done';
@@ -180,7 +188,7 @@ const AnnouncementScreen = ({ navigation }) => {
       .catch(err => {
         console.log(err);
       });
-  };
+  }, []);
 
   const checkPermision = async (id, image) => {
     if (Platform.OS === 'ios') {
@@ -246,6 +254,52 @@ const AnnouncementScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
+  const renderAnnouncements = useMemo(() => {
+    if (isLoading) {
+      return <LoadingSkeleton />;
+    } else if (announcements.length === 0) {
+      return <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />;
+    } else {
+      return (
+        <FlatList
+          contentContainerStyle={styles.scrollable}
+          ref={flatlistRef}
+          onMomentumScrollEnd={onScrollEndHandler}
+          onScroll={onScrollHandler}
+          onScrollBeginDrag={onScrollStartHandler}
+          onRefresh={loadAnnouncements}
+          refreshing={isRefreshing}
+          data={announcements}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => {
+            return (
+              <AnnouncementCard
+                key={item.id}
+                onEdit={() => {
+                  onEditHandler(item);
+                }}
+                onDelete={() => {
+                  onDeleteHandler(item.id);
+                }}
+                onDownload={() => {
+                  onDownloadHandler(item);
+                }}
+                announcementData={item}
+              />
+            );
+          }}
+        />
+      );
+    }
+  }, [
+    announcements,
+    isLoading,
+    isRefreshing,
+    loadAnnouncements,
+    onDownloadHandler,
+    onEditHandler,
+  ]);
+
   return (
     <View style={[styles.container, { backgroundColor: theme.secondaryBg }]}>
       <StatusBar
@@ -261,38 +315,7 @@ const AnnouncementScreen = ({ navigation }) => {
       ) : null}
       <SafeAreaView style={announcements.length === 0 ? styles.container : {}}>
         <NavHeader ref={searchBarRef} toggleFilter={showFilter} />
-        {announcements.length === 0 ? (
-          <ErrorScreen error="NO_RESULTS" onRefresh={loadAnnouncements} />
-        ) : (
-          <FlatList
-            contentContainerStyle={styles.scrollable}
-            ref={flatlistRef}
-            onMomentumScrollEnd={onScrollEndHandler}
-            onScroll={onScrollHandler}
-            onScrollBeginDrag={onScrollStartHandler}
-            onRefresh={loadAnnouncements}
-            refreshing={isRefreshing}
-            data={announcements}
-            keyExtractor={item => item.id}
-            renderItem={({ item }) => {
-              return (
-                <AnnouncementCard
-                  key={item.id}
-                  onEdit={() => {
-                    onEditHandler(item);
-                  }}
-                  onDelete={() => {
-                    onDeleteHandler(item.id);
-                  }}
-                  onDownload={() => {
-                    onDownloadHandler(item);
-                  }}
-                  announcementData={item}
-                />
-              );
-            }}
-          />
-        )}
+        {renderAnnouncements}
         {userData && userData.accessLevel > 0 ? (
           <UiModal
             primaryLabel="Confirm"

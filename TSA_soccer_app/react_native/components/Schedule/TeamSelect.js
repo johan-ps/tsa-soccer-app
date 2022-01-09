@@ -19,18 +19,6 @@ const TeamSelect = props => {
     setShowTeams(!showTeams);
   }
 
-  const loadTeams = useCallback(async () => {
-    try {
-      await dispatch(teamActions.getTeams());
-    } catch (err) {
-      console.log(err);
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    loadTeams();
-  }, [loadTeams]);
-
   const onSelectHandler = (team) => {
     onClickHandler();
     onSelect(team);

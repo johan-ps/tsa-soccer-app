@@ -55,6 +55,7 @@ export const fetchAndHandleError = async (
 
     return resData;
   } catch (error) {
+    console.log(error);
     if (error && error.errors && error.errors.length > 0) {
       throw error.errors;
     } else {
