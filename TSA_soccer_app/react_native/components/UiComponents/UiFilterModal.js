@@ -1,109 +1,61 @@
 import React, {
   useEffect,
   useCallback,
-  useReducer,
   useRef,
   forwardRef,
   useImperativeHandle,
   memo,
+  useState,
 } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { formatTeams } from '../../Util/utilities';
 import { UiDropdown } from '../_components';
 import * as teamActions from '../../store/actions/TeamActions';
 import UiDatePicker from './UiDatePicker';
-import moment from 'moment';
 import * as loaderActions from '../../store/actions/LoaderActions';
 import * as announcementActions from '../../store/actions/AnnouncementActions';
 import UiBottomSheet from './UiBottomSheet';
-
-const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE';
-const FORM_INPUT_APPLY = 'FORM_INPUT_APPLY';
-const FORM_INPUT_RESET = 'FORM_INPUT_RESET';
-
-const formInit = {
-  inputValues: {
-    teams: [],
-    startDate: null,
-    endDate: null,
-  },
-  prevState: {
-    teams: [],
-    startDate: null,
-    endDate: null,
-  },
-  inputValidities: {
-    teams: true,
-    startDate: true,
-    endDate: true,
-  },
-  errors: {
-    teams: null,
-    startDate: null,
-    endDate: null,
-  },
-};
-
-const formReducer = (state, action) => {
-  if (action.type === FORM_INPUT_UPDATE) {
-    const updatedValues = { ...state.inputValues };
-    if (action.value !== undefined) {
-      updatedValues[action.input] = action.value;
-    }
-
-    const updatedValidities = { ...state.inputValidities };
-    if (action.isValid !== undefined) {
-      updatedValidities[action.input] = action.isValid;
-    }
-
-    const updatedErrors = { ...state.errors };
-    if (action.error !== undefined) {
-      updatedErrors[action.input] = action.error;
-    }
-
-    return {
-      inputValues: updatedValues,
-      inputValidities: updatedValidities,
-      errors: updatedErrors,
-      prevState: { ...state.prevState },
-    };
-  } else if (action.type === FORM_INPUT_APPLY) {
-    return {
-      ...state,
-      inputValues: { ...state.inputValues },
-      prevState: { ...state.inputValues },
-    };
-  } else if (action.type === FORM_INPUT_RESET) {
-    return {
-      ...state,
-      inputValues: { ...state.prevState },
-      prevState: { ...state.prevState },
-    };
-  } else {
-    return {
-      ...formInit,
-      prevState: { ...state.prevState },
-    };
-  }
-};
+import { useFormik } from 'formik';
 
 const UiFilterModal = forwardRef((props, ref) => {
   const theme = useSelector(state => state.theme.colors);
   const dispatch = useDispatch();
-  const [formState, dispatchFormState] = useReducer(formReducer, formInit);
   const bottomSheetRef = useRef();
-  const ddRef = useRef();
+  const [initTeams, setInitTeams] = useState([]);
+  const [labelMapping, setLabelMapping] = useState({});
+  const teams = useSelector(state => formatTeams(state.teams));
 
   useImperativeHandle(ref, () => ({
     snapToIndex,
     reset: secondaryBtnHandler,
   }));
+
+  const formik = useFormik({
+    initialValues: {
+      startDate: null,
+      endDate: null,
+      teams: initTeams,
+    },
+    onSubmit: values => {
+      console.log(values);
+    },
+  });
+
+  useEffect(() => {
+    const selectedTeams = [];
+    const mapping = {};
+
+    teams.forEach((option, i) => {
+      selectedTeams.push(false);
+      mapping[option.id] = i;
+    });
+
+    setLabelMapping(mapping);
+    setInitTeams(selectedTeams);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadFilteredAnnouncements = useCallback(
     async filters => {
@@ -114,12 +66,7 @@ const UiFilterModal = forwardRef((props, ref) => {
       } catch (error) {
         if (error && error.length > 0) {
           error.forEach(err => {
-            dispatchFormState({
-              type: FORM_INPUT_UPDATE,
-              isValid: false,
-              error: err.errCode,
-              input: err.field,
-            });
+            formik.setFieldError(err.field, err.errCode);
           });
         }
       } finally {
@@ -147,53 +94,32 @@ const UiFilterModal = forwardRef((props, ref) => {
   }, [loadTeams]);
 
   const primaryBtnHandler = useCallback(() => {
-    dispatchFormState({ type: FORM_INPUT_APPLY });
-    props.onUpdateFilter(formState.inputValues);
-    loadFilteredAnnouncements(formState.inputValues);
+    props.onUpdateFilter(formik.values);
+    loadFilteredAnnouncements(formik.values);
     bottomSheetRef.current.closeSheet();
-  }, [formState.inputValues, loadFilteredAnnouncements, props]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values, loadFilteredAnnouncements]);
 
   const secondaryBtnHandler = () => {
-    ddRef.current.reset();
-    dispatchFormState({ type: 'reset' });
+    formik.resetForm();
   };
 
-  const teams = useSelector(state => formatTeams(state.teams));
-
-  const onSelectHandler = useCallback(inputValue => {
-    if (inputValue) {
-      let selectedTeams = [];
-
-      for (let group in inputValue) {
-        for (let teamId in inputValue[group].children) {
-          if (inputValue[group].children[teamId]) {
-            selectedTeams.push(teamId);
-          }
-        }
-      }
-
-      dispatchFormState({
-        type: FORM_INPUT_UPDATE,
-        value: selectedTeams,
-        isValid: true,
-        input: 'teams',
-      });
-    }
-  }, []);
-
-  const onDateChange = (inputId, value) => {
-    dispatchFormState({
-      type: FORM_INPUT_UPDATE,
-      value,
-      isValid: true,
-      input: inputId,
-    });
-  };
-
-  const onCloseHandler = useCallback(() => {
-    dispatchFormState({ type: FORM_INPUT_RESET });
+  const onCloseHandler = () => {
+    formik.resetForm();
     props.onCloseHandler();
-  }, [props]);
+  };
+
+  const handleDropdownChange = values => {
+    formik.setFieldValue('teams', values);
+  };
+
+  const handleStartDateChange = value => {
+    formik.setFieldValue('startDate', value);
+  };
+
+  const handleEndDateChange = value => {
+    formik.setFieldValue('endDate', value);
+  };
 
   const headingStyle = {
     fontFamily: theme.fontMedium,
@@ -215,36 +141,22 @@ const UiFilterModal = forwardRef((props, ref) => {
           <Text style={[styles.subheading, headingStyle]}>Teams</Text>
         </View>
         <UiDropdown
-          ref={ddRef}
           options={teams}
-          multiselect={true}
-          group={true}
+          labelMapping={labelMapping}
           placeholder="Choose teams"
-          size="large"
-          optionSize="large"
-          onSelect={onSelectHandler}
-          existingValues={formState.inputValues.teams}
-          isValid={formState.inputValidities.teams}
-          errCode={formState.errors.teams}
+          onChange={handleDropdownChange}
+          selectedValues={formik.values.teams}
+          error={formik.errors.teams}
         />
         <View style={styles.marginTop}>
           <View style={styles.subheadingContainer}>
             <Text style={[styles.subheading, headingStyle]}>Start Date</Text>
           </View>
           <UiDatePicker
-            id="startDate"
-            placeholder={
-              formState.inputValues.startDate
-                ? moment(formState.inputValues.startDate).format(
-                    'dddd, D MMM YYYY',
-                  )
-                : 'Select start date'
-            }
-            existingDate={formState.inputValues.startDate}
-            onChange={onDateChange}
-            height={280}
-            isValid={formState.inputValidities.startDate}
-            errCode={formState.errors.startDate}
+            placeholder="Select start date"
+            onChange={handleStartDateChange}
+            value={formik.values.startDate}
+            error={formik.errors.startDate}
           />
         </View>
         <View style={styles.marginTop}>
@@ -252,19 +164,10 @@ const UiFilterModal = forwardRef((props, ref) => {
             <Text style={[styles.subheading, headingStyle]}>End Date</Text>
           </View>
           <UiDatePicker
-            id="endDate"
-            placeholder={
-              formState.inputValues.endDate
-                ? moment(formState.inputValues.endDate).format(
-                    'dddd, D MMM YYYY',
-                  )
-                : 'Select end date'
-            }
-            existingDate={formState.inputValues.endDate}
-            onChange={onDateChange}
-            height={280}
-            isValid={formState.inputValidities.endDate}
-            errCode={formState.errors.endDate}
+            placeholder="Select end date"
+            onChange={handleEndDateChange}
+            value={formik.values.endDate}
+            error={formik.errors.endDate}
           />
         </View>
       </View>

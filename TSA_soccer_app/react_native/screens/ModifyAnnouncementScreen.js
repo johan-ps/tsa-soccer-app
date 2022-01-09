@@ -134,7 +134,6 @@ const ModifyAnnouncementScreen = props => {
       if (isEdit) {
         updateData.id = announcementData.id;
       }
-      console.log(updateData);
       await dispatch(
         isEdit
           ? announcementActions.updateAnnouncement(updateData)
@@ -144,7 +143,6 @@ const ModifyAnnouncementScreen = props => {
       navigation.goBack();
       formik.resetForm();
     } catch (error) {
-      console.log(error);
       if (error && error.length > 0) {
         error.forEach(err => {
           formik.setFieldError(err.field, err.errCode);
@@ -207,7 +205,6 @@ const ModifyAnnouncementScreen = props => {
               <View style={styles.modalBody}>
                 <Text style={[styles.formLabels, labelFont]}>Description</Text>
                 <UiInput
-                  id="description"
                   placeholder="Description"
                   multiline={true}
                   onChangeText={formik.handleChange('description')}
@@ -216,11 +213,8 @@ const ModifyAnnouncementScreen = props => {
                 />
                 <Text style={[styles.formLabels, labelFont]}>Team</Text>
                 <UiDropdown
-                  id="teams"
                   options={teams}
                   labelMapping={labelMapping}
-                  multiselect={true}
-                  group={true}
                   placeholder="Choose teams"
                   onChange={handleDropdownChange}
                   selectedValues={formik.values.teams}

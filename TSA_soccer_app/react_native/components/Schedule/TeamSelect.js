@@ -76,7 +76,7 @@ const TeamSelect = props => {
                 :
                 null
               }
-              <View style={styles.subContainer}>
+              {/* <View style={styles.subContainer}>
                 {teams.children.map((team, index) => (
                   <TeamListItem
                     key={team.id + index + 1}
@@ -85,7 +85,7 @@ const TeamSelect = props => {
                     currentTeam={current}
                   />
                 ))}
-              </View>
+              </View> */}
             </View>
           )
           }

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {
   useCallback,
   useRef,
@@ -14,7 +15,6 @@ import {
   Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetFooter,
@@ -27,7 +27,6 @@ const UiBottomSheet = forwardRef((props, ref) => {
   const {
     snaps = ['80%'],
     footerLabel = null,
-    icon,
     title = '',
     borderRadius = 35,
     width = 45,
@@ -78,6 +77,7 @@ const UiBottomSheet = forwardRef((props, ref) => {
 
   const renderFooter = (() => {
     if (footerLabel) {
+      // eslint-disable-next-line no-shadow
       return props => (
         <BottomSheetFooter
           {...props}
@@ -105,6 +105,7 @@ const UiBottomSheet = forwardRef((props, ref) => {
   })();
 
   const renderBackdrop = useCallback(
+    // eslint-disable-next-line no-shadow
     props => (
       <BottomSheetBackdrop
         {...props}

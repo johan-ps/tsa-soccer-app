@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -11,28 +11,19 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import DatePicker from 'react-native-date-picker';
 import { useSelector } from 'react-redux';
 import ErrorMessage from './ErrorMessage';
+import moment from 'moment';
 
 const UiDatePicker = props => {
-  const {
-    placeholder,
-    id,
-    height = 230,
-    existingDate,
-    isValid,
-    errCode,
-  } = props;
+  const { placeholder, value, error } = props;
   const [showDatePicker, setShowDatePicker] = useState(false);
   const dateAnim = useSharedValue(0);
   const theme = useSelector(state => state.theme.colors);
-  const [date, setDate] = useState(existingDate || new Date());
-  const [isInit, setIsInit] = useState(!!existingDate);
 
   const onToggleHandler = () => {
-    if (!isInit) {
+    if (!value) {
       if (props.onChange) {
-        props.onChange(id, new Date());
+        props.onChange(new Date());
       }
-      setIsInit(true);
     }
     if (showDatePicker) {
       dateAnim.value = withTiming(0);
@@ -46,35 +37,39 @@ const UiDatePicker = props => {
 
   const dateStyle = useAnimatedStyle(() => {
     return {
-      height: interpolate(dateAnim.value, [0, 1], [58, height]),
+      height: interpolate(dateAnim.value, [0, 1], [58, 280]),
     };
   });
 
   const onDateChangeHandler = dateVal => {
-    setDate(dateVal);
     if (props.onChange) {
-      props.onChange(id, dateVal);
+      console.log(dateVal);
+      props.onChange(dateVal);
     }
   };
 
   return (
     <Animated.View
-      style={[styles.container, { backgroundColor: theme.ddBgClr }, dateStyle]}>
+      style={[
+        styles.container,
+        { backgroundColor: theme.secondaryBg },
+        dateStyle,
+      ]}>
       <TouchableOpacity onPress={onToggleHandler}>
         <View style={styles.innerContainer}>
           <Text
             style={[
               styles.placeholder,
               {
-                color: isValid ? theme.secondaryText : theme.error,
+                color: !error ? theme.secondaryText : theme.error,
                 fontFamily: theme.fontRegular,
               },
             ]}>
-            {placeholder}
+            {!value ? placeholder : moment.utc(value).format('MMMM D, YYYY')}
           </Text>
           <View style={styles.iconContainer}>
             <Icon
-              color={isValid ? theme.ddSClr : theme.error}
+              color={!error ? theme.ddSClr : theme.error}
               name="calendar-outline"
               size={20}
             />
@@ -83,15 +78,16 @@ const UiDatePicker = props => {
       </TouchableOpacity>
       {showDatePicker && (
         <DatePicker
-          date={date}
-          onDateChange={onDateChangeHandler}
+          modal
+          date={new Date()}
+          // onDateChange={onDateChangeHandler}
           mode="date"
           androidVariant="nativeAndroid"
           textColor={theme.primaryText}
-          style={[styles.datePicker, { backgroundColor: theme.ddBgClr }]}
+          style={[styles.datePicker, { backgroundColor: theme.secondaryBg }]}
         />
       )}
-      <ErrorMessage isValid={isValid} errCode={errCode} />
+      <ErrorMessage isValid={!error} errCode={error} />
     </Animated.View>
   );
 };

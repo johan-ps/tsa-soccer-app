@@ -51,7 +51,7 @@ const UiDropdown = props => {
   const [selectedCount, setSelectedCount] = useState(0);
 
   useEffect(() => {
-    if (selectedValues && selectedValues.length > 0) {
+    if (selectedValues) {
       setSelectedCount(selectedValues.filter(val => val).length);
     }
   }, [selectedValues]);
